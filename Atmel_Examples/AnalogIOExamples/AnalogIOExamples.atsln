@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Atmel Studio Solution File, Format Version 11.00
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "ReadAnalogInput", "ReadAnalogInput\ReadAnalogInput.cppproj", "{2FB82D7F-5764-4F0C-9056-2579531D256C}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "WriteAnalogCurrentOutput", "WriteAnalogCurrentOutput\WriteAnalogCurrentOutput.cppproj", "{96490400-80FE-478E-86E0-0CBBFF5C1651}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Release|ARM = Release|ARM
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2FB82D7F-5764-4F0C-9056-2579531D256C}.Debug|ARM.ActiveCfg = Debug|ARM
+		{2FB82D7F-5764-4F0C-9056-2579531D256C}.Debug|ARM.Build.0 = Debug|ARM
+		{2FB82D7F-5764-4F0C-9056-2579531D256C}.Release|ARM.ActiveCfg = Release|ARM
+		{2FB82D7F-5764-4F0C-9056-2579531D256C}.Release|ARM.Build.0 = Release|ARM
+		{96490400-80FE-478E-86E0-0CBBFF5C1651}.Debug|ARM.ActiveCfg = Debug|ARM
+		{96490400-80FE-478E-86E0-0CBBFF5C1651}.Debug|ARM.Build.0 = Debug|ARM
+		{96490400-80FE-478E-86E0-0CBBFF5C1651}.Release|ARM.ActiveCfg = Release|ARM
+		{96490400-80FE-478E-86E0-0CBBFF5C1651}.Release|ARM.Build.0 = Release|ARM
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

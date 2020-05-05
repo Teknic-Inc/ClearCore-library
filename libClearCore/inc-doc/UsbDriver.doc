@@ -1,0 +1,94 @@
+#include "ClearCore.h";
+namespace ClearCore {
+
+//********************************************************************************************
+/**
+\page UsbMain ClearCore USB Port
+<h1> Overview </h1>
+    The USB port on the ClearCore interfaces directly with the USB native support of the ATSAMEN19A processor. 
+    
+    This configuration removes the need for a seperate USB serial port chip and provides versatility in how the device is presented to the USB host computer. It also means that since the main processor is providing the USB support, the USB device will go away and come back as the ClearCore is powered down or reset. Since the port goes away during resets, applications that interface with the USB port should watch for port removals to avoid holding open a stale instance of the COM port.
+
+<h2> Windows Drivers </h2>
+    Windows drivers for the ClearCore USB port are downloadable from http://www.teknic.com/downloads. Windows 10 users are not required to install the driver, but it is helpful so that the ClearCore USB device appears as "Teknic ClearCore (COMxx)" instead of "USB Serial Device (COMxx)" in Device Manager.
+    
+<h2> Application Operation </h2>
+    During application operation, the USB port is presented as a serial device. Windows users will find the device listed in the Ports (COM & LPT) section of Device Manager. 
+    
+    From the ClearCore application, use the \ref ConnectorUsb object to interact with the USB port serial device.
+    
+     \code{.cpp}
+     // Open the USB serial port on the device side
+     ConnectorUsb.PortOpen();
+     // Wait for the host to open the USB serial port
+     while (!ConnectorUsb) {
+         continue;
+     }
+     ConnectorUsb.SendLine("Serial is now connected and host is listening.");
+     \endcode
+    
+<h2> Bootloader Operation </h2>
+    ClearCore ships with a UF2 bootloader installed. During bootloader operation, the USB port is presented as a serial device, HID device and a Mass Storage device. This allows the device to be reprogrammed in a variety of methods that only require a USB cable.
+    
+    \note The Application and Bootloader USB devices enumerate as different product IDs, and thus will show up as different COM ports. This allows the operation mode to be clearly identified and use different capabilities based on the mode.
+    \note As the ClearCore switches between the application COM port and the bootloader COM port, make sure you have the proper port selected.
+    
+    See \ref BootloaderMain for more details on the bootloader operation and flashing firmware.
+    
+
+**/
+//********************************************************************************************
+/**
+\page BootloaderMain UF2 Bootloader
+<h1> Overview </h1>
+    A bootloader is a small piece of code that allows users to reprogram the application code within that device. ClearCore ships with a UF2 bootloader programmed on the processor. This bootloader allows programming over the USB Serial Port, as well as UF2 format firmware images to/from a USB mass storage drive. The bootloader resides at memory locations 0x0000-0x4000 and is protected from being cleared or overwritten during device programming operations. When compiling and loading your application, the user application should begin at address 0x4000.
+    
+<h2> Entering the Bootloader </h2>
+    The bootloader can be entered several ways.
+    - Double click the reset button on the ClearCore
+    - Open and close the USB Serial Port at 1200 baud
+    - Call SysManager::ResetBoard with the SysManager::RESET_TO_BOOTLOADER argument
+    
+    Upon entering bootloader mode the LEDs for I/O-0 through I/O-5 will begin blinking in increasing order.
+    Once the USB cable is plugged into a host device, the LEDs for I/O-0 through I/O-5 will change to blinking in descending order and the underglow LEDs will start slowly fading in and out.
+    As a program is loaded by the bootloader, the underglow LEDs will toggle on and off as the flash operation progresses.
+    
+    The bootloader can be exited by hitting the reset button on the ClearCore.
+    
+    \note If there is not a valid program loaded in memory starting at address 0x4000, the ClearCore will stay in bootloader mode.
+    
+<h2> Loading a program </h2>
+    <h3> Using BOSSA </h3>
+    BOSSA is a flash programming utility for the processor family used in the ClearCore. BOSSA provides both UI and command line based interfaces which perform the flash operation and verify the contents of program memory over the USB Serial Port.
+    
+    To program the ClearCore using the UI based BOSSA.exe:
+    - Select the COM port for the ClearCore device while the booloader is running.
+    - Select the compiled *.bin file that you would like to load
+    - Select "Erase all" in the "Write Options" section
+    - Enter 0x4000 as the "Flash Offset"
+    - Click the "Write" button to program the ClearCore
+    - Hit the reset button or power cycle the ClearCore to run your application
+    
+    BOSSA can also extract a binary file with the current contents of program memory or compary the memory against a given binary file.
+    
+    See http://www.shumatech.com/web/products/bossa for more information and to download.
+    
+    <h3> Using the Mass Storage Device </h3>
+    When the ClearCore is running in the bootloader, you should see a USB disk drive labeled CLEAR_BOOT on your host computer.
+    In that drive should be three files:
+    - CURRENT.UF2 - the current contents of program memory
+    - INDEX.HTM - A link to the teknic webpage to learn more about ClearCore
+    - INFO_UF2.TXT - UF2 bootloader version information
+    
+    Note that the format of the program memory image is in the UF2 format. UF2 is a file format developed by Microsoft for flashing microcontrollers. Included in the ClearCore tools is a Windows program (uf2-builder.exe) that will create a *.UF2 file from the compiled *.bin file that is generated when you compile your application.
+    
+    To program the ClearCore using the Mass Storage Device:
+    - Generate a UF2 file of the image you want to load
+    - Copy that UF2 file into the CLEAR_BOOT drive
+    
+    The ClearCore will automatically reset after the flash operation completes and begin executing the newly loaded program.
+    
+    See https://github.com/Microsoft/uf2 for more information on the UF2 format and UF2 utilities.
+**/
+//********************************************************************************************
+}

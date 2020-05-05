@@ -1,0 +1,61 @@
+namespace ClearCore {
+/**
+\page ConnectorMain ClearCore Connector System
+<h1> Overview </h1>
+    The ClearCore board has several different kinds of hardware connectors that range from simple digital inputs to complex ClearPath motor connectors. To facilitate easier coding the ClearCore \n
+    library implements a Connector interface that is common to all connectors on the board. All classes representing a ClearCore hardware connector are derived, or inherit, from the common Connector \n
+    class.
+
+<h2> Inheritance and Child Classes </h2>
+    In C++ class inheritance, there is always a parent class and a child class. For the connector interface the parent class is Connector whereas all other classes, such as DigitalIn or MotorDriver, \n
+    are the children. A child class must implement the functionality of its parents, but it may also modify and extend that functionality.
+
+<h3> Shared Functionality </h3>
+    Because each child class implements the functionality of its parent all child classes have the same base set of functions and members. These functions typically perform the same actions as each \n
+    other for similar hardware connectors, but some may have different behavior. These shared functions make using groups of connectors much simpler, such as looping through an array of connectors to \n
+    call a common function.
+
+<h3> Extended Functionality </h3>
+    While all child classes share function definitions, the child implementations of those functions may not be the same. The common functions may be changed, or overriden, by child classes when extra \n
+    operations need to be performed. For instance, DigitalIn's Mode() function will slightly differ from DigitalInOut's because DigitalIn only has one valid operational mode.
+    
+    Child classes may also contain additional functions and members that other child classes do not. These functions and members perform specific actions that would not be useful in the other child \n
+    classes, such as MotorDriver's EnableRequest() function for enabling attached motors.
+
+<h2> Common Members </h2>
+    The functions and types shared between the Connector child classes provide a good base for operating hardware connectors as groups.
+
+<h3> Mode </h3>
+    - The ConnectorModes enumeration provides a set of operational modes a connector class may potentially be put in.
+    - The Mode() function may be used to read and set the current operational mode of a connector class.
+        - Attempting to set an invalid mode on a connector (like setting a DigitalIn to OUTPUT_ANALOG mode) will fail and the function will return false.
+   
+<h3> Type </h3>
+    - The ConnectorTypes enumeration provides a set of hardware connector types. These are specific to each child class and cannot be changed.
+    - The Type() function will return the type of the child class. This is useful when dealing with an array of connectors that are stored in a generic way.
+
+<h3> IsWritable </h3>
+    - This function will show whether a connector class is an input or an output.
+    - For hardware connectors that may be either an input or an output, the return of IsWritable() changes depending on which mode the connector is in.
+
+<h3> Re-initialize </h3>
+    - This function resets the connector to its state at program start-up. No settings, such as a change to the operational mode, will persist after the re-initialization.
+
+<h3> ConnectorIndex </h3>
+    - This returns the index of the connector in the ClearCore system's connector array.
+    - ConnectorIndex() is useful when accessing connectors through SysManager's ConnectorByIndex() function.
+
+<h3> State </h3>
+    - The State() functions are used to read and write to a hardware connector.
+        - For connectors that are only inputs attempting to write using State() will do nothing and the function will return false.
+    - Classes such as MotorDriver implement the State() functions but they don't do anything, thus they are hidden from most documentation.
+
+<h3> IsInHwFault </h3>
+    - This is a simple boolean return representing whether the connector is in a fault state or not.
+
+<h3> InputRegMask </h3>
+    - This function provides a bit mask of the current connector. It is useful for interacting with the InputManager when only the specific connector is needed to be looked at.
+
+**/
+//********************************************************************************************
+}
