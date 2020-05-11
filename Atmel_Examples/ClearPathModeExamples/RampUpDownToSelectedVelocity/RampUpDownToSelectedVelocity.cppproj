@@ -69,7 +69,7 @@
       </ToolNumber>
       <ToolName>Custom Programming Tool</ToolName>
     </custom>
-    <CustomProgrammingToolCommand>"$(SolutionDir)..\..\..\flash_clearcore.cmd" "$(OutputDirectory)\$(OutputFileName).bin"</CustomProgrammingToolCommand>
+    <CustomProgrammingToolCommand>"$(MSBuildProjectDirectory)\..\..\..\Tools\flash_clearcore.cmd" "$(OutputDirectory)\$(OutputFileName).bin"</CustomProgrammingToolCommand>
     <com_atmel_avrdbg_tool_samice>
       <ToolOptions>
         <InterfaceProperties>
@@ -111,7 +111,6 @@
             <Value>../../../../libClearCore/inc</Value>
             <Value>../../../../LwIP/LwIP/src/include</Value>
             <Value>../../../../LwIP/LwIP/port/include</Value>
-            <Value>../../../../libClearCore/UnitTests/inc</Value>
           </ListValues>
         </armgcccpp.compiler.directories.IncludePaths>
         <armgcccpp.compiler.optimization.level>Optimize most (-O3)</armgcccpp.compiler.optimization.level>
@@ -196,7 +195,6 @@
             <Value>../../../../libClearCore/inc</Value>
             <Value>../../../../LwIP/LwIP/src/include</Value>
             <Value>../../../../LwIP/LwIP/port/include</Value>
-            <Value>../../../../libClearCore/UnitTests/inc</Value>
           </ListValues>
         </armgcccpp.compiler.directories.IncludePaths>
         <armgcccpp.compiler.optimization.level>Optimize most (-O3)</armgcccpp.compiler.optimization.level>

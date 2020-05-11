@@ -67,7 +67,7 @@ rem ------------
 rem Find bossac.
 rem ------------
 
-set "bossacPath=%~dp0\Teknic\Tools\bossac\bossac.exe"
+set "bossacPath=%~dp0\bossac\bossac.exe"
 
 if not exist %bossacPath% (
     echo Error: Could not find bossac uploader!

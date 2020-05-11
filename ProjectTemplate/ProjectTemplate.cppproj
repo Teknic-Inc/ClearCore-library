@@ -68,6 +68,7 @@
       </ToolNumber>
       <ToolName xmlns="">Custom Programming Tool</ToolName>
     </custom>
+    <CustomProgrammingToolCommand>"$(MSBuildProjectDirectory)\..\Tools\flash_clearcore.cmd" "$(OutputDirectory)\$(OutputFileName).bin"</CustomProgrammingToolCommand>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -98,7 +99,6 @@
             <Value>../../libClearCore/inc</Value>
             <Value>../../LwIP/LwIP/src/include</Value>
             <Value>../../LwIP/LwIP/port/include</Value>
-            <Value>../../libClearCore/UnitTests/inc</Value>
           </ListValues>
         </armgcccpp.compiler.directories.IncludePaths>
         <armgcccpp.compiler.optimization.level>Optimize most (-O3)</armgcccpp.compiler.optimization.level>
@@ -111,14 +111,12 @@
           <ListValues>
             <Value>libm</Value>
             <Value>arm_cortexM4lf_math</Value>
-            <Value>CppUTest</Value>
           </ListValues>
         </armgcccpp.linker.libraries.Libraries>
         <armgcccpp.linker.libraries.LibrarySearchPaths>
           <ListValues>
             <Value>%24(ProjectDir)\Device_Startup</Value>
             <Value>%24(PackRepoDir)\arm\CMSIS\4.5.0\CMSIS\Lib\GCC</Value>
-            <Value>../../libClearCore/UnitTests/lib</Value>
           </ListValues>
         </armgcccpp.linker.libraries.LibrarySearchPaths>
         <armgcccpp.linker.optimization.GarbageCollectUnusedSections>True</armgcccpp.linker.optimization.GarbageCollectUnusedSections>
@@ -181,7 +179,6 @@
             <Value>../../libClearCore/inc</Value>
             <Value>../../LwIP/LwIP/src/include</Value>
             <Value>../../LwIP/LwIP/port/include</Value>
-            <Value>../../libClearCore/UnitTests/inc</Value>
           </ListValues>
         </armgcccpp.compiler.directories.IncludePaths>
         <armgcccpp.compiler.optimization.level>Optimize most (-O3)</armgcccpp.compiler.optimization.level>
@@ -194,14 +191,12 @@
           <ListValues>
             <Value>libm</Value>
             <Value>arm_cortexM4lf_math</Value>
-            <Value>CppUTest</Value>
           </ListValues>
         </armgcccpp.linker.libraries.Libraries>
         <armgcccpp.linker.libraries.LibrarySearchPaths>
           <ListValues>
             <Value>%24(ProjectDir)\Device_Startup</Value>
             <Value>%24(PackRepoDir)\arm\CMSIS\4.5.0\CMSIS\Lib\GCC</Value>
-            <Value>../../libClearCore/UnitTests/lib</Value>
           </ListValues>
         </armgcccpp.linker.libraries.LibrarySearchPaths>
         <armgcccpp.linker.optimization.GarbageCollectUnusedSections>True</armgcccpp.linker.optimization.GarbageCollectUnusedSections>
