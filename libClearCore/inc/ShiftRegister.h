@@ -32,7 +32,7 @@
 #define __SHIFTREGISTER_H__
 
 #include <stdint.h>
-#include "atomic_gcc.h"
+#include "atomic_utils.h"
 #include "BlinkCodeDriver.h"
 
 namespace ClearCore {

@@ -28,7 +28,7 @@
 **/
 
 #include "NvmManager.h"
-#include "atomic_gcc.h"
+#include "atomic_utils.h"
 #include <cstring>
 #include <sam.h>
 

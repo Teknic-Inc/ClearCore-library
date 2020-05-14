@@ -1,9 +1,9 @@
 /*
- * atomic_gcc.h
+ * atomic_utils.h
  */
 
-#ifndef __ATOMICGCC_H_
-#define __ATOMICGCC_H_
+#ifndef __ATOMIC_UTILS_H_
+#define __ATOMIC_UTILS_H_
 
 #define atomic_store_n(ptr, val) __atomic_store_n(ptr, val, __ATOMIC_RELEASE)
 

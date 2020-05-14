@@ -28,7 +28,7 @@
 
 #include "DigitalIn.h"
 #include <sam.h>
-#include "atomic_gcc.h"
+#include "atomic_utils.h"
 #include "InputManager.h"
 #include "SysUtils.h"
 

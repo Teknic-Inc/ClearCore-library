@@ -29,7 +29,7 @@
 
 #include "ShiftRegister.h"
 #include <sam.h>
-#include "atomic_gcc.h"
+#include "atomic_utils.h"
 #include "HardwareMapping.h"
 #include "SysTiming.h"
 #include "SysUtils.h"

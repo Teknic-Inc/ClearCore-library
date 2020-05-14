@@ -30,7 +30,7 @@
 #include "HardwareMapping.h"
 #include "SysTiming.h"
 #include "SysUtils.h"
-#include "atomic_gcc.h"
+#include "atomic_utils.h"
 #include <stdlib.h>
 
 

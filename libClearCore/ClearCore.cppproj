@@ -653,7 +653,7 @@
     <Compile Include="inc\CcioBoardManager.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="inc\atomic_gcc.h">
+    <Compile Include="inc\atomic_utils.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="inc\CcioPin.h">

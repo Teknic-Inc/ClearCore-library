@@ -23,7 +23,7 @@
 #include "StatusManager.h"
 #include <stddef.h>
 #include <stdio.h>
-#include "atomic_gcc.h"
+#include "atomic_utils.h"
 #include "AdcManager.h"
 #include "CcioBoardManager.h"
 #include "DigitalInOutHBridge.h"

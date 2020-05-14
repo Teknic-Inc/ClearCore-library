@@ -29,7 +29,7 @@
 
 #include "InputManager.h"
 #include <stddef.h>
-#include "atomic_gcc.h"
+#include "atomic_utils.h"
 #include "SysUtils.h"
 
 namespace ClearCore {
