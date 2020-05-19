@@ -24,14 +24,16 @@ There is an Atmel Studio project file (*.cppproj) included to load and compile t
 
 ### Atmel_Examples
 
-This folder contains example applications for a variety of ClearCore features. To run a provided example, first choose which subdirectory describes the feature that you want to run. Within each subdirectory is an Atmel solution file (*.atsln) that contains various examples related to that feature, as well as the required interface libraries. Browse for the project with the example that you wish to run within the solution explorer panel of Atmel Studio. Right click on the project and select "Set as Startup Project". The example programs are also configured with a custom firmware loading script that will search for a connected ClearCore USB port and load the example programs on the ClearCore. Simply click "Start Without Debugging (Ctrl+Alt+F5)" and the example program will compile, load the firmware, and start executing.
+This folder contains example applications for a variety of ClearCore features. To run a provided example, first choose which subdirectory describes the feature that you want to run. Within each subdirectory is an Atmel solution file (*.atsln) that contains various examples related to that feature, as well as the required interface libraries. After the solution is loaded in Atmel Studio, browse for the project with the example that you wish to run within the solution explorer panel. Right click on the project and select "Set as Startup Project". 
+
+The example programs are configured with a custom firmware loading script that will search for a connected ClearCore USB port and load the example programs on the ClearCore hardware. Simply click "Start Without Debugging (Ctrl+Alt+F5)" and the example program will compile, load the firmware, and start executing.
 
 ### Project Template
 The Project Template directory is included as a starting point for writing your own application. Simply open the Atmel Studio solution file (*.atsln), and put your application code in main.cpp.
 
 ### Tools
 
-We have included Windows tools for loading the firmware onto the ClearCore using the USB connector.
+We have included Windows tools for loading the firmware onto the ClearCore using the USB connector. 
 
 **bossac** A command line flashing application
 
