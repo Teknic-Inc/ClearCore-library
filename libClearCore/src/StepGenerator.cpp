@@ -36,67 +36,74 @@ namespace ClearCore {
     sent, and calculates how many steps to send in the next ISR.
 */
 
-#if !DEBUG_STEP_OUTPUT
 void StepGenerator::StepsCalculated() {
-    // Process current move state.
+    
+    // Perform setup for a newly issued move.
+    // This is handled separately from the main state machine to determine
+    // determine the proper entry state and begin executing without delaying
+    // until the next sample.
+    if (m_moveState == MS_START) {
+        // Compute move parameters
+        m_accelCurrentQx = m_accelLimitQx;
+        m_posnTargetQx = static_cast<int64_t>(m_stepsCommanded)
+        << FRACT_BITS;
+
+        if (m_velocityMove) {
+            m_velTargetQx = m_velMoveDirChange ? 0 : m_altVelLimitQx;
+            if (m_velTargetQx) {
+                // Notify the system of the direction of the issued move
+                // if moving to a non-zero velocity
+                OutputDirection();
+                m_directionLast = m_direction;
+            }
+
+            if (m_velCurrentQx == m_velTargetQx) {
+                // Already at the correct velocity
+                m_moveState = MS_CRUISE;
+            }
+            else if (m_velCurrentQx > m_velTargetQx) {
+                // Decelerate to reach the target velocity
+                m_moveState = MS_DECEL_VEL;
+            }
+            else {
+                // Accelerate to reach the target velocity
+                m_moveState = MS_ACCEL;
+            }
+        }
+        else {
+            // Notify the system of the direction of the issued move
+            OutputDirection();
+            m_directionLast = m_direction;
+
+            // If the move profile is a triangle (i.e. doesn't reach
+            // VelLimit), set the velocity limit to peak velocity so that
+            // trapezoid logic can be used.
+            // The maximum triangle move distance =
+            //     VelLimit * (AccelSamples + DecelSamples) / 2 = V*V/A
+            if (static_cast<int64_t>(m_velLimitQx) * m_velLimitQx /
+            m_accelLimitQx > m_posnTargetQx) {
+                // Multiplication by 2^FRACT_BITS to preserve Q-format
+                int64_t vel64 =
+                static_cast<int64_t>(sqrtf(static_cast<int64_t>(m_stepsCommanded) *
+                m_accelLimitQx * static_cast<float>(1 << FRACT_BITS)));
+
+                m_velTargetQx = static_cast<int32_t>(min(vel64, INT32_MAX));
+            }
+            else {
+                m_velTargetQx = m_velLimitQx;
+            }
+            m_moveState = MS_ACCEL;
+        }
+    }
+
+    // Process the current move state.
     switch (m_moveState) {
         case MS_IDLE: // Idle state, waiting for a command.
             return;
-        case MS_START: // Start state, executed only once.
-            // Compute move parameters
-            m_accelCurrentQx = m_accelLimitQx;
-            m_posnTargetQx = static_cast<int64_t>(m_stepsCommanded)
-                             << FRACT_BITS;
-
-            if (m_velocityMove) {
-                m_velTargetQx = m_velMoveDirChange ? 0 : m_altVelLimitQx;
-                if (m_velTargetQx) {
-                    // Notify the system of the direction of the issued move
-                    // if moving to a non-zero velocity
-                    OutputDirection();
-                }
-
-                if (m_velCurrentQx == m_velTargetQx) {
-                    // Already at the correct velocity
-                    m_moveState = MS_CRUISE;
-                }
-                else if (m_velCurrentQx > m_velTargetQx) {
-                    // Decelerate to reach the target velocity
-                    m_moveState = MS_DECEL_VEL;
-                }
-                else {
-                    // Accelerate to reach the target velocity
-                    m_moveState = MS_ACCEL;
-                }
-            }
-            else {
-                // Notify the system of the direction of the issued move
-                OutputDirection();
-
-                // If the move profile is a triangle (i.e. doesn't reach
-                // VelLimit), set the velocity limit to peak velocity so that
-                // trapezoid logic can be used.
-                // The maximum triangle move distance =
-                //     VelLimit * (AccelSamples + DecelSamples) / 2 = V*V/A
-                if (static_cast<int64_t>(m_velLimitQx) * m_velLimitQx /
-                        m_accelLimitQx > m_posnTargetQx) {
-                    // Multiplication by 2^FRACT_BITS to preserve Q-format
-                    int64_t vel64 =
-                        static_cast<int64_t>(sqrtf(static_cast<int64_t>(m_stepsCommanded) *
-                                                   m_accelLimitQx *
-                                                   static_cast<float>(1 << FRACT_BITS)));
-
-                    m_velTargetQx = static_cast<int32_t>(min(vel64, INT32_MAX));
-                }
-                else {
-                    m_velTargetQx = m_velLimitQx;
-                }
-                m_moveState = MS_ACCEL;
-            }
-
+        case MS_START: // Start state, this case was handled above 
             break;
 
-        case MS_ACCEL: // Phase 1: Ramp up to target speed
+        case MS_ACCEL: // Ramp up to target speed
             // Execute move
             m_posnCurrentQx += m_velCurrentQx + (m_accelCurrentQx >> 1);
             m_velCurrentQx += m_accelCurrentQx;
@@ -135,7 +142,7 @@ void StepGenerator::StepsCalculated() {
             }
         // Fall through
 
-        case MS_CRUISE: // Phase 2: Continue at the current velocity
+        case MS_CRUISE: // Continue at the current velocity
             m_posnCurrentQx += m_velCurrentQx;
 
             // Velocity moves don't need to decelerate in the typical way,
@@ -180,7 +187,7 @@ void StepGenerator::StepsCalculated() {
             }
             break;
 
-        case MS_DECEL: // Phase 3: Ramp down to stopped
+        case MS_DECEL: // Ramp down to stopped
             // Execute move
             m_posnCurrentQx += m_velCurrentQx - (m_accelCurrentQx >> 1);
             m_velCurrentQx -= m_accelCurrentQx;
@@ -197,7 +204,7 @@ void StepGenerator::StepsCalculated() {
             }
             break;
 
-        case MS_DECEL_VEL: // Velocity moves deceleration state
+        case MS_DECEL_VEL: // Velocity move deceleration state
             m_posnCurrentQx += m_velCurrentQx - (m_accelCurrentQx >> 1);
             m_velCurrentQx -= m_accelCurrentQx;
 
@@ -252,7 +259,6 @@ void StepGenerator::StepsCalculated() {
     // Check move direction and increment absolute position
     m_posnAbsolute += m_direction ? -m_stepsPrevious : m_stepsPrevious;
 }
-#endif
 
 /*
     Default constructor
@@ -262,6 +268,7 @@ StepGenerator::StepGenerator()
       m_stepsPerSampleMax(0),
       m_moveState(MS_IDLE),
       m_direction(false),
+      m_directionLast(false),
       m_posnAbsolute(0),
       m_stepsCommanded(0),
       m_stepsSent(0),
@@ -337,15 +344,14 @@ bool StepGenerator::Move(int32_t dist, bool absolute) {
 bool StepGenerator::MoveVelocity(int32_t velocity) {
     // Block the interrupt while changing the command
     __disable_irq();
-    bool lastDir = m_direction;
     m_direction = (velocity < 0);
-    m_velMoveDirChange = velocity && m_velCurrentQx && m_direction != lastDir;
+    m_velMoveDirChange = velocity && m_velCurrentQx && m_direction != m_directionLast;
     m_velocityMove = true;
 
     int32_t velAbsolute = abs(velocity);
     AltVelMax(velAbsolute);
     m_stepsCommanded = INT32_MAX;
-    m_posnCurrentQx = 0;
+    m_posnCurrentQx &= ~(UINT64_MAX << FRACT_BITS);
     m_stepsSent = 0;
 
     m_moveState = MS_START;

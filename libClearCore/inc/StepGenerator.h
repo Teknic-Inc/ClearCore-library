@@ -41,8 +41,6 @@ namespace ClearCore {
     This defines the Q value - the number of bits that are treated as
     fractional values (15). **/
 #define FRACT_BITS 15
-/** For use when debugging step generator output. **/
-#define DEBUG_STEP_OUTPUT 0
 
 /**
     \class StepGenerator
@@ -195,6 +193,7 @@ protected:
     uint32_t m_stepsPerSampleMax;
     MOVE_STATES m_moveState;
     bool m_direction;
+    bool m_directionLast;
 
     volatile const bool &Direction() {
         return m_direction;
@@ -204,13 +203,7 @@ protected:
         return m_moveState;
     }
 
-#if DEBUG_STEP_OUTPUT
-    void StepsCalculated() {
-        m_stepsPrevious = (m_stepsPrevious + 1) % m_stepsPerSampleMax;
-    }
-#else
     void StepsCalculated();
-#endif
 
     uint32_t StepsPrevious() {
         return m_stepsPrevious;
