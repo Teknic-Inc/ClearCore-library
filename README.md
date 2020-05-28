@@ -12,7 +12,7 @@ From the Atmel Studio Tools menu, open the Device Pack Manager. Ensure the follo
 
 ### libClearCore
 
-libClearCore provides a C++ object oriented API to interface with the ClearCore hardware. Each connector of the ClearCore has an associated object to use in your application. A Doxygen reference manual for the libClearCore API is available at <TODO: insert doxygen link here>.
+libClearCore provides a C++ object oriented API to interface with the ClearCore hardware. Each connector of the ClearCore has an associated object to use in your application. A Doxygen reference manual for the libClearCore API is available at https://teknic-inc.github.io/ClearCore-library/.
 
 There is an Atmel Studio project file (*.cppproj) included to load and compile this library in Atmel Studio.
 
