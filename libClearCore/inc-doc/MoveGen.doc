@@ -1,0 +1,86 @@
+namespace ClearCore {
+/**
+\page MoveGen Step and Direction Control
+<h1> Overview </h1>
+    For applications that require motion control of a connected motor ClearCore provides a motion generation class called StepGenerator. StepGenerator is one of the parent classes of MotorDriver. \n
+    This allows all motor configuration functions and motion generation functions to be accessed by the same MotorDriver object.
+    
+    The StepGenerator class is designed to facilitate features of a Teknic ClearPath motor, however generic stepper motor drives may be used as well. For simplicity's sake this document will assume a \n
+    ClearPath motor is being used when describing the features of the StepGenerator class.
+    
+<h2> Wiring and Initialization </h2>
+    - Before beginning to use the ClearCore, set up and connect a ClearPath motor to a host PC. Then, using Teknic's MSP software, configure and tune the ClearPath to the desired specifications. For \n
+    more information on these steps refer to the manual for your ClearPath motor found <a href="https://www.teknic.com/downloads/" >here</a>.
+    - Using MSP, set the ClearPath's mode to Step and Direction. The StepGenerator will not function correctly if the ClearPath is in another operational mode.
+    - Attach the ClearPath to a motor connector, M-0, M-1, M-2, or M-3, on the ClearCore using the blue 8-pin data cable (Teknic P/N CPM-CABLE-CTRL-MM660).
+        - Any of the four connectors may be used in any order. For example, M-2 may be used without occupying M-0 and M-1. 
+    - Using the ClearCore's MotorManager, set the motor connector into Connector#CPM_MODE_STEP_AND_DIR mode using the MotorManager#MotorModeSet() function. The StepGenerator will not function if the \n
+    connector is in another mode.
+        - The MotorModeSet() function sets a pair of motor connectors into the specified mode. Choose the pair that includes the connector you'd like to use. The pairs are M-0/M-1 and M-2/M-3.
+
+<h2> Motion Parameters </h2>
+    The StepGenerator generates a move profile using pre-defined motion parameters set by the user. These parameters may be changed "on the fly" but if they are changed while a move is active the \n
+    changes will not apply until after the active move is complete. An easy way to check the move's state, provided by StepGenerator, is by polling the StepGenerator#StepsComplete() function. This \n
+    will return a boolean value representing whether the StepGenerator is outputting steps. Note that depending on your mechanics the motor shaft may still be moving even if the value is false.
+
+<h3> Position Reference </h3>
+    - The StepGenerator's position reference may be read or set directly through code. 
+        \code{.cpp}
+        if (ConnectorM0.PositionRefCommanded() > 50000) {
+            // If the motor's position is high enough, reset the position to 0
+            ConnectorM0.PositionRefSet(0);
+        }
+        \endcode
+    - The position reference resets to zero at the beginning of code execution. It WILL NOT save between board resets.
+    - The position reference is entirely internal to the ClearCore. The StepGenerator's position reference will not reflect a ClearPath's own shaft position as displayed in the MSP software.
+
+<h3> Velocity and Acceleration </h3>
+    - Maximum velocity and acceleration values may be set to give the desired motion profile (in units of step pulses per second and step pulses per second^2, respectively).
+        \code{.cpp}
+        ConnectorM0.VelMax(500);
+        ConnectorM0.AccelMax(5000);
+        \endcode
+    - Changed motion parameters will only apply after any active moves are complete.
+    - Setting a velocity limit using StepGenerator#VelMax() will not limit the allowable velocities when commanding a velocity move using StepGenerator#MoveVelocity().
+
+<h2> Motion Commands </h2>
+    The StepGenerator class provides movement functions which can have various behaviors depending on the pre-defined motion parameters and the parameters passed into the functions. 
+    
+    Regardless of which move command is issued, they may both be stopped by calling the StepGenerator#MoveStopAbrupt() function.
+
+<h3> Positional Move </h3>
+    - Generates a triangle movement profile that obeys the set maximum velocity and acceleration limits.
+    - The function returns the movement success as a boolean value. The move will be rejected if there is another positional or velocity move active or if the commanded position reference would result \n
+    in no motion.
+    - The StepGenerator#Move() function by default commands a relative move.
+        \code{.cpp}
+        // Move 500 step pulses in the positive direction from the current position reference (ie 1250 -> 1750)
+        ConnectorM0.Move(500);
+        \endcode
+    - Setting the <em>absolute</em> parameter to <code>true</code> will command a move to the (passed-in) absolute position reference.
+        \code{.cpp}
+        // Move the motor from its current position reference to -2500 (ie 850 -> -2500)
+        ConnectorM0.Move(-2500, true);
+        \endcode
+   
+<h3> Velocity Move </h3>
+    - Begins a continuous move at the specified velocity using the pre-defined max acceleration.
+    - The StepGenerator#MoveVelocity() function will not begin its move if a positional move is currently active. If it is called during an active positionial move, the requested MoveVelocity command \n
+    will be rejected and the function will return false.
+        \code{.cpp}
+        // Move the motor 50000 step pulses
+        ConnectorM0.Move(50000);
+        // This will be rejected
+        ConnectorM0.MoveVelocity(100);
+        \endcode
+    - Commanding a velocity move during another velocity move will cause the first move to smoothly accelerate/decelerate to the new velocity.
+        \code{.cpp}
+        // Move the motor at 500 step pulses/second
+        ConnectorM0.MoveVelocity(500);
+        // This will ramp up the speed to 750 step pulses/second.
+        ConnectorM0.MoveVelocity(750);
+        \endcode
+
+**/
+//********************************************************************************************
+}

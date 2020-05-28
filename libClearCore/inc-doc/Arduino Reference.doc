@@ -1,0 +1,266 @@
+namespace ClearCore {
+/**
+\page ArduinoRef ClearCore Arduino API Reference
+<h1> Overview </h1>
+**TODO: This section should talk about how the Arduino "wrapper" interacts with the OEM ClearCore library. This should be probably be written by SW member and then reviewed by a Sales member, after we have a concrete plan for how we want to market the Arduino wrapper.
+
+<table>
+<caption>ClearCore connector aliases</caption>
+<tr><th>Name<th>Arduino Alias
+<tr><td>#ConnectorIO0 <td><center>IO0</center>
+<tr><td>#ConnectorIO1 <td><center>IO1</center>
+<tr><td>#ConnectorIO2 <td><center>IO2</center>
+<tr><td>#ConnectorIO3 <td><center>IO3</center>
+<tr><td>#ConnectorIO4 <td><center>IO4</center>
+<tr><td>#ConnectorIO5 <td><center>IO5</center>
+<tr><td>#ConnectorDI6 <td><center>DI6</center>
+<tr><td>#ConnectorDI7 <td><center>DI7</center>
+<tr><td>#ConnectorDI8 <td><center>DI8</center>
+<tr><td>#ConnectorA9 <td><center>A9</center>
+<tr><td>#ConnectorA10 <td><center>A10</center>
+<tr><td>#ConnectorA11 <td><center>A11</center>
+<tr><td>#ConnectorA12 <td><center>A12</center>
+<tr><td>#ConnectorUsb <td><center>Serial</center>
+<tr><td>#ConnectorCOM0 <td><center>Serial0</center>
+<tr><td>#ConnectorCOM1 <td><center>Serial1</center>
+</table>
+
+<h2> Deviations from standard Arduino </h2>
+    - The pin mode INPUT_PULLUP has no functional difference from INPUT. The two may be used interchangeably.
+    - analogRead() has an extra optional parameter to specify the desired units of the 
+    analog reading returned:
+        - 'units' may be set to ADC_RAW (default) or MILLVOLTS.
+    - analogWrite() has two extra optional parameters relating to the output:
+        - 'mode' may be set to either PWM (default) or CURRENT.
+        - 'units' may be set to either DAC_RAW (default) or MICROAMPS.
+    - analogReference() is not a supported function. The ClearCore analog input reference voltage is not user-modifiable.
+    - The default analog read resolution is 12 bits, rather than 10 bits.
+    - analogWriteResolution() is not a supported function. The analog write resolution 
+    of the ClearCore is 12 bits and is not user-modifiable.
+    - Tones are sine waves rather than half-duty square waves like most Arduinos.
+    - Arduino-style periodic interrupts using Timer0 and Timer1 are not supported.
+    - The Serial keyword represents the USB serial port. Serial0 and Serial1 represent the COM-0 and COM-1 serial ports respectively.
+    - The Servo and Stepper libraries are not supported by ClearCore.
+    - The pulseIn() and pulseInLong() functions do not require interrupts to be enabled.
+    - There is no functional difference between pulseIn() and pulseInLong().
+    
+    
+<h2> Global Types, Enumerators, and Objects </h2>
+
+<h3> Pin Mode </h3>
+    - Digital pins can be used as INPUT, INPUT_PULLUP, or OUTPUT. Changing a pin with pinMode() changes the electrical behavior of the pin.
+    - More information can be found <a href="https://www.arduino.cc/reference/en/language/variables/constants/constants/" >here</a>.
+
+<h3> Pin Status </h3>
+    - When reading or writing to a digital pin there are only two possible values a pin can take/be-set-to: HIGH and LOW.
+    - More information can be found <a href="https://www.arduino.cc/reference/en/language/variables/constants/constants/" >here</a>.
+
+<h3> Serial </h3>
+    - Used for communication between the Arduino board and a computer or other devices. All Arduino boards have at least one serial port (also known as a UART or USART), and some have several.
+        - ClearCore may use either Serial, Serial0, or Serial1.
+    - More information can be found <a href="https://www.arduino.cc/reference/en/language/functions/communication/serial/" >here</a>.
+
+
+<h2> Basic I/O </h2>
+
+<h3> pinMode(pin, mode) </h3>
+    - Configures the specified pin to behave either as an input or an output.
+    - <a href="https://www.arduino.cc/reference/en/language/functions/digital-io/pinmode/" >Arduino.cc Reference</a>
+    
+<h3> digitalRead(pin) </h3>
+    - Valid pins: All pins
+    - Reads the value from a specified digital pin, either HIGH or LOW.
+    - <a href="https://www.arduino.cc/reference/en/language/functions/digital-io/digitalread/" >Arduino.cc Reference</a>
+    
+<h3> digitalWrite(pin, value) </h3>
+    - Valid pins: IO0, IO1, IO2, IO3, IO4, IO5
+    - Write a HIGH or a LOW value to a digital pin.
+    - <a href="https://www.arduino.cc/reference/en/language/functions/digital-io/digitalwrite/" >Arduino.cc Reference</a>
+    
+<h3> analogRead(pin, units[optional]) </h3>
+    - Valid pins: A9, A10, A11, A12
+    - Reads the value from the specified analog pin. The analog-to-digital converter on
+    the ClearCore has a default resolution of 12 bits (not 10 bits like most Arduino boards).\n
+    The allowable range of analog input values is 0 to 10V. This function will map input 
+    voltages between 0 and 10V to integer values between 0 and 4095, unless the analog\n
+    read resolution is changed from its default value via a call to analogReadResolution().
+    - The <em>units</em> argument, if supplied, must be one of the following values:
+        - ADC_RAW - default, return the raw ADC value, with bit depth specified by analogReadResolution().
+        - MILLIVOLTS - the voltage level is returned, expressed in millivolts
+    - <a href="https://www.arduino.cc/reference/en/language/functions/analog-io/analogread/" >Arduino.cc Reference</a>
+    
+<h3> analogWrite(pin, value, mode[optional], units[optional]) </h3>
+    - Valid pins: IO0
+    - Writes an analog value (PWM wave) to a pin. Can be used to light a LED at varying brightnesses or drive a motor at various speeds. After a call to analogWrite(), \n
+    the pin will generate a steady rectangular wave of the specified duty cycle until the next call to analogWrite() (or a call to digitalRead() or digitalWrite()) on the same pin.
+    - The <em>mode</em> argument, if supplied, must be one of the following values: 
+        - PWM - default, digital PWM output
+        - CURRENT - analog current output, exclusive to the ClearCore
+    - The <em>units</em> argument, if supplied, must be one of the following values:
+        - DAC_RAW - default, the raw 12-bit DAC reading is returned 
+        - MICROAMPS - the voltage level is returned, expressed in microamps
+    - <a href="https://www.arduino.cc/reference/en/language/functions/analog-io/analogwrite/" >Arduino.cc Reference</a>
+    
+<h3> analogReadResolution(bits) </h3>
+    - Sets the size (in bits) of the value returned by analogRead().
+    - The analog read resolution of the ClearCore defaults to 12 bits (returns values 0-4095), 
+    rather than the Arduino standard resolution of 10 bits.
+    - The allowable bit resolutions are: 8, 10, and 12.
+    - <a href="https://www.arduino.cc/reference/en/language/functions/zero-due-mkr-family/analogreadresolution/" >Arduino.cc Reference</a>
+    
+<h3> analogWriteResolution(bits) </h3>
+    - Not supported. The analog write resolution of the ClearCore is 12 bits and is not
+    user-modifiable.
+    
+<h3> analogReference(type) </h3>
+    - Not supported. The ClearCore analog input reference voltage is not user-modifiable.
+    
+
+<h2> Advanced I/O </h2>
+
+<h3> tone(pin, frequency, duration[optional]) </h3>
+    - Valid pins: IO4, IO5
+    - Generates an audible sine wave of the specified frequency on a pin. This is in contrast with standard
+    Arduino boards that produce a square wave tone with 50% duty cycle.\n
+    A duration can be specified, in milliseconds, otherwise the tone continues to sound until a call to noTone().
+    - <a href="https://www.arduino.cc/reference/en/language/functions/advanced-io/tone/" >Arduino.cc Reference</a>
+    
+<h3> noTone(pin) </h3>
+    - Stops the generation of an audible sine wave triggered by tone(). Has no effect if no tone is being generated on the specified pin.
+    - <a href="https://www.arduino.cc/reference/en/language/functions/advanced-io/notone/" >Arduino.cc Reference</a>
+    
+<h3 id=pulseIn> pulseIn(pin, value, timeout[optional]) </h3>
+    - Reads a pulse (HIGH or LOW) on a pin, starts timing, then waits for the pin to change
+    state and stops timing. Returns the length of the pulse in microseconds,\n or zero if no
+    complete pulse was received within the timeout (specified in microseconds). If no timeout
+    argument is supplied, the timeout will default to\n 1,000,000 microseconds (1 second).
+    - <a href="https://www.arduino.cc/reference/en/language/functions/advanced-io/pulsein/" >Arduino.cc Reference</a>
+
+<h3> pulseInLong(pin, value, timeout[optional]) </h3>
+    - There is no functional difference between pulseIn() and pulseInLong() on the ClearCore board.
+    - See <a href="#pulseIn">pulseIn()</a>.
+
+
+<h2> Time </h2>
+    
+<h3> delay(ms) </h3>
+    - Pauses the program for the amount of time (in milliseconds) specified via parameter <em>ms</em>.
+    - <a href="https://www.arduino.cc/reference/en/language/functions/time/delay/" >Arduino.cc Reference</a>
+
+<h3> delayMicroseconds(us) </h3>
+    - Pauses the program for the amount of time (in microseconds) specified via parameter <em>us</em>.
+    - <a href="https://www.arduino.cc/reference/en/language/functions/time/delaymicroseconds/" >Arduino.cc Reference</a>
+    
+<h3> millis() </h3>
+    - Returns the number of milliseconds elapsed since the board began running the current program. This number will overflow (return to zero), after approximately 50 days.
+    - <a href="https://www.arduino.cc/reference/en/language/functions/time/millis/" >Arduino.cc Reference</a>
+    
+<h3> micros() </h3>
+    - Returns the number of microseconds elapsed since the board began running the current program. This number will overflow (return to zero), after approximately 70 minutes.
+    - <a href="https://www.arduino.cc/reference/en/language/functions/time/millis/" >Arduino.cc Reference</a>
+
+
+<h2> Interrupts </h2>
+
+ClearCore pins DI6 through A12 can be set up as digital interrupts.
+
+<h3> attachInterrupt(digitalPinToInterrupt(pin), ISR, mode) </h3>
+    - The first parameter to attachInterrupt() is an interrupt number. Use digitalPinToInterrupt(pin) to translate the actual digital pin to the specific interrupt number. For example,\n 
+    if you connect to pin 3 (DI-6), use digitalPinToInterrupt(DI6) as the first parameter to attachInterrupt().
+    - The ISR must be a pointer to a function that takes no parameters and returns void. This is
+    the function that will get called when the condition specified by <em>mode</em> is detected
+    on the pin.
+    - The ClearCore supports interrupts on the following state conditions: LOW, CHANGE, RISING, FALLING, and HIGH (specified by <em>mode</em>).
+    - <a href="https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/" >Arduino.cc Reference</a>
+    
+<h3> detachInterrupt(pin) </h3>
+    - Turns off the interrupt registered on the specified pin.
+    - <a href="https://www.arduino.cc/reference/en/language/functions/external-interrupts/detachinterrupt/" >Arduino.cc Reference</a>
+    
+<h3> interrupts() </h3>
+    - Re-enables interrupts after they’ve been disabled by nointerrupts().
+    - <a href="https://www.arduino.cc/reference/en/language/functions/interrupts/interrupts/" >Arduino.cc Reference</a>
+    
+<h3> noInterrupts() </h3>
+    - Disables interrupts on any pins that have had interrupts attached.
+    For any pin that had an attached interrupt, if the condition specified by <em>mode</em> in the corresponding attachInterrupt()\n call occurs while the interrupt is detached,
+    it will still be detected and the ISR will fire upon re-enabling interrupts with interrupts().
+    To completely disable interrupt functionality on the pin,\n use detachInterrupt() instead.
+    - <a href="https://www.arduino.cc/reference/en/language/functions/interrupts/nointerrupts/" >Arduino.cc Reference</a>
+
+
+<h2> Serial </h2>
+<a href="https://www.arduino.cc/reference/en/language/functions/communication/serial/" >Arduino.cc Reference</a>
+
+<h3> begin(speed, config[optional]) </h3>
+    - Sets the data rate in bits per second (baud) for serial data transmission. An optional second argument configures the data, parity, and stop bits. These default to 8 data bits, no parity, and one\n stop bit.
+    - <a href="https://www.arduino.cc/reference/en/language/functions/communication/serial/begin/" >Arduino.cc Reference</a>
+    
+<h3> write(val) </h3>
+    - Writes binary data to the serial port.
+    - <a href="https://www.arduino.cc/reference/en/language/functions/communication/serial/write/" >Arduino.cc Reference</a>
+    
+<h3> print(val, format[optional]) </h3>
+    - Prints data to the serial port as human-readable ASCII text. An optional second parameter specifies the base (format) to use; permitted values are BIN (binary, or base 2), OCT (octal, or base 8),\n  DEC (decimal, or base 10), HEX (hexadecimal, or base 16). For floating point numbers, this second parameter specifies the number of decimal places to use.
+    - <a href="https://www.arduino.cc/reference/en/language/functions/communication/serial/print/" >Arduino.cc Reference</a>
+    
+<h3> println(val, format[optional]) </h3>
+    - Prints data to the serial port as human-readable ASCII text followed by a carriage return character (ASCII 13, or '\r') and a newline character (ASCII 10, or '\\n').\n This command takes the same formats as Serial.print().
+    - <a href="https://www.arduino.cc/reference/en/language/functions/communication/serial/println/" >Arduino.cc Reference</a>
+    
+<h3> read() </h3>
+    - Reads incoming serial data.
+    - <a href="https://www.arduino.cc/reference/en/language/functions/communication/serial/read/" >Arduino.cc Reference</a>
+    
+<h3> ttl(bool isTtl) </h3>
+    - Sets whether the serial COM port is wired as TTL or not.
+    - This is a ClearCore-specific addition to the Arduino standard library.
+ 
+
+<h2> SPI </h2>
+<a href="https://www.arduino.cc/en/reference/SPI" >Arduino.cc Reference</a>
+
+<h3> SPISettings(speedMaximum, dataOrder, dataMode) </h3>
+    - The SPISettings object is used to configure the SPI port for your SPI device. All 3 parameters are combined in a single SPISettings object, which is passed to SPI.beginTransaction().
+    - <a href="https://www.arduino.cc/en/Reference/SPISettings" >Arduino.cc Reference</a>
+    
+<h3> begin() </h3>
+    - Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low, and SS high.
+    - <a href="https://www.arduino.cc/en/Reference/SPIBegin" >Arduino.cc Reference</a>
+    
+<h3> beginTransaction(mySettings) </h3>
+    - Initializes the SPI bus using the defined SPISettings.
+    - <a href="https://www.arduino.cc/en/Reference/SPIbeginTransaction" >Arduino.cc Reference</a>
+    
+<h3> transfer(val) </h3>
+    - Performs the SPI transfer by sending the passed-in <em>val</em> and returning the received data.
+    - <a href="https://www.arduino.cc/en/Reference/SPITransfer" >Arduino.cc Reference</a>
+    
+<h3> endTransaction() </h3>
+    - Stop using the SPI bus. Normally this is called after de-asserting the chip select to allow other libraries to use the SPI bus.
+    - <a href="https://www.arduino.cc/en/Reference/SPIendTransaction" >Arduino.cc Reference</a>
+
+    
+<h2> Ethernet </h2>
+<a href="https://www.arduino.cc/en/Reference/Ethernet" >Arduino.cc Reference</a>
+
+<h3> IPAddress() </h3>
+    - Defines an IP address. It can be used to declare both local and remote addresses.
+    - <a href="https://www.arduino.cc/en/Reference/EthernetIPAddress" >Arduino.cc Reference</a>
+    
+<h3> begin(mac) </h3>
+    - Initializes the ethernet library and network settings. Any value supplied for the MAC address (<em>mac</em>) parameter will be ignored. The ClearCore's MAC address is stored in \n
+    non-volatile memory and should not be altered.
+    - <a href="https://www.arduino.cc/en/Reference/EthernetBegin" >Arduino.cc Reference</a>
+    
+<h3> linkStatus() </h3>
+    - Tells you whether the link is active. LinkOFF could indicate the Ethernet cable is unplugged or defective. 
+    - <a href="https://www.arduino.cc/en/Reference/EthernetLinkStatus" >Arduino.cc Reference</a>
+    
+    
+<h2> External Reference </h2>
+See official Arduino documentation at https://www.arduino.cc/reference/en.
+
+**/
+//********************************************************************************************
+}

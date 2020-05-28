@@ -1,0 +1,852 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
+  <PropertyGroup>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>7.0</ProjectVersion>
+    <ToolchainName>com.Atmel.ARMGCC.CPP</ToolchainName>
+    <ProjectGuid>{2530d5b1-8a40-4a55-95ca-2ec0b63e2088}</ProjectGuid>
+    <avrdevice>ATSAME53N19A</avrdevice>
+    <avrdeviceseries>none</avrdeviceseries>
+    <OutputType>StaticLibrary</OutputType>
+    <Language>CPP</Language>
+    <OutputFileName>lib$(MSBuildProjectName)</OutputFileName>
+    <OutputFileExtension>.a</OutputFileExtension>
+    <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
+    <AvrGccProjectExtensions>
+    </AvrGccProjectExtensions>
+    <AssemblyName>ClearCore</AssemblyName>
+    <Name>ClearCore</Name>
+    <RootNamespace>ClearCore</RootNamespace>
+    <ToolchainFlavour>Native</ToolchainFlavour>
+    <KeepTimersRunning>true</KeepTimersRunning>
+    <OverrideVtor>false</OverrideVtor>
+    <CacheFlash>true</CacheFlash>
+    <ProgFlashFromRam>true</ProgFlashFromRam>
+    <RamSnippetAddress>0x20000000</RamSnippetAddress>
+    <UncachedRange />
+    <preserveEEPROM>true</preserveEEPROM>
+    <OverrideVtorValue>exception_table</OverrideVtorValue>
+    <BootSegment>2</BootSegment>
+    <ResetRule>0</ResetRule>
+    <eraseonlaunchrule>0</eraseonlaunchrule>
+    <EraseKey />
+    <AsfFrameworkConfig>
+      <framework-data xmlns="">
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.40.0" />
+        </dependencies>
+      </framework-data>
+    </AsfFrameworkConfig>
+    <avrtool>com.atmel.avrdbg.tool.samice</avrtool>
+    <avrtoolserialnumber>504502241</avrtoolserialnumber>
+    <avrdeviceexpectedsignature>0x61830303</avrdeviceexpectedsignature>
+    <avrtoolinterface>
+    </avrtoolinterface>
+    <com_atmel_avrdbg_tool_atmelice>
+      <ToolOptions>
+        <InterfaceProperties>
+          <SwdClock>2000000</SwdClock>
+        </InterfaceProperties>
+        <InterfaceName>SWD</InterfaceName>
+      </ToolOptions>
+      <ToolType>com.atmel.avrdbg.tool.atmelice</ToolType>
+      <ToolNumber>J41800075798</ToolNumber>
+      <ToolName>Atmel-ICE</ToolName>
+    </com_atmel_avrdbg_tool_atmelice>
+    <avrtoolinterfaceclock>4000000</avrtoolinterfaceclock>
+    <com_atmel_avrdbg_tool_samice>
+      <ToolOptions>
+        <InterfaceProperties>
+          <SwdClock>4000000</SwdClock>
+        </InterfaceProperties>
+        <InterfaceName>SWD</InterfaceName>
+      </ToolOptions>
+      <ToolType>com.atmel.avrdbg.tool.samice</ToolType>
+      <ToolNumber>504502241</ToolNumber>
+      <ToolName>J-Link</ToolName>
+    </com_atmel_avrdbg_tool_samice>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <ToolchainSettings>
+      <ArmGccCpp>
+        <armgcc.common.outputfiles.hex>True</armgcc.common.outputfiles.hex>
+        <armgcc.common.outputfiles.lss>True</armgcc.common.outputfiles.lss>
+        <armgcc.common.outputfiles.eep>True</armgcc.common.outputfiles.eep>
+        <armgcc.common.outputfiles.bin>True</armgcc.common.outputfiles.bin>
+        <armgcc.common.outputfiles.srec>True</armgcc.common.outputfiles.srec>
+        <armgcc.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>ARM_MATH_CM4</Value>
+            <Value>DEBUG</Value>
+          </ListValues>
+        </armgcc.compiler.symbols.DefSymbols>
+        <armgcc.compiler.directories.DefaultIncludePath>False</armgcc.compiler.directories.DefaultIncludePath>
+        <armgcc.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\arm\CMSIS\4.5.0\CMSIS\Include\</Value>
+            <Value>%24(PackRepoDir)\atmel\SAME53_DFP\1.1.118\include</Value>
+            <Value>../inc</Value>
+            <Value>../../LwIP/LwIP/port/include</Value>
+            <Value>../../LwIP/LwIP/src/include</Value>
+            <Value>../usb</Value>
+            <Value>../usb/device</Value>
+            <Value>../usb/class/cdc</Value>
+            <Value>../usb/class/cdc/device</Value>
+            <Value>../hal/include</Value>
+            <Value>../hal/utils/include</Value>
+            <Value>../hri</Value>
+            <Value>../hpl/core</Value>
+            <Value>../hpl/port</Value>
+            <Value>../hpl/usb</Value>
+            <Value>../config</Value>
+            <Value>../hpl/gclk</Value>
+            <Value>../hpl/mclk</Value>
+          </ListValues>
+        </armgcc.compiler.directories.IncludePaths>
+        <armgcc.compiler.optimization.level>Optimize most (-O3)</armgcc.compiler.optimization.level>
+        <armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>
+        <armgcc.compiler.optimization.PrepareDataForGarbageCollection>True</armgcc.compiler.optimization.PrepareDataForGarbageCollection>
+        <armgcc.compiler.optimization.EnableLongCalls>False</armgcc.compiler.optimization.EnableLongCalls>
+        <armgcc.compiler.warnings.AllWarnings>True</armgcc.compiler.warnings.AllWarnings>
+        <armgcc.compiler.warnings.ExtraWarnings>True</armgcc.compiler.warnings.ExtraWarnings>
+        <armgcc.compiler.warnings.Pedantic>True</armgcc.compiler.warnings.Pedantic>
+        <armgcc.compiler.miscellaneous.OtherFlags>-mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -std=gnu11 --param max-inline-insns-single=50 -MMD</armgcc.compiler.miscellaneous.OtherFlags>
+        <armgcc.compiler.miscellaneous.Verbose>True</armgcc.compiler.miscellaneous.Verbose>
+        <armgcccpp.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>ARM_MATH_CM4</Value>
+            <Value>DEBUG</Value>
+          </ListValues>
+        </armgcccpp.compiler.symbols.DefSymbols>
+        <armgcccpp.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\arm\CMSIS\4.5.0\CMSIS\Include\</Value>
+            <Value>%24(PackRepoDir)\atmel\SAME53_DFP\1.1.118\include</Value>
+            <Value>../inc</Value>
+            <Value>../../LwIP/LwIP/port/include</Value>
+            <Value>../../LwIP/LwIP/src/include</Value>
+            <Value>../config</Value>
+            <Value>../hal/include</Value>
+            <Value>../hal/utils/include</Value>
+            <Value>../hpl/core</Value>
+            <Value>../hpl/gclk</Value>
+            <Value>../hpl/mclk</Value>
+            <Value>../hpl/port</Value>
+            <Value>../hpl/usb</Value>
+            <Value>../hri</Value>
+            <Value>../usb</Value>
+            <Value>../usb/class/cdc</Value>
+            <Value>../usb/class/cdc/device</Value>
+            <Value>../usb/device</Value>
+          </ListValues>
+        </armgcccpp.compiler.directories.IncludePaths>
+        <armgcccpp.compiler.optimization.level>Optimize most (-O3)</armgcccpp.compiler.optimization.level>
+        <armgcccpp.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcccpp.compiler.optimization.PrepareFunctionsForGarbageCollection>
+        <armgcccpp.compiler.optimization.PrepareDataForGarbageCollection>True</armgcccpp.compiler.optimization.PrepareDataForGarbageCollection>
+        <armgcccpp.compiler.optimization.EnableLongCalls>False</armgcccpp.compiler.optimization.EnableLongCalls>
+        <armgcccpp.compiler.warnings.AllWarnings>True</armgcccpp.compiler.warnings.AllWarnings>
+        <armgcccpp.compiler.warnings.ExtraWarnings>True</armgcccpp.compiler.warnings.ExtraWarnings>
+        <armgcccpp.compiler.warnings.Pedantic>True</armgcccpp.compiler.warnings.Pedantic>
+        <armgcccpp.compiler.miscellaneous.Verbose>True</armgcccpp.compiler.miscellaneous.Verbose>
+        <armgcccpp.linker.libraries.Libraries>
+          <ListValues>
+            <Value>libm</Value>
+          </ListValues>
+        </armgcccpp.linker.libraries.Libraries>
+        <armgcccpp.linker.optimization.GarbageCollectUnusedSections>True</armgcccpp.linker.optimization.GarbageCollectUnusedSections>
+        <armgcccpp.linker.memorysettings.ExternalRAM>
+        </armgcccpp.linker.memorysettings.ExternalRAM>
+        <armgcccpp.assembler.debugging.DebugLevel>Default (-g)</armgcccpp.assembler.debugging.DebugLevel>
+        <armgcccpp.preprocessingassembler.debugging.DebugLevel>Default (-Wa,-g)</armgcccpp.preprocessingassembler.debugging.DebugLevel>
+        <armgcccpp.compiler.directories.DefaultIncludePath>False</armgcccpp.compiler.directories.DefaultIncludePath>
+        <armgcc.compiler.optimization.DebugLevel>Default (-g2)</armgcc.compiler.optimization.DebugLevel>
+        <armgcccpp.compiler.optimization.DebugLevel>Default (-g2)</armgcccpp.compiler.optimization.DebugLevel>
+        <armgcccpp.compiler.miscellaneous.OtherFlags>-mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -std=gnu++11 -fno-threadsafe-statics --param max-inline-insns-single=500 -MMD</armgcccpp.compiler.miscellaneous.OtherFlags>
+      </ArmGccCpp>
+    </ToolchainSettings>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <ToolchainSettings>
+      <ArmGccCpp>
+        <armgcc.common.outputfiles.hex>True</armgcc.common.outputfiles.hex>
+        <armgcc.common.outputfiles.lss>True</armgcc.common.outputfiles.lss>
+        <armgcc.common.outputfiles.eep>True</armgcc.common.outputfiles.eep>
+        <armgcc.common.outputfiles.bin>True</armgcc.common.outputfiles.bin>
+        <armgcc.common.outputfiles.srec>True</armgcc.common.outputfiles.srec>
+        <armgcc.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>ARM_MATH_CM4</Value>
+            <Value>NDEBUG</Value>
+          </ListValues>
+        </armgcc.compiler.symbols.DefSymbols>
+        <armgcc.compiler.directories.DefaultIncludePath>False</armgcc.compiler.directories.DefaultIncludePath>
+        <armgcc.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\arm\CMSIS\4.5.0\CMSIS\Include\</Value>
+            <Value>%24(PackRepoDir)\atmel\SAME53_DFP\1.1.118\include</Value>
+            <Value>../inc</Value>
+            <Value>../../LwIP/LwIP/port/include</Value>
+            <Value>../../LwIP/LwIP/src/include</Value>
+            <Value>../usb</Value>
+            <Value>../usb/device</Value>
+            <Value>../usb/class/cdc</Value>
+            <Value>../usb/class/cdc/device</Value>
+            <Value>../hal/include</Value>
+            <Value>../hal/utils/include</Value>
+            <Value>../hri</Value>
+            <Value>../hpl/core</Value>
+            <Value>../hpl/port</Value>
+            <Value>../hpl/usb</Value>
+            <Value>../config</Value>
+            <Value>../hpl/gclk</Value>
+            <Value>../hpl/mclk</Value>
+          </ListValues>
+        </armgcc.compiler.directories.IncludePaths>
+        <armgcc.compiler.optimization.level>Optimize most (-O3)</armgcc.compiler.optimization.level>
+        <armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>
+        <armgcc.compiler.optimization.PrepareDataForGarbageCollection>True</armgcc.compiler.optimization.PrepareDataForGarbageCollection>
+        <armgcc.compiler.optimization.EnableLongCalls>False</armgcc.compiler.optimization.EnableLongCalls>
+        <armgcc.compiler.warnings.AllWarnings>True</armgcc.compiler.warnings.AllWarnings>
+        <armgcc.compiler.warnings.ExtraWarnings>True</armgcc.compiler.warnings.ExtraWarnings>
+        <armgcc.compiler.warnings.Pedantic>True</armgcc.compiler.warnings.Pedantic>
+        <armgcc.compiler.miscellaneous.OtherFlags>-mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -std=gnu11 --param max-inline-insns-single=50 -MMD</armgcc.compiler.miscellaneous.OtherFlags>
+        <armgcc.compiler.miscellaneous.Verbose>True</armgcc.compiler.miscellaneous.Verbose>
+        <armgcccpp.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>ARM_MATH_CM4</Value>
+            <Value>NDEBUG</Value>
+          </ListValues>
+        </armgcccpp.compiler.symbols.DefSymbols>
+        <armgcccpp.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\arm\CMSIS\4.5.0\CMSIS\Include\</Value>
+            <Value>%24(PackRepoDir)\atmel\SAME53_DFP\1.1.118\include</Value>
+            <Value>../inc</Value>
+            <Value>../../LwIP/LwIP/port/include</Value>
+            <Value>../../LwIP/LwIP/src/include</Value>
+            <Value>../config</Value>
+            <Value>../hal/include</Value>
+            <Value>../hal/utils/include</Value>
+            <Value>../hpl/core</Value>
+            <Value>../hpl/gclk</Value>
+            <Value>../hpl/mclk</Value>
+            <Value>../hpl/port</Value>
+            <Value>../hpl/usb</Value>
+            <Value>../hri</Value>
+            <Value>../usb</Value>
+            <Value>../usb/class/cdc</Value>
+            <Value>../usb/class/cdc/device</Value>
+            <Value>../usb/device</Value>
+          </ListValues>
+        </armgcccpp.compiler.directories.IncludePaths>
+        <armgcccpp.compiler.optimization.level>Optimize most (-O3)</armgcccpp.compiler.optimization.level>
+        <armgcccpp.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcccpp.compiler.optimization.PrepareFunctionsForGarbageCollection>
+        <armgcccpp.compiler.optimization.PrepareDataForGarbageCollection>True</armgcccpp.compiler.optimization.PrepareDataForGarbageCollection>
+        <armgcccpp.compiler.optimization.EnableLongCalls>False</armgcccpp.compiler.optimization.EnableLongCalls>
+        <armgcccpp.compiler.warnings.AllWarnings>True</armgcccpp.compiler.warnings.AllWarnings>
+        <armgcccpp.compiler.warnings.ExtraWarnings>True</armgcccpp.compiler.warnings.ExtraWarnings>
+        <armgcccpp.compiler.warnings.Pedantic>True</armgcccpp.compiler.warnings.Pedantic>
+        <armgcccpp.compiler.miscellaneous.Verbose>True</armgcccpp.compiler.miscellaneous.Verbose>
+        <armgcccpp.linker.libraries.Libraries>
+          <ListValues>
+            <Value>libm</Value>
+          </ListValues>
+        </armgcccpp.linker.libraries.Libraries>
+        <armgcccpp.linker.optimization.GarbageCollectUnusedSections>True</armgcccpp.linker.optimization.GarbageCollectUnusedSections>
+        <armgcccpp.linker.memorysettings.ExternalRAM>
+        </armgcccpp.linker.memorysettings.ExternalRAM>
+        <armgcccpp.assembler.debugging.DebugLevel>Default (-g)</armgcccpp.assembler.debugging.DebugLevel>
+        <armgcccpp.preprocessingassembler.debugging.DebugLevel>Default (-Wa,-g)</armgcccpp.preprocessingassembler.debugging.DebugLevel>
+        <armgcccpp.compiler.directories.DefaultIncludePath>False</armgcccpp.compiler.directories.DefaultIncludePath>
+        <armgcccpp.compiler.miscellaneous.OtherFlags>-mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -std=gnu++11 -fno-threadsafe-statics -nostdlib --param max-inline-insns-single=500 -MMD</armgcccpp.compiler.miscellaneous.OtherFlags>
+      </ArmGccCpp>
+    </ToolchainSettings>
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="config\hpl_cmcc_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="config\hpl_dmac_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="config\hpl_gclk_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="config\hpl_mclk_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="config\hpl_port_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="config\hpl_usb_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="config\peripheral_clk_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="config\usbd_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hpl\core\hpl_core_m4.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hpl\core\hpl_core_port.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hpl\core\hpl_init.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hpl\gclk\hpl_gclk.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hpl\gclk\hpl_gclk_base.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hpl\mclk\hpl_mclk.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hpl\port\hpl_gpio_base.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hpl\usb\hpl_usb.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\EncoderInput.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\EncoderInput.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="usb\class\cdc\device\cdcdf_acm.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="usb\class\cdc\device\cdcdf_acm.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="usb\class\cdc\device\cdcdf_acm_desc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="usb\class\cdc\usb_protocol_cdc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="usb\device\usbdc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="usb\device\usbdc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="usb\usb_atmel.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="usb\usb_debug.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="usb\usb_includes.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="usb\usb_protocol.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="usb\usb_protocol.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Folder Include="hal\include" />
+    <Folder Include="hal\utils" />
+    <Folder Include="hal\src" />
+    <Folder Include="hal\utils\include" />
+    <Folder Include="hal\utils\src" />
+    <Folder Include="hpl\core" />
+    <Folder Include="hpl\gclk" />
+    <Folder Include="hpl\mclk" />
+    <Folder Include="hpl\usb" />
+    <Folder Include="hpl\port" />
+    <Folder Include="inc\" />
+    <Content Include="inc\**\*.*" />
+    <Compile Include="hal\include\hal_atomic.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\include\hal_cache.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\include\hal_gpio.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\include\hal_init.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\include\hal_io.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\include\hal_sleep.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\include\hal_usb_device.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\include\hpl_cmcc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\include\hpl_core.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\include\hpl_dma.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\include\hpl_gpio.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\include\hpl_init.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\include\hpl_irq.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\include\hpl_missing_features.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\include\hpl_ramecc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\include\hpl_reset.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\include\hpl_sleep.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\include\hpl_usb.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\include\hpl_usb_device.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\include\hpl_usb_host.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\src\hal_atomic.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\src\hal_cache.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\src\hal_gpio.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\src\hal_init.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\src\hal_io.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\src\hal_sleep.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\src\hal_usb_device.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\utils\include\compiler.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\utils\include\err_codes.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\utils\include\events.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\utils\include\parts.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\utils\include\utils.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\utils\include\utils_assert.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\utils\include\utils_event.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\utils\include\utils_increment_macro.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\utils\include\utils_list.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\utils\include\utils_repeat_macro.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\utils\src\utils_assert.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\utils\src\utils_event.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\utils\src\utils_list.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hal\utils\src\utils_syscalls.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_ac_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_adc_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_aes_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_ccl_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_cmcc_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_dac_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_dmac_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_dsu_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_eic_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_evsys_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_freqm_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_gclk_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_gmac_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_hmatrixb_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_i2s_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_icm_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_mclk_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_nvmctrl_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_osc32kctrl_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_oscctrl_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_pac_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_pcc_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_pdec_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_pm_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_port_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_qspi_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_ramecc_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_rstc_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_rtc_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_sdhc_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_sercom_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_supc_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_tcc_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_tc_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_trng_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_usb_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hri\hri_wdt_e53.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\AdcManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\DigitalInOutAnalogOut.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\DigitalInAnalogIn.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\BlinkCodeDriver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\ClearCore.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\Connector.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\DigitalInOut.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\DigitalIn.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\DigitalInOutHBridge.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\DmaManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\EthernetTcp.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\EthernetTcpClient.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\EthernetTcpServer.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\EthernetUdp.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\EthernetUtils.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\CcioBoardManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\atomic_utils.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\CcioPin.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\InputManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\IpAddress.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\ISerial.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\MotorDriver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\PeripheralRoute.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\Phy.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\SdCardDriver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\SerialBase.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\SerialDriver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\SerialUsb.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\LedDriver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\StatusManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\SysConnectors.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\UsbManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\XBeeDriver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\SysManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\NvmManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\SysTiming.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\SysUtils.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\EthernetApi.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\EthernetManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\HardwareMapping.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\IirFilter.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\ShiftRegister.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\MotorManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\StepGenerator.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Folder Include="config" />
+    <Folder Include="hal" />
+    <Folder Include="hpl" />
+    <Folder Include="hri" />
+    <Folder Include="usb" />
+    <Folder Include="src\" />
+    <Content Include="src\**\*.*" />
+    <Compile Include="src\AdcManager.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\DigitalInOutAnalogOut.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\DigitalInAnalogIn.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\BlinkCodeDriver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\DigitalInOut.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\DigitalIn.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\DigitalInOutHBridge.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\DmaManager.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\EthernetTcp.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\EthernetTcpClient.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\EthernetTcpServer.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\EthernetUdp.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\EthernetUtils.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\CcioBoardManager.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\CcioPin.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\InputManager.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\MotorDriver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\SdCardDriver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\SerialBase.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\SerialDriver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\SerialUsb.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\LedDriver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\StatusManager.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\UsbManager.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\XBeeDriver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\SysManager.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\NvmManager.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\SysTiming.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\EthernetManager.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ShiftRegister.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\MotorManager.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\StepGenerator.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\system_same53.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Folder Include="usb\class" />
+    <Folder Include="usb\class\cdc" />
+    <Folder Include="usb\class\cdc\device" />
+    <Folder Include="usb\device" />
+  </ItemGroup>
+  <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
+</Project>

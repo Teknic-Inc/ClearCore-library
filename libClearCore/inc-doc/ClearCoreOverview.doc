@@ -1,0 +1,232 @@
+#include "ClearCore.h";
+namespace ClearCore {
+/**
+
+\mainpage 
+# Introduction
+    ClearCore can do it all.
+    
+# Informational Pages    - \ref ConnectorMain
+    - \ref MotorDriverMain
+        - \ref MoveGen
+    - \ref UsbMain
+    - \ref SerialDriverMain
+    - \ref CCIOMain
+    - \ref EthernetMain
+
+# Connectors
+    - 1x DigitalInOutAnalogOut
+        - #ConnectorIO0
+    - 3x DigitalInOut
+        - #ConnectorIO1, #ConnectorIO2, #ConnectorIO3
+    - 2x DigitalInOutHBridge
+        - #ConnectorIO4, #ConnectorIO5
+    - 3x DigitalIn
+        - #ConnectorDI6, #ConnectorDI7, #ConnectorDI8
+    - 4x DigitalInAnalogIn
+        - #ConnectorA9, #ConnectorA10, #ConnectorA11, #ConnectorA12
+    - 1x LedDriver
+        - #ConnectorLed
+    - 4x MotorDriver
+        - #ConnectorM0, #ConnectorM1, #ConnectorM2, #ConnectorM3
+    - 1x SerialUsb
+        - #ConnectorUsb
+    - 2x SerialDriver
+        - #ConnectorCOM0, #ConnectorCOM1
+    - 1x EthernetManager
+        - #EthernetMgr
+    - 1x SerialBase socket to connect an XBee module
+        - #XBee
+    - 1x CcioBoardManager (\ref CCIOMain) providing up to 64x CcioPin connectors 
+        - #CcioMgr
+
+# Connector functionality checklist
+    - \subpage ConnectorFunctionality
+        - A table view of the different functionalities supported by each ClearCore I/O connector.
+
+# Status
+    - \subpage StatusIndicators
+        - \subpage BlinkCodes
+    
+# Arduino Reference
+    - \ref ArduinoRef
+
+# Hardware Reference
+    - Refer to the <a href="SystemDiagram.pdf">ClearCore System Diagram</a>.
+        - Jump to:
+            - <a href="SystemDiagram.pdf#page=1">Overview</a>
+            - <a href="SystemDiagram.pdf#page=2">Connector Wiring</a>
+            - <a href="SystemDiagram.pdf#page=6">Installing Debugger and XBee Modules</a>
+            - <a href="SystemDiagram.pdf#page=7">Block Diagram: I/O and Communication</a>
+            - <a href="SystemDiagram.pdf#page=8">Block Diagram: Motor I/O and Configuration Shift Register</a>
+
+**/
+//********************************************************************************************
+/**
+\page StatusIndicators Status Indicators
+<h1> Status Indicators </h1>
+    ClearCore has several LEDs that reflect the status of the ClearCore hardware.
+
+    - \subpage IoLed
+    - \subpage ComLed
+    - \subpage UnderGlowLed
+        - \subpage BlinkCodes
+    - \subpage EthernetLed
+    - \subpage XBeeLed
+    - \subpage CcioLed
+    - \subpage BootloaderBlinks
+    - \subpage InitializationBlinks
+
+**/
+//********************************************************************************************
+/**
+\page IoLed I/O LED Indicators
+<h1> I/O LED Indicators </h1>
+    Near each of the 13 3-pin I/O terminal blocks there is an LED that will indicate the state of that connector.
+    
+<h2> I/O LED States </h2>
+    - Off: Connector is in the logic FALSE state.
+    - On: Connector is in the logic TRUE state.
+    - PWM Modulated: The LED is dimmed to reflect the analog or PWM value on the connector.
+    - Strobed: There is an overload condition.
+**/
+//********************************************************************************************
+/**
+\page ComLed COM Port LED Indicators
+<h1> COM Port LED Indicators </h1>
+    Within each of the COM port connectors, there is an LED that will indicate the state of communications for that connector.
+    
+<h2> COM Port LED States </h2>
+    - Off: The port has not been opened for data communications.
+    - On: The port has been opened and is ready to transmit and receive data.
+    - Breathing: The port has been configured to communicate with one or more ClearCore I/O Expansion (CCIO-8) Boards and the link established between the ClearCore all CCIO-8 boards is healthy.
+    - Strobing: The port has been configured to communicate with one or more ClearCore I/O Expansion (CCIO-8) Boards and there is an overload condition on one of the CCIO-8 connectors.
+**/
+//********************************************************************************************
+/**
+\page UnderGlowLed Under Glow LED Indicator
+<h1> Under Glow LED Indicator </h1>
+    There are LEDs on the bottom side of the ClearCore board that are used to show the running state of the hardware.
+    
+<h2> Under Glow LED States </h2>
+    - Off: ClearCore is not powered properly.
+    - Breathing: Normal running state. LEDs slowly fade in and out.  
+    - On: Processor has crashed. To recover, double-click the reset button to put the processor into bootloader mode, then upload safe code.
+    - Error Code: A series of stobes and solid blinks indicate an error code that has occurred since the last time the processor was reset.
+        - See \subpage BlinkCodes
+**/
+//********************************************************************************************
+/**
+\page CcioLed ClearCore I/O Expansion Board (CCIO-8) LED Indicators
+<h1> ClearCore I/O Expansion Board (CCIO-8) LED Indicators </h1>
+    Each ClearCore I/O Expansion Board provides 8 I/O connectors that may be individually configured for digital input or digital output modes.
+    Near each of the 8 3-pin I/O terminal blocks, there is an LED that will indicate the state of that connector.
+    
+<h2> CCIO-8 I/O LED States </h2>
+    - Off: Connector is in the logic FALSE state.
+    - On: Connector is in the logic TRUE state.
+    - Strobing: There is an overload condition.
+**/
+//********************************************************************************************
+/**
+\page BootloaderBlinks Bootloader Mode
+<h1> Bootloader Mode </h1>
+    Bootloader mode is indicated by a continually repeating series of pulses on the bottom row of I/O LEDs. Double-clicking the reset button puts the ClearCore into bootloader mode.
+    - USB connected: The I/O LEDs IO-5 through IO-0 flash from right to left and the UnderGlow LED is breathing. 
+    - No USB connected: The I/O LEDs IO-0 through IO-5 flash from left to right and the UnderGlow LED is off.
+**/
+//********************************************************************************************
+/**
+\page InitializationBlinks Program Initialization
+<h1> Program Initialization </h1>
+    The start of program execution is indicated by the illumination of all the software-controllable board LEDs: the blue UnderGlow LED, the red user-controllable LED, and both blue COM port LEDs turn \n
+    on while the top and bottom rows of I/O LEDs (connnectors A-12 through DI-6 and IO-0 through IO-5, respectively) flash once from left to right (when viewing the board so that the connector labels \n
+    are facing upright).
+**/
+//********************************************************************************************
+/**
+\page BlinkCodes ClearCore Status Blink Codes
+<h1> Blink Code Sequencing </h1>
+    The ClearCore can provide multiple status codes using the \ref UnderGlowLed.  These codes use a pattern of strobes and blink pulses indicating error code groups and values.
+    
+<h2> Reading the Status </h2>
+    - Long Strobe: The status LED will strobe for 2.3 seconds, indicating the start of the status code sequence.
+    - Code(s): Each status code that has occurred since the last time that the processor has reset will be output.
+        - Strobes: The status LED will indicate the Code Group with a series of strobe pulses, 0.5 seconds strobing at 20Hz and 0.5 seconds off. The Code Group is the count of strobe groups.
+        - Blinks: The status LED then indicates the Code Value with a series of blinks, 0.5 seconds on and 0.5 seconds off. The Code Value is the count of blink pulses.
+        - If there are multiple codes, each strobe / blink pair will be displayed with brief pauses between them.
+    
+<h2> Decoding the Status </h2>
+<h3> Code Group 1: An output connector was overloaded </h3>
+    - Value N: Connector (N-1) was overloaded
+
+<br>
+
+<u>Example</u>: 4 pulses means IO-3 was overloaded
+<img src="blink_code_timing_diagram_1_4.png">
+\see \ref OutputOverload
+    
+<hr>
+
+<h3> Code Group 2: Power Supply Error </h3>
+    - Value 1: Vsupply voltage was low
+    - Value 2: Vsupply voltage was high
+    - Value 3: Offboard 5V supply was overloaded
+    
+<hr>
+
+<h3> Code Group 3: Device Error </h3>
+    - Value 1: H-Bridge error
+    - Value 2: SD card error
+    - Value 3: Ethernet error
+    - Value 4: CCIO-8 error
+    - Value 5: XBee error
+
+<br>
+    
+<u>Example</u>: 2 pulses indicate an SD card error
+<img src="blink_code_timing_diagram_3_2.png">
+
+<hr>
+
+<h3> Code Group 4: CCIO-8 output was overloaded </h3>
+    - Value N: Connector(s) on the Nth CCIO-8 board in the chain were overloaded
+
+**/
+//********************************************************************************************
+/**
+\page OutputOverload I/O Output Overload
+<h1> I/O Output Overload </h1>
+    Each ClearCore digital output can drive resistive or inductive loads up to 9 watts (0.375 A). If the load exceeds the output capacity, the connector detects that the output voltage is not at the \n
+    proper level and signals an overload condition.
+    
+    When an overload is detected, the connector's \ref IoLed is strobed at 10Hz while the overload condition persists. An error code will be shown on the \ref UnderGlowLed indicating that an overload \n
+    occurred on the given connector and persist until the ClearCore is reset.
+    
+\see \ref BlinkCodes
+**/
+//********************************************************************************************
+/**
+\page ConnectorFunctionality Connector functionality at a glance
+This table is a quick way to tell which connectors support which functionalities.
+
+<table>
+<caption>Connector functionality checklist</caption>
+<tr><td><th>Digital input<th>Analog input (0-20V)<th>Digital output<th>PWM output<th>H-Bridge digital output<th>Tone output<th>WAV file output<th>Analog output
+<tr><td>#ConnectorIO0 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><td><td><td><center>x</center>
+<tr><td>#ConnectorIO1 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><td><td><td>
+<tr><td>#ConnectorIO2 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><td><td><td>
+<tr><td>#ConnectorIO3 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><td><td><td>
+<tr><td>#ConnectorIO4 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td>
+<tr><td>#ConnectorIO5 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td>
+<tr><td>#ConnectorDI6 <td><center>x</center><td><td><td><td><td><td><td>
+<tr><td>#ConnectorDI7 <td><center>x</center><td><td><td><td><td><td><td>
+<tr><td>#ConnectorDI8 <td><center>x</center><td><td><td><td><td><td><td>
+<tr><td>#ConnectorA9 <td><center>x</center><td><center>x</center><td><td><td><td><td><td>
+<tr><td>#ConnectorA10 <td><center>x</center><td><center>x</center><td><td><td><td><td><td>
+<tr><td>#ConnectorA11 <td><center>x</center><td><center>x</center><td><td><td><td><td><td>
+<tr><td>#ConnectorA12 <td><center>x</center><td><center>x</center><td><td><td><td><td><td>
+</table>
+**/
+//********************************************************************************************
+}

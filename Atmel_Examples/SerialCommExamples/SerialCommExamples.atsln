@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Atmel Studio Solution File, Format Version 11.00
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "ReadSerialInput", "ReadSerialInput\ReadSerialInput.cppproj", "{2630F666-8B81-463C-8DAA-F5CB4831C71B}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "SerialPrint", "SerialPrint\SerialPrint.cppproj", "{3197A468-29D1-4575-9EA9-9A8E9A3E3F90}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "SpiComPortInitialization", "SpiComPortInitialization\SpiComPortInitialization.cppproj", "{8A5A00B6-E15B-4E0E-8910-EF433F51821D}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "SpiSerialDisplay", "SpiSerialDisplay\SpiSerialDisplay.cppproj", "{3A539E7C-898A-4370-AFEE-AE65D0E60C36}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "TtlSerialDisplay", "TtlSerialDisplay\TtlSerialDisplay.cppproj", "{E5B0EFC0-FE9A-4370-AD2D-6A4C4FFED11D}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "ClearCore", "..\..\libClearCore\ClearCore.cppproj", "{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "LwIP", "..\..\LwIP\LwIP.cppproj", "{C373696C-5D45-4B91-AD62-A21552361596}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Release|ARM = Release|ARM
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2630F666-8B81-463C-8DAA-F5CB4831C71B}.Debug|ARM.ActiveCfg = Debug|ARM
+		{2630F666-8B81-463C-8DAA-F5CB4831C71B}.Debug|ARM.Build.0 = Debug|ARM
+		{2630F666-8B81-463C-8DAA-F5CB4831C71B}.Release|ARM.ActiveCfg = Release|ARM
+		{2630F666-8B81-463C-8DAA-F5CB4831C71B}.Release|ARM.Build.0 = Release|ARM
+		{3197A468-29D1-4575-9EA9-9A8E9A3E3F90}.Debug|ARM.ActiveCfg = Debug|ARM
+		{3197A468-29D1-4575-9EA9-9A8E9A3E3F90}.Debug|ARM.Build.0 = Debug|ARM
+		{3197A468-29D1-4575-9EA9-9A8E9A3E3F90}.Release|ARM.ActiveCfg = Release|ARM
+		{3197A468-29D1-4575-9EA9-9A8E9A3E3F90}.Release|ARM.Build.0 = Release|ARM
+		{8A5A00B6-E15B-4E0E-8910-EF433F51821D}.Debug|ARM.ActiveCfg = Debug|ARM
+		{8A5A00B6-E15B-4E0E-8910-EF433F51821D}.Debug|ARM.Build.0 = Debug|ARM
+		{8A5A00B6-E15B-4E0E-8910-EF433F51821D}.Release|ARM.ActiveCfg = Release|ARM
+		{8A5A00B6-E15B-4E0E-8910-EF433F51821D}.Release|ARM.Build.0 = Release|ARM
+		{3A539E7C-898A-4370-AFEE-AE65D0E60C36}.Debug|ARM.ActiveCfg = Debug|ARM
+		{3A539E7C-898A-4370-AFEE-AE65D0E60C36}.Debug|ARM.Build.0 = Debug|ARM
+		{3A539E7C-898A-4370-AFEE-AE65D0E60C36}.Release|ARM.ActiveCfg = Release|ARM
+		{3A539E7C-898A-4370-AFEE-AE65D0E60C36}.Release|ARM.Build.0 = Release|ARM
+		{E5B0EFC0-FE9A-4370-AD2D-6A4C4FFED11D}.Debug|ARM.ActiveCfg = Debug|ARM
+		{E5B0EFC0-FE9A-4370-AD2D-6A4C4FFED11D}.Debug|ARM.Build.0 = Debug|ARM
+		{E5B0EFC0-FE9A-4370-AD2D-6A4C4FFED11D}.Release|ARM.ActiveCfg = Release|ARM
+		{E5B0EFC0-FE9A-4370-AD2D-6A4C4FFED11D}.Release|ARM.Build.0 = Release|ARM
+		{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}.Debug|ARM.ActiveCfg = Debug|ARM
+		{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}.Debug|ARM.Build.0 = Debug|ARM
+		{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}.Release|ARM.ActiveCfg = Release|ARM
+		{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}.Release|ARM.Build.0 = Release|ARM
+		{C373696C-5D45-4B91-AD62-A21552361596}.Debug|ARM.ActiveCfg = Debug|ARM
+		{C373696C-5D45-4B91-AD62-A21552361596}.Debug|ARM.Build.0 = Debug|ARM
+		{C373696C-5D45-4B91-AD62-A21552361596}.Release|ARM.ActiveCfg = Release|ARM
+		{C373696C-5D45-4B91-AD62-A21552361596}.Release|ARM.Build.0 = Release|ARM
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

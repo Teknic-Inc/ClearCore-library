@@ -1,0 +1,33 @@
+stages:
+  - ClearCore
+
+ClearCore:
+  stage: ClearCore
+  script:
+  - cd %USERPROFILE%\AppData\Local\Arduino15\packages\ClearCore
+  - rmdir /S /Q hardware\sam\1.0.1
+  - rmdir /S /Q hardware\sam\1.0.2
+  - rmdir /S /Q hardware\sam\1.0.3
+  - rmdir /S /Q hardware\sam\1.0.4
+  - rmdir /S /Q hardware\sam\1.0.5
+  - rmdir /S /Q hardware\sam\1.0.6
+  - rmdir /S /Q hardware\sam\1.0.7
+  - rmdir /S /Q hardware\sam\1.0.8
+  - rmdir /S /Q hardware\sam\1.0.9
+  - rmdir /S /Q tools\LwIP
+  - rmdir /S /Q tools\libClearCore
+  - rmdir /S /Q hardware\sam\1.0.10
+  - rmdir /S /Q hardware\sam\1.0.11
+  - rmdir /S /Q hardware\sam\1.0.12
+  - rmdir /S /Q hardware\sam\1.0.13
+                                  
+  - git clone git@git-server.teknic.com:CustomerPackages/ClearCore_Arduino.git --branch "%CI_COMMIT_REF_NAME%" --single-branch "hardware\sam\1.0.13" || ( git clone git@git-server.teknic.com:CustomerPackages/ClearCore_Arduino.git --branch "develop" --single-branch "hardware\sam\1.0.13" )
+  - git clone git@git-server.teknic.com:CustomerPackages/libClearCore.git --branch "%CI_COMMIT_REF_NAME%" --single-branch "hardware\sam\1.0.13\Teknic\libClearCore" || ( git clone git@git-server.teknic.com:CustomerPackages/libClearCore.git --branch "develop" --single-branch "hardware\sam\1.0.13\Teknic\libClearCore" )
+  - git clone git@git-server.teknic.com:CustomerPackages/same53.git --branch "master" --single-branch "hardware\sam\1.0.13\variants\clearcore\Third Party\SAME53"
+  - git clone git@git-server.teknic.com:CustomerPackages/LwIP.git --branch "master" --single-branch "hardware\sam\1.0.13\Teknic\LwIP"
+  - git clone git@git-server.teknic.com:CustomerPackages/uf2-builder.git --branch "master" --single-branch "hardware\sam\1.0.13\Teknic\Tools\uf2-builder"
+  - cd "hardware\sam\1.0.13"
+  - mkdir TestSketch
+  - echo void setup(){} void loop(){} > TestSketch/TestSketch.ino
+  - atmelstudio.exe ClearCore.atsln /build debug /out output.txt || ( type output.txt & EXIT /B 1 )
+  - python build.py -c -b

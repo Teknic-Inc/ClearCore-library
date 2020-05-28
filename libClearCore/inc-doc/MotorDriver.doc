@@ -1,0 +1,104 @@
+namespace ClearCore {
+/**
+\page MotorDriverMain Motor Control System
+<h1> Overview </h1>
+    For applications that require the operation of a motor, ClearCore offers a suite of options to control up to four motors simultaneously. The MotorManager class handles the configuration of the \n
+    physical motor connectors (M-0 through M-3) on the ClearCore board. In code, these motor connectors are represented and controlled by instances of the MotorDriver class (#ConnectorM0 through \n
+    #ConnectorM3).
+    
+    The MotorDriver class is designed to facilitate and fully exercise all the features of a Teknic ClearPath motor, however generic stepper motor drives may be used as well. For simplicity's sake \n
+    this document will assume a ClearPath motor is being used when describing the features of the MotorDriver class.
+    
+<h2> Wiring and Initialization </h2>
+    - Before beginning to use the ClearCore, set up and connect a ClearPath motor to a host PC. Then, using Teknic's MSP software, configure and tune the ClearPath to the desired specifications. For \n
+    more information on these steps refer to the manual for your ClearPath motor found <a href="https://www.teknic.com/downloads/" >here</a>.
+    - Connect the ClearPath to one of the ClearCore's motor connectors (M-0, M-1, M-2, or M-3) with an 8-pin Molex Mini-fit control cable.
+        - Any of the four connectors may be used in any order. For example, M-2 may be used without occupying M-0 and M-1.
+    - Note the operational mode and the HLFB mode of the ClearPath in MSP.
+
+<h2> Motor Manager </h2>
+    The MotorManager class controls the configuration of the actual motor connectors, not the MotorDriver objects associated with the connectors. The manager has APIs for setting the controller mode of\n
+    the connectors as well as the clock rate of the connectors.
+
+<h3> Motor Input Clocking </h3>
+    - The MotorManager sets the input clock rate for all motor connectors on the ClearCore; connectors' clock rates may not be set individually.
+        \code{.cpp}
+        // Set the input clocking rate on all motor connectors
+        MotorMgr.MotorInputClocking(MotorManager::CLOCK_RATE_NORMAL);
+        \endcode
+    - The clock rates may be set to \ref MotorManager#CLOCK_RATE_LOW "LOW", \ref MotorManager#CLOCK_RATE_NORMAL "NORMAL", or \ref MotorManager#CLOCK_RATE_HIGH "HIGH":
+        - LOW is 100 kHz
+        - NORMAL is 500 kHz
+        - HIGH is 2 MHz
+            - Note that a HIGH clock rate may induce errors with a ClearPath motor.
+
+<h3> Connector Modes </h3>
+    - The MotorManager class sets the motor controller mode in pairs. The controller mode may be set on M-0 and M-1, M-2 and M-3, or all 4 connectors at once. Modes may not be set on individual connectors.
+        \code{.cpp}
+        // Set the M-2 and M-3 motor connectors into step and direction mode.
+        MotorMgr.MotorModeSet(MotorManager::MOTOR_M2M3, Connector::CPM_MODE_STEP_AND_DIR);
+        \endcode
+    - There are four controller modes that correspond to various ClearPath operating modes:
+        - \ref Connector#CPM_MODE_STEP_AND_DIR "CPM_MODE_STEP_AND_DIR" - For generic stepper motor drives or a ClearPath in Step & Direction mode
+        - \ref Connector#CPM_MODE_A_DIRECT_B_DIRECT "CPM_MODE_A_DIRECT_B_DIRECT" - Compatible with ClearPath modes that require direct control of the A and B motor input signals (e.g., Incremental \n
+        Distance).
+        - \ref Connector#CPM_MODE_A_DIRECT_B_PWM "CPM_MODE_A_DIRECT_B_PWM" - Compatible with operational modes where motor input A is controlled by the user directly and motor input B is controlled \n
+        with a PWM signal (e.g., Follow Digital Torque).
+        - \ref Connector#CPM_MODE_A_PWM_B_PWM "CPM_MODE_A_PWM_B_PWM" - Compatible with Follow Digital Velocity: Bipolar PWM Command with Variable Torque operational mode where both motor inputs A and \n
+        B are controlled with PWM signals.
+
+<h2> Motor Driver </h2>
+    The MotorDriver class contains interfaces for controlling and communicating with a motor attached to a ClearCore motor connector. There are APIs provided to manipulate all the input lines of a \n
+    ClearPath as well as functions to interact with HLFB. The MotorDriver class also contains functions for motion generation by inheriting from the StepGenerator class. More information on the \n
+    MotorDriver's motion generation features may be found on the \ref MoveGen page.
+
+<h3> Motor Inputs </h3>
+    - The MotorDriver class provides interfaces for all of ClearPath's motor inputs: A, B, and Enable.
+    - The status of the motor's enable line may be checked and set by the \ref MotorDriver#EnableRequest() "EnableRequest" function.
+        \code{.cpp}
+        if (ConnectorM0.EnableRequest()) {
+            // If the motor is currently enabled, disable it.
+            ConnectorM0.EnableRequest(false);
+        }
+        \endcode
+    - For ClearPath modes that require a short off-on pulse of the enable line, such as to trigger a move, use the \ref MotorDriver#EnableTriggerPulse "EnableTriggerPulse" function.
+        \code{.cpp}
+        // Begin a train of five 100ms pulses on M-0's enable that block further 
+        // code execution until the pulse train is finished.
+        ConnectorM0.EnableTriggerPulse(100, true, 5);
+        \endcode
+    - ClearPath inputs A and B may be controlled as boolean values using the \ref MotorDriver#MotorInAState() "MotorInAState" and \ref MotorDriver#MotorInBState() "MotorInBState" functions. The \n
+    ClearPath motor inputs may also have a PWM wave sent to them by the ClearCore using the \ref MotorDriver#MotorInADuty() "MotorInADuty" and \ref MotorDriver#MotorInBDuty() "MotorInBDuty" functions\n
+    (when in the correct connector modes).
+        \code{.cpp}
+        // Set the motor connectors to use a PWM signal on A and B.
+        MotorMgr.MotorModeSet(MotorManager::MOTOR_M2M3, Connector::CPM_MODE_A_PWM_B_PWM);
+        // Begin a 50% duty cycle on M-2's Input B
+        ConnectorM2.MotorInBDuty(50);
+        \endcode
+    - For generic stepper motor drives that may be controlled by inverted signals all of the MotorDriver's motor input signals may be inverted. 
+        \code{.cpp}
+        // Invert M-2's enable signal
+        ConnectorM2.PolarityInvertSDEnable(true);
+        \endcode
+   
+<h3> HLFB </h3>
+    A key feature of ClearPath is the High-Level Feedback (HLFB) that can be output by the ClearPath to report on various motor statuses. For more information on HLFB you may reference the ClearPath \n
+    manual for your motor. The manuals may be found <a href="https://www.teknic.com/files/downloads/clearpath_user_manual.pdf">here</a> and <a href="https://www.teknic.com/files/downloads/ac_clearpath-mc-sd_manual.pdf">here</a> for DC- and AC-input ClearPaths, respectively.
+    - The MotorDriver class contains several functions and configuration options so HLFB can be fully utilized in motor control applications.
+    - \ref MotorDriver#HlfbState() "HlfbState" may return as \ref MotorDriver#HLFB_ASSERTED "ASSERTED", \ref MotorDriver#HLFB_DEASSERTED "DEASSERTED", or that a PWM signal has been measured. \n
+    \ref MotorDriver#HLFB_HAS_MEASUREMENT "HLFB_HAS_MEASUREMENT" will only be returned when there is an active PWM signal or there has been a PWM since the last read of \ref MotorDriver#HlfbState() "HlfbState".
+        \code{.cpp}
+        if (ConnectorM0.HlfbState() == MotorDriver::HLFB_HAS_MEASUREMENT) {
+            // If there is a PWM value for the HLFB, read and save the value.
+            float hlfbDuty = ConnectorM0.HlfbDuty();
+        }
+        \endcode
+    - The MotorDriver's HLFB interface can be set to three different modes that correspond to various HLFB modes on your ClearPath motor:
+        - \ref MotorDriver#HLFB_MODE_STATIC "HLFB_MODE_STATIC" - For use with ClearPath HLFB modes that only read as asserted or deasserted, such as ServoOn.
+        - \ref MotorDriver#HLFB_MODE_HAS_PWM "HLFB_MODE_HAS_PWM" - For modes where the HLFB signal may have a 0-100% PWM component, such as Speed Output.
+        - \ref MotorDriver#HLFB_MODE_HAS_BIPOLAR_PWM "HLFB_MODE_HAS_BIPOLAR_PWM" - For modes where the HLFB signal may have a -100 to 100% PWM component, such as ASG-Position with Measured Torque.
+
+**/
+//********************************************************************************************
+}

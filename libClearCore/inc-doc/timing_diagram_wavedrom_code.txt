@@ -1,0 +1,51 @@
+/* Source WaveDrom code for ClearCore blink code timing diagrams */
+
+/* Blink code 3-2: SD card error */
+
+{signal: [
+  {name:'Blink code region', 
+   wave: 'x.3...x4.....x5...x.3...x4.....x5...x', 
+   data: 'start group code start group code ' },
+  
+  {name:'Underglow state',
+   wave: '0.6...0606060.6060..6...0606060.6060.', 
+   data: [['tspan', {class:'h6'}, 'strobing'], ['tspan', {class:'h6'}, 'strobing'], ['tspan', {class:'h6'}, 'strobing'], ['tspan', {class:'h6'}, 'strobing'], ['tspan', {class:'h6'}, 'on'], ['tspan', {class:'h6'}, 'on'],
+          ['tspan', {class:'h6'}, 'strobing'], ['tspan', {class:'h6'}, 'strobing'], ['tspan', {class:'h6'}, 'strobing'], ['tspan', {class:'h6'}, 'strobing'], ['tspan', {class:'h6'}, 'on'], ['tspan', {class:'h6'}, 'on']]},
+  
+  {name:'Duration (s)',     
+   wave: '2.2...22.....22...2.2...22.....22...2', 
+   data: '1 2.3 0.5 3 0.5 2 1 2.3 0.5 3 0.5 2 ' }
+],
+ head:{
+   text:'Blink code timing diagram',
+ },
+ foot:{
+   text:'Blink code 3-2: SD card error'
+ }
+}
+
+
+/* Blink code 1-4: I0-3 was overloaded */
+
+{signal: [
+  {name:'Blink code region', 
+   wave: 'x.3...x4.x5.......x.3...x4.x5.......x', 
+   data: 'start group code start group code ' },
+  
+  {name:'Underglow state',
+   wave: '0.6...060.60606060..6...060.60606060.', 
+   data: [['tspan', {class:'h6'}, 'strobing'], ['tspan', {class:'h6'}, 'strobing'], ['tspan', {class:'h6'}, 'on'], ['tspan', {class:'h6'}, 'on'], ['tspan', {class:'h6'}, 'on'], ['tspan', {class:'h6'}, 'on'],
+          ['tspan', {class:'h6'}, 'strobing'], ['tspan', {class:'h6'}, 'strobing'], ['tspan', {class:'h6'}, 'on'], ['tspan', {class:'h6'}, 'on'], ['tspan', {class:'h6'}, 'on'], ['tspan', {class:'h6'}, 'on']] },
+
+  {name:'Duration (s)',     
+   wave: '2.2...22.22.......2.2...22.22.......2', 
+   data: '1 2.3 0.5 1 0.5 4 1 2.3 0.5 1 0.5 4 ' }
+],
+ head:{
+   text:'Blink code timing diagram',
+ },
+ foot:{
+   text:'Blink code 1-4: IO-3 was overloaded'
+ }
+}
+

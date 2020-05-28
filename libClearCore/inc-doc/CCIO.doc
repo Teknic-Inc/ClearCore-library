@@ -1,0 +1,78 @@
+namespace ClearCore {
+/**
+\page CCIOMain ClearCore I/O Expansion Board
+<h1> Overview </h1>
+    For applications that require additional digital I/O pins, ClearCore may be linked with up to 8 ClearCore I/O Expansion Board (CCIO-8) modules. The ClearCore software package provides a \n
+    CcioBoardManager that interfaces with and controls the CCIO-8 link. Each CCIO-8 module has 8 CcioPin connectors that may be individually configured as a digital input or output, providing up to 64 \n
+    additional digital I/O connectors.
+
+    The CcioBoardManager uses SPI to communicate to the CCIO-8 modules. The CCIO-8 modules are chained together and attached to either the COM-0 or COM-1 connectors. When a COM port is opened in CCIO \n
+    mode, ClearCore automatically detects how many CCIO-8 modules are in the chain. The CcioBoardManager will then periodically refresh the input and output CcioPin connectors as part of the ClearCore \n
+    system's background processing.
+    
+<h2> Wiring and Initialization</h2>
+    - Connect 24V power to the PWR terminal block on each CCIO-8 module (next to CCIO-8 pin 3). 24V power may be supplied three ways: from a source independent of the ClearCore, by connecting to any \n
+    of the main ClearCore board's I/O connectors, or by connecting to an I/O connector of a CCIO-8 earlier in the chain.
+    - Check that the Power OK LED (next to CCIO-8 pin 4) on each CCIO-8 module is on.
+    - Connect either the COM-0 or COM-1 port from the ClearCore to the COM_IN port on the CCIO-8 module with an RJ45 cable.
+        - If multiple CCIO-8 modules are needed, create a chain by connecting the COM_OUT port of CCIO-8 module <em>(N - 1)</em> to the COM_IN port of CCIO-8 module <em>N</em>. Repeat until all of the \n
+        modules (up to 8) are linked together.
+    - Check that the LED in each connected COM_IN and COM_OUT port is on.
+        - The LED in the COM_OUT port on the final CCIO-8 module in the chain should be off.
+    - Put the ClearCore COM connector in CCIO mode using SerialDriver's \ref SerialDriver#Mode() function then open the port. Calling \ref SerialDriver#PortOpen() "PortOpen()" in CCIO mode will call \n
+    the \ref CcioBoardManager#CcioDiscover() "CcioDiscover()" function automatically in the background.
+        \code{.cpp}
+        // Set COM-1's mode to be the port controlling a CCIO-8 link
+        ConnectorCOM1.Mode(Connector::CCIO);
+        ConnectorCOM1.PortOpen();
+        \endcode
+    - Verify that the number of discovered CCIO-8 modules matches the number of modules that were wired.
+        \code{.cpp}
+        // Are the CCIO-8 modules properly wired and communicating?
+        if (CcioMgr.CcioCount() != myExpectedModules) {
+            // The link size is wrong, do something
+        }
+        \endcode
+    - The CCIO-8 modules in a link are represented by the letters A-H. The CCIO-8 module that is connected directly to the COM port is addressed using ClearCorePins CLEARCORE_PIN_CCIOA0 through \n
+    CLEARCORE_PIN_CCIOA7. The next CCIO-8 module in the chain uses ClearCorePins CLEARCORE_PIN_CCIOB0 through CLEARCORE_PIN_CCIOB7, and so on.
+
+<h2> Configuring CCIO-8 Pins </h2>
+    - Each pin on the CCIO-8 modules can be independently configured as either a digital output or digital input. 
+        \code{.cpp}
+        // Set CCIO-8 board A, pin 0 to output mode and assert the output.
+        CcioPin *ccioA0 = CcioMgr.PinByIndex(CLEARCORE_PIN_CCIOA0);
+        if (ccioA0 != nullptr) {
+            ccioA0->Mode(Connector::OUTPUT_DIGITAL);
+            ccioA0->State(1);
+        }
+        // Set CCIO-8 board B, pin 1 to input mode and read the current value.
+        bool value = false;
+        CcioPin *ccioB1 = CcioMgr.PinByIndex(CLEARCORE_PIN_CCIOB1);
+        if (ccioB1 != nullptr) {
+            ccioB1->Mode(Connector::INPUT_DIGITAL);
+            value = ccioB1->State();
+        }
+        \endcode
+
+<h2> Operation </h2>
+    - The CcioBoardManager periodically refreshes the CcioPin values as part of its background processing. The refresh rate varies depending on the length of the CCIO-8 chain.
+        - 1-2 CCIO-8 modules: Refresh at \ref SampleRateHz
+        - 3-4 CCIO-8 modules: Refresh at \ref SampleRateHz / 2
+        - 5-6 CCIO-8 modules: Refresh at \ref SampleRateHz / 3
+        - 7-8 CCIO-8 modules: Refresh at \ref SampleRateHz / 4
+    - CcioBoardManager refresh cycle processing operations:
+        - Ensure that the previous SPI transfer is complete.
+        - Toggle the SPI Slave Select line to activate the outputs that were sent in the previous refresh cycle and latch a snapshot of the inputs.
+        - Check the integrity of the previous input data transfer.
+        - Perform input pin filtering.
+        - Prepare the current output data to transfer.
+        - Initiate a background SPI data transfer.
+        
+    - The CcioBoardManager monitors the status of the CCIO-8 communications to ensure that the link is maintained. 
+        - If all or some of the CCIO-8 link goes offline the StatusManager#StatusRegister#CcioLinkBroken bit will be raised.
+        - The CcioBoardManager automatically attempts to re-establish a broken CCIO-8 link through the Rediscover feature. The CCIO-8 Rediscover feature is enabled by default, but it may be disabled \n
+        if link-breaks and rediscovers need to be manually controlled. \see CcioBoardManager::CcioRediscoverEnable
+    
+**/
+//********************************************************************************************
+}

@@ -1,0 +1,76 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Atmel Studio Solution File, Format Version 11.00
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "InputInterrupts", "InputInterrupts\InputInterrupts.cppproj", "{7A616192-7406-4B83-8A8E-E23636ADDD1A}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "PlayTone", "PlayTone\PlayTone.cppproj", "{B3DDBC7F-7604-44B7-ADB7-65C4DF6B70C9}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "ReadDigitalInput", "ReadDigitalInput\ReadDigitalInput.cppproj", "{BE495490-B70F-4B25-8076-5356DB0087B5}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "ReadDigitalInputRiseFall", "ReadDigitalInputRiseFall\ReadDigitalInputRiseFall.cppproj", "{E1663362-F31D-45B2-86F4-FBCC4DFDEC0E}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "WriteDigitalOutput", "WriteDigitalOutput\WriteDigitalOutput.cppproj", "{1EE9571F-30C5-47AA-A260-EEC0F0C4B672}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "WriteHBridgeOutput", "WriteHBridgeOutput\WriteHBridgeOutput.cppproj", "{3FE5E45E-D672-47BC-BD99-6843C006B002}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "WritePwmOutput", "WritePwmOutput\WritePwmOutput.cppproj", "{B8C6043B-49F1-43EB-9F30-E8C131F0B59F}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "PeriodicInterrupt", "PeriodicInterrupt\PeriodicInterrupt.cppproj", "{BC799FB3-5751-404E-9AC3-1F78CEC17147}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "ClearCore", "..\..\libClearCore\ClearCore.cppproj", "{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "LwIP", "..\..\LwIP\LwIP.cppproj", "{C373696C-5D45-4B91-AD62-A21552361596}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Release|ARM = Release|ARM
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7A616192-7406-4B83-8A8E-E23636ADDD1A}.Debug|ARM.ActiveCfg = Debug|ARM
+		{7A616192-7406-4B83-8A8E-E23636ADDD1A}.Debug|ARM.Build.0 = Debug|ARM
+		{7A616192-7406-4B83-8A8E-E23636ADDD1A}.Release|ARM.ActiveCfg = Release|ARM
+		{7A616192-7406-4B83-8A8E-E23636ADDD1A}.Release|ARM.Build.0 = Release|ARM
+		{B3DDBC7F-7604-44B7-ADB7-65C4DF6B70C9}.Debug|ARM.ActiveCfg = Debug|ARM
+		{B3DDBC7F-7604-44B7-ADB7-65C4DF6B70C9}.Debug|ARM.Build.0 = Debug|ARM
+		{B3DDBC7F-7604-44B7-ADB7-65C4DF6B70C9}.Release|ARM.ActiveCfg = Release|ARM
+		{B3DDBC7F-7604-44B7-ADB7-65C4DF6B70C9}.Release|ARM.Build.0 = Release|ARM
+		{BE495490-B70F-4B25-8076-5356DB0087B5}.Debug|ARM.ActiveCfg = Debug|ARM
+		{BE495490-B70F-4B25-8076-5356DB0087B5}.Debug|ARM.Build.0 = Debug|ARM
+		{BE495490-B70F-4B25-8076-5356DB0087B5}.Release|ARM.ActiveCfg = Release|ARM
+		{BE495490-B70F-4B25-8076-5356DB0087B5}.Release|ARM.Build.0 = Release|ARM
+		{E1663362-F31D-45B2-86F4-FBCC4DFDEC0E}.Debug|ARM.ActiveCfg = Debug|ARM
+		{E1663362-F31D-45B2-86F4-FBCC4DFDEC0E}.Debug|ARM.Build.0 = Debug|ARM
+		{E1663362-F31D-45B2-86F4-FBCC4DFDEC0E}.Release|ARM.ActiveCfg = Release|ARM
+		{E1663362-F31D-45B2-86F4-FBCC4DFDEC0E}.Release|ARM.Build.0 = Release|ARM
+		{1EE9571F-30C5-47AA-A260-EEC0F0C4B672}.Debug|ARM.ActiveCfg = Debug|ARM
+		{1EE9571F-30C5-47AA-A260-EEC0F0C4B672}.Debug|ARM.Build.0 = Debug|ARM
+		{1EE9571F-30C5-47AA-A260-EEC0F0C4B672}.Release|ARM.ActiveCfg = Release|ARM
+		{1EE9571F-30C5-47AA-A260-EEC0F0C4B672}.Release|ARM.Build.0 = Release|ARM
+		{3FE5E45E-D672-47BC-BD99-6843C006B002}.Debug|ARM.ActiveCfg = Debug|ARM
+		{3FE5E45E-D672-47BC-BD99-6843C006B002}.Debug|ARM.Build.0 = Debug|ARM
+		{3FE5E45E-D672-47BC-BD99-6843C006B002}.Release|ARM.ActiveCfg = Release|ARM
+		{3FE5E45E-D672-47BC-BD99-6843C006B002}.Release|ARM.Build.0 = Release|ARM
+		{B8C6043B-49F1-43EB-9F30-E8C131F0B59F}.Debug|ARM.ActiveCfg = Debug|ARM
+		{B8C6043B-49F1-43EB-9F30-E8C131F0B59F}.Debug|ARM.Build.0 = Debug|ARM
+		{B8C6043B-49F1-43EB-9F30-E8C131F0B59F}.Release|ARM.ActiveCfg = Release|ARM
+		{B8C6043B-49F1-43EB-9F30-E8C131F0B59F}.Release|ARM.Build.0 = Release|ARM
+		{BC799FB3-5751-404E-9AC3-1F78CEC17147}.Debug|ARM.ActiveCfg = Debug|ARM
+		{BC799FB3-5751-404E-9AC3-1F78CEC17147}.Debug|ARM.Build.0 = Debug|ARM
+		{BC799FB3-5751-404E-9AC3-1F78CEC17147}.Release|ARM.ActiveCfg = Release|ARM
+		{BC799FB3-5751-404E-9AC3-1F78CEC17147}.Release|ARM.Build.0 = Release|ARM
+		{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}.Debug|ARM.ActiveCfg = Debug|ARM
+		{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}.Debug|ARM.Build.0 = Debug|ARM
+		{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}.Release|ARM.ActiveCfg = Release|ARM
+		{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}.Release|ARM.Build.0 = Release|ARM
+		{C373696C-5D45-4B91-AD62-A21552361596}.Debug|ARM.ActiveCfg = Debug|ARM
+		{C373696C-5D45-4B91-AD62-A21552361596}.Debug|ARM.Build.0 = Debug|ARM
+		{C373696C-5D45-4B91-AD62-A21552361596}.Release|ARM.ActiveCfg = Release|ARM
+		{C373696C-5D45-4B91-AD62-A21552361596}.Release|ARM.Build.0 = Release|ARM
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

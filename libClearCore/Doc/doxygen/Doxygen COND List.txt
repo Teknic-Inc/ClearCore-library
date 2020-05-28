@@ -1,0 +1,35 @@
+Doxygen Master COND list
+
+Prefix meanings:
+----------------
+ISC - Meridian ISC
+IEX - IEX Related
+CPM - ClearPath-SC Related
+INFC- Net Layer related low level functionality
+
+
+Suffix meanings:
+----------------
+DOC - TOC, general content
+ADV - Advanced topic
+FLIB - C-Function Library content
+CLIB - Class Library content
+
+General
+-------
+INTERNAL_DOC
+SFND1	- Version 1 S-Foundation content (Meridian)
+SFND2 	- Version 2 S-Foundation content (ClearPath-SC only)
+
+Meridian/ISC Related
+--------------------
+ISC_DOC
+IEX_DOC
+ISC_ADV
+ISC_FLIB
+
+ClearPath-SC Related
+--------------------
+CPM_CLIB
+CPM_FLIB
+CPM_ADV
