@@ -32,17 +32,17 @@ void setup() {
 }
 
 void loop() {
-    // Ramp the current output of IO-0 up to 20mA.
-    for (uint16_t value = 0; value < 2047; value++) {
-        // ClearCore's analog current output has 11-bit resolution, so we write
-        // values of 0 to 2047 (corresponding to 0-20mA).
-        ConnectorIO0.State(value);
+    // Ramp the current output of IO-0 up to 20 mA (20,000 uA). If using an
+    // operating range of 4-20 mA, change the lower bounds of the loops below
+    // to 4000 instead of 0.
+    for (uint16_t microAmps = 0; microAmps < 20000; microAmps += 10) {
+        ConnectorIO0.OutputCurrent(microAmps);
         Delay_ms(2);
     }
 
     // Ramp the current output of IO-0 back down.
-    for (uint16_t value = 0; value < 2047; value++) {
-        ConnectorIO0.State(2047 - value);
+    for (uint16_t microAmps = 20000; microAmps > 0; microAmps -= 10) {
+        ConnectorIO0.OutputCurrent(microAmps);
         Delay_ms(2);
     }
 }
