@@ -16,6 +16,7 @@ addons:
 # Build your code e.g. by calling make
 script:
   - doxygen libClearCore/Doc/libClearCore.cfg
+  - touch docs/build/html/.nojekyll
 
 # Generate and deploy documentation
 deploy:
