@@ -47,6 +47,15 @@ namespace ClearCore {
 # Status
     - \subpage StatusIndicators
         - \subpage BlinkCodes
+
+# Behavior on Powerup / Resetting
+    - When the ClearCore first powers up, the last-uploaded code will start
+    executing immediately. If no code has been uploaded yet, or if the chip
+    was erased, the ClearCore will start up in bootloader mode. See 
+    \ref InitializationBlinks and \ref BootloaderBlinks for more information.
+    - Pressing the reset button once will restart execution of user code. Quickly
+    double-pressing the reset button will reset the ClearCore into bootloader
+    mode.
     
 # Arduino Reference
     - \ref ArduinoRef

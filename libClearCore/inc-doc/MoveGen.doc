@@ -71,14 +71,14 @@ namespace ClearCore {
         // Move the motor 50000 step pulses
         ConnectorM0.Move(50000);
         // This will be rejected
-        ConnectorM0.MoveVelocity(100);
+        ConnectorM0.MoveVelocity(10000);
         \endcode
     - Commanding a velocity move during another velocity move will cause the first move to smoothly accelerate/decelerate to the new velocity.
         \code{.cpp}
-        // Move the motor at 500 step pulses/second
-        ConnectorM0.MoveVelocity(500);
-        // This will ramp up the speed to 750 step pulses/second.
-        ConnectorM0.MoveVelocity(750);
+        // Move the motor at 10000 step pulses/second
+        ConnectorM0.MoveVelocity(10000);
+        // This will ramp up the speed to 15000 step pulses/second.
+        ConnectorM0.MoveVelocity(15000);
         \endcode
 
 **/

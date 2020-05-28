@@ -38,9 +38,12 @@ namespace ClearCore {
     - analogWriteResolution() is not a supported function. The analog write resolution 
     of the ClearCore is 12 bits and is not user-modifiable.
     - Tones are sine waves rather than half-duty square waves like most Arduinos.
-    - Arduino-style periodic interrupts using Timer0 and Timer1 are not supported.
+    - Arduino-style periodic interrupts using Timer0 and Timer1 are not supported. The AVR registers used to configure these Timers
+    do not exist in the ClearCore hardware. Refer to the PeriodicInterrupt example in the Atmel_Examples directory for an alternative
+    way to achieve the same functionality as Timer0 and Timer1.
     - The Serial keyword represents the USB serial port. Serial0 and Serial1 represent the COM-0 and COM-1 serial ports respectively.
-    - The Servo and Stepper libraries are not supported by ClearCore.
+    - The Servo and Stepper Arduino libraries are not supported by ClearCore. For motor control, defer to the
+    underlying ClearCore I/O and Motion Control library. (See the \ref MotorDriverMain documentation for more information.)
     - The pulseIn() and pulseInLong() functions do not require interrupts to be enabled.
     - There is no functional difference between pulseIn() and pulseInLong().
     
