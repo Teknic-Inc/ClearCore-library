@@ -221,7 +221,7 @@ This table is a quick way to tell which connectors support which functionalities
 
 <table>
 <caption>Connector functionality checklist</caption>
-<tr><td><th>Digital input<th>Analog input (0-20V)<th>Digital output<th>PWM output<th>H-Bridge digital output<th>Tone output<th>WAV file output<th>Analog output
+<tr><td><th>Digital input<th>Analog input (0-10V)<th>Digital output<th>PWM output<th>H-Bridge digital output<th>Tone output<th>WAV file output<th>Analog output
 <tr><td>#ConnectorIO0 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><td><td><td><center>x</center>
 <tr><td>#ConnectorIO1 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><td><td><td>
 <tr><td>#ConnectorIO2 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><td><td><td>
