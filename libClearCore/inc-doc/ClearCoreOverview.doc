@@ -83,7 +83,8 @@ namespace ClearCore {
     - \subpage UnderGlowLed
         - \subpage BlinkCodes
     - \subpage EthernetLed
-    - \subpage XBeeLed
+    - XBee LED Indicator
+        - Refer to the Associate LED settings of your XBee device.
     - \subpage CcioLed
     - \subpage BootloaderBlinks
     - \subpage InitializationBlinks
