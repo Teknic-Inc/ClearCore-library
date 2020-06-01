@@ -72,28 +72,32 @@ void StepGenerator::StepsCalculated() {
         else {
             // Notify the system of the direction of the issued move
             OutputDirection();
-
-            // If the move profile is a triangle (i.e. doesn't reach
-            // VelLimit), set the velocity limit to peak velocity so that
-            // trapezoid logic can be used.
-            // The maximum triangle move distance =
-            //     VelLimit * (AccelSamples + DecelSamples) / 2 = V*V/A
-            if (static_cast<int64_t>(m_velLimitQx) * m_velLimitQx /
-            m_accelLimitQx > m_posnTargetQx) {
-                // Multiplication by 2^FRACT_BITS to preserve Q-format
-                int64_t vel64 =
-                static_cast<int64_t>(sqrtf(static_cast<int64_t>(m_stepsCommanded) *
-                m_accelLimitQx * static_cast<float>(1 << FRACT_BITS)));
-
-                m_velTargetQx = static_cast<int32_t>(min(vel64, INT32_MAX));
-            }
-            else {
-                m_velTargetQx = m_velLimitQx;
-            }
             if (m_moveDirChange){
                 m_moveState = MS_DECEL_VEL;
                 m_velTargetQx = 0;
             } else {
+                // If the move profile is a triangle (i.e. doesn't reach
+                // VelLimit), set the velocity limit to peak velocity so that
+                // trapezoid logic can be used.
+                // The maximum triangle move distance =
+                //     VelLimit * (AccelSamples + DecelSamples) / 2 = V*V/A
+                // Account for the steps that would have been used to accelerate
+                // to the current velocity.
+                int64_t accelStepsQx = (static_cast<int64_t>(m_velCurrentQx) *
+                m_velCurrentQx / 2) / m_accelLimitQx;
+                if (static_cast<int64_t>(m_velLimitQx) * m_velLimitQx /
+                m_accelLimitQx - accelStepsQx > m_posnTargetQx) {
+                    // Multiplication by 2^FRACT_BITS to preserve Q-format
+                    int64_t vel64 =
+                    static_cast<int64_t>(sqrtf((float)(
+                    ((static_cast<int64_t>(m_stepsCommanded) << FRACT_BITS)
+                    + accelStepsQx) * m_accelLimitQx)));
+
+                    m_velTargetQx = static_cast<int32_t>(min(vel64, INT32_MAX));
+                }
+                else {
+                    m_velTargetQx = m_velLimitQx;
+                }
                 m_moveState = MS_ACCEL;
             }
         }
