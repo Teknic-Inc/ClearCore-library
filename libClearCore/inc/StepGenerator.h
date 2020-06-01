@@ -110,6 +110,19 @@ public:
     void MoveStopAbrupt();
 
     /**
+        Interrupts the current move; Slows the motor at the decel rate
+
+        \code{.cpp}
+        // Command an abrupt stop
+        ConnectorM0.MoveStopAbrupt();
+        \endcode
+
+        \param[in] velMax The new velocity limit. Passing 0 keeps the 
+        previous deceleration rate
+    **/
+    void MoveStopDecel(int32_t decelMax = 0);
+
+    /**
         \brief Sets the absolute commanded position to the given value.
 
         \code{.cpp}
@@ -182,6 +195,21 @@ public:
     void AccelMax(int32_t accelMax);
 
     /**
+        \brief Sets the maximum deceleration for E-stop Deceleration in 
+        step pulses per second^2. This is only for MoveStopDecel.
+
+        Value will be clipped if out of bounds
+
+        \code{.cpp}
+        // Set the StepGenerator's maximum velocity to 15000 step pulses/sec^2
+        ConnectorM0.AccelMax(15000);
+        \endcode
+
+        \param[in] decelMax The new deceleration limit
+    **/
+    void EStopDecelMax(int32_t decelMax);
+
+    /**
         \brief Function to check if no steps are currently being commanded to
         the motor.
 
@@ -251,6 +279,7 @@ private:
     int32_t m_stepsCommanded;
     int32_t m_stepsSent;      // Accumulated integer position
 
+    bool m_eStopDecelMove;    // An e-stop deceleration is active
     bool m_velocityMove;      // A Velocity move is active
     bool m_moveDirChange;     // The move is changing direction
     bool m_moveOvershoot;     // The new requested position is too close
@@ -263,6 +292,7 @@ private:
     int32_t m_velLimitQx;     // Velocity limit
     int32_t m_altVelLimitQx;  // Velocity move Velocity limit
     int32_t m_accelLimitQx;   // Acceleration limit
+    int32_t m_altDecelLimitQx;// E-Stop Deceleration limit
     int64_t m_posnCurrentQx;  // Current position
     int32_t m_velCurrentQx;   // Current velocity
     int32_t m_accelCurrentQx; // Current acceleration

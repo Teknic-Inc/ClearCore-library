@@ -44,7 +44,7 @@ void StepGenerator::StepsCalculated() {
     // until the next sample.
     if (m_moveState == MS_START) {
         // Compute move parameters
-        m_accelCurrentQx = m_accelLimitQx;
+        m_accelCurrentQx = m_eStopDecelMove ? m_altDecelLimitQx : m_accelLimitQx;
         m_posnTargetQx = static_cast<int64_t>(m_stepsCommanded)
         << FRACT_BITS;
 
@@ -278,6 +278,7 @@ void StepGenerator::StepsCalculated() {
             m_stepsCommanded = 0;
             m_moveState = MS_IDLE;
             m_velocityMove = false;
+            m_eStopDecelMove = false;
             return;
     }
 
@@ -302,12 +303,14 @@ StepGenerator::StepGenerator()
       m_posnAbsolute(0),
       m_stepsCommanded(0),
       m_stepsSent(0),
+      m_eStopDecelMove(false),
       m_velocityMove(false),
       m_moveDirChange(false),
       m_moveOvershoot(false),
       m_velLimitQx(1),
       m_altVelLimitQx(0),
       m_accelLimitQx(2),
+      m_altDecelLimitQx(2),
       m_posnCurrentQx(0),
       m_velCurrentQx(0),
       m_accelCurrentQx(0),
@@ -329,6 +332,7 @@ void StepGenerator::MoveStopAbrupt() {
     m_stepsSent = 0;
     m_moveState = MS_IDLE;
     m_velocityMove = false;
+    m_eStopDecelMove = false;
     m_stepsCommanded = 0;
     m_stepsPrevious = 0;
     __enable_irq();
@@ -418,6 +422,7 @@ bool StepGenerator::Move(int32_t dist, bool absolute, bool immediate) {
     m_direction = m_moveDirChange ? lastDir : newDir;
 
     m_velocityMove = false;
+    m_eStopDecelMove = false;
     m_moveState = MS_START;
     __enable_irq();
     return true;
@@ -447,10 +452,23 @@ bool StepGenerator::MoveVelocity(int32_t velocity) {
     m_posnCurrentQx &= ~(UINT64_MAX << FRACT_BITS);
     m_stepsSent = 0;
 
+    m_eStopDecelMove = false;
     m_moveState = MS_START;
     __enable_irq();
 
     return true;
+}
+
+void StepGenerator::MoveStopDecel(int32_t decelMax) {
+    __disable_irq();
+    if (decelMax != 0){
+        EStopDecelMax(decelMax);
+    }
+    m_eStopDecelMove = true;
+    m_velocityMove = true;
+    AltVelMax(0);
+    m_moveState = MS_START;
+    __enable_irq();
 }
 
 /*
@@ -509,6 +527,27 @@ void StepGenerator::AccelMax(int32_t accelMax) {
     // Enforce minimum acceleration of 2 step pulses/sample^2
     if (m_accelLimitQx < 2) {
         m_accelLimitQx = 2;
+    }
+}
+
+/*
+    This function takes the acceleration in step pulses/sec^2
+    and sets m_altDecelLimitQx in step pulses/sample^2. Negative numbers will be
+    converted to positive.
+*/
+void StepGenerator::EStopDecelMax(int32_t decelMax) {
+    decelMax = abs(decelMax);
+    // Convert from step pulses/sec/sec to step pulses/sample/sample
+    int64_t decelLim64 = ((static_cast<int64_t>(decelMax) << FRACT_BITS) /
+                          (SampleRateHz * SampleRateHz));
+    // Ensure we didn't overflow 32-bit int
+    m_altDecelLimitQx = min(decelLim64, INT32_MAX);
+    // Since accel has to be divided by 2 when calculating position increments,
+    // make sure it is even
+    m_altDecelLimitQx &= ~1L;
+    // Enforce minimum acceleration of 2 step pulses/sample^2
+    if (m_altDecelLimitQx < 2) {
+        m_altDecelLimitQx = 2;
     }
 }
 
