@@ -128,6 +128,17 @@ namespace ClearCore {
 **/
 //********************************************************************************************
 /**
+\page EthernetLed Ethernet LED Indicator
+<h1> Ethernet LED Indicator </h1>
+    The LED within the Ethernet connector indicates the state of the link and network activity on the link.
+    
+<h2> Ethernet LED States </h2>
+    - Off: No link established (link down).
+    - On: Link established but no network activity detected (link up).
+    - Blinking: Network activity detected on the link.
+**/
+//********************************************************************************************
+/**
 \page CcioLed ClearCore I/O Expansion Board (CCIO-8) LED Indicators
 <h1> ClearCore I/O Expansion Board (CCIO-8) LED Indicators </h1>
     Each ClearCore I/O Expansion Board provides 8 I/O connectors that may be individually configured for digital input or digital output modes.
