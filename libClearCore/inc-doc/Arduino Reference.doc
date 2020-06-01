@@ -2,7 +2,9 @@ namespace ClearCore {
 /**
 \page ArduinoRef ClearCore Arduino API Reference
 <h1> Overview </h1>
-**TODO: This section should talk about how the Arduino "wrapper" interacts with the OEM ClearCore library. This should be probably be written by SW member and then reviewed by a Sales member, after we have a concrete plan for how we want to market the Arduino wrapper.
+The ClearCore Arduino Wrapper Library, used in conjunction with the standard ClearCore Motion and I/O Library, allows for easy programming in the lightweight Arduino IDE. Using ClearCore with the Arduino IDE is suitable for all developers, from confident Arduino users to novice programmers or even experienced programmers who want to create a prototype as quickly as possible.
+
+This section serves as a reference guide for the ClearCore Arduino wrapper functions that can be used to control your ClearCore. Because this is a software wrapper, each of the functions within it interacts with the ClearCore Motion and I/O Library. As such, some of the functions you see here were modified from the original Arduino counterparts. Any differences from the standard Arduino functions are documented below as well.
 
 <table>
 <caption>ClearCore connector aliases</caption>
