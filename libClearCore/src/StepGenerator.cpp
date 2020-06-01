@@ -49,12 +49,11 @@ void StepGenerator::StepsCalculated() {
         << FRACT_BITS;
 
         if (m_velocityMove) {
-            m_velTargetQx = m_velMoveDirChange ? 0 : m_altVelLimitQx;
+            m_velTargetQx = m_moveDirChange ? 0 : m_altVelLimitQx;
             if (m_velTargetQx) {
                 // Notify the system of the direction of the issued move
                 // if moving to a non-zero velocity
                 OutputDirection();
-                m_directionLast = m_direction;
             }
 
             if (m_velCurrentQx == m_velTargetQx) {
@@ -73,7 +72,6 @@ void StepGenerator::StepsCalculated() {
         else {
             // Notify the system of the direction of the issued move
             OutputDirection();
-            m_directionLast = m_direction;
 
             // If the move profile is a triangle (i.e. doesn't reach
             // VelLimit), set the velocity limit to peak velocity so that
@@ -92,7 +90,12 @@ void StepGenerator::StepsCalculated() {
             else {
                 m_velTargetQx = m_velLimitQx;
             }
-            m_moveState = MS_ACCEL;
+            if (m_moveDirChange){
+                m_moveState = MS_DECEL_VEL;
+                m_velTargetQx = 0;
+            } else {
+                m_moveState = MS_ACCEL;
+            }
         }
     }
 
@@ -205,6 +208,9 @@ void StepGenerator::StepsCalculated() {
             break;
 
         case MS_DECEL_VEL: // Velocity move deceleration state
+            // When decreasing velocity, target a new velocity, not a position
+            // During decel, we still need to accumulate the steps that we are
+            // taking.
             m_posnCurrentQx += m_velCurrentQx - (m_accelCurrentQx >> 1);
             m_velCurrentQx -= m_accelCurrentQx;
 
@@ -223,15 +229,39 @@ void StepGenerator::StepsCalculated() {
                     (static_cast<uint64_t>(pctSampleOverQ32) * overshootQx) >>
                     33;
 
+                // Velocity may be slightly off of the target velocity due to
+                // discrete sampling. Force velocity to snap to the target
                 m_velCurrentQx = m_velTargetQx;
                 // Adjust position for overshoot.
                 m_posnCurrentQx += posnAdjQx;
                 // If there's no sign change between moves, head to cruise.
                 // Otherwise return to start to begin the new move in the opposite
                 // direction of the first move.
-                if (m_velMoveDirChange) {
+                if (m_moveDirChange) {
+                    // When a direction change occurs, the goal is to slow down
+                    // as quickly as possible (accel limit). During this slow
+                    // down period, we are moving in the direction that we were
+                    // previously and steps are accumulating in that direction.
+                    // In order to still meet the position target, we need to
+                    // add these (wrong direction) steps to the  user entered
+                    // commanded steps.
+
+                    // We need to flop directions, so do so.
+                    m_direction = !m_direction;
+                    // We went past where the command was issued, we have to
+                    // now go the original distance plus how far we went slowing
+                    if (m_moveOvershoot) {
+                        m_stepsCommanded = m_stepsSent - m_stepsCommanded;
+                        } else {
+                        m_stepsCommanded += m_stepsSent;
+                    }
+                    
+                    // Zero previous move
+                    m_stepsSent = 0;
+                    m_posnCurrentQx = m_posnCurrentQx & ~(UINT64_MAX << FRACT_BITS);
+
                     m_moveState = MS_START;
-                    m_velMoveDirChange = false;
+                    m_moveDirChange = false;
                 }
                 else {
                     m_moveState = MS_CRUISE;
@@ -245,6 +275,7 @@ void StepGenerator::StepsCalculated() {
             m_velCurrentQx = 0;
             m_stepsSent = 0;
             m_stepsPrevious = 0;
+            m_stepsCommanded = 0;
             m_moveState = MS_IDLE;
             m_velocityMove = false;
             return;
@@ -268,12 +299,12 @@ StepGenerator::StepGenerator()
       m_stepsPerSampleMax(0),
       m_moveState(MS_IDLE),
       m_direction(false),
-      m_directionLast(false),
       m_posnAbsolute(0),
       m_stepsCommanded(0),
       m_stepsSent(0),
       m_velocityMove(false),
-      m_velMoveDirChange(false),
+      m_moveDirChange(false),
+      m_moveOvershoot(false),
       m_velLimitQx(1),
       m_altVelLimitQx(0),
       m_accelLimitQx(2),
@@ -305,37 +336,93 @@ void StepGenerator::MoveStopAbrupt() {
 
 /*
     This function commands a directional move.
-    If there is a current move it will NOT be overwritten.
 
     The function will return true if the move was accepted.
 */
-bool StepGenerator::Move(int32_t dist, bool absolute) {
-    if (!StepsComplete() || (dist == 0 && !absolute) || m_velocityMove) {
+bool StepGenerator::Move(int32_t dist, bool absolute, bool immediate) {
+    // Check if the move overwrites a current move and it shouldn't
+    if (!immediate && !StepsComplete() ) {
         return false;
+    }
+
+    // Make relative moves be based off of current position during a velocity
+    // move
+    if (m_velocityMove){
+        m_stepsCommanded = 0;
     }
 
     // Block the interrupt while changing the command
     __disable_irq();
+    bool lastDir = m_direction;
+    bool newDir;
     if (absolute) {
-        // Invert the absolute position so it's easier to use and think about
-        // in code
-        int32_t posn = -m_posnAbsolute;
-        m_direction = (dist < posn);
-        m_stepsCommanded = m_direction ? posn - dist : dist - posn;
+        m_stepsCommanded = dist - m_posnAbsolute;
     }
     else {
-        m_direction = (dist < 0);
-        m_stepsCommanded = m_direction ? -dist : dist;
-        m_posnCurrentQx = 0;
+        //m_stepsCommanded += (newDir ? -dist : dist);
+        // Since the steps scale is relative to start of move to prevent 
+        // overflow, the scale shifts by the number of steps taken
+        // So account for this, the current steps should be taken off of the
+        // previous commanded amount, then the new command should be added
+        // The steps send are in the direction of the commanded steps, subtract
+        // that first. Steps taken is always less than commanded, result (+)
+        m_stepsCommanded -= m_stepsSent;
+        // Convert magnitude + direction format to signed int
+        m_stepsCommanded = m_direction ? -m_stepsCommanded : m_stepsCommanded ;
+        // Now stepsCommanded and distance are signed and in the global 
+        // direction. Add them
+        m_stepsCommanded += dist;
+        // Steps commanded and dir will be calculated later.
     }
 
-    m_velCurrentQx = 0;
+    // Zero out the steps and integer portion of current position to
+    // reduce chance of overflow
     m_stepsSent = 0;
+    // Zero the integer portion of the current position. We want to keep
+    // partial steps so movement is smooth. 
+    m_posnCurrentQx = m_posnCurrentQx & ~(UINT64_MAX << FRACT_BITS);
+
+    // Determine the direction of the movements.
+    newDir = m_stepsCommanded < 0;
+    
+    // Steps commanded now needs to be a positive value. 
+    m_stepsCommanded = abs(m_stepsCommanded);
+
+    // Determine if we are moving too quickly to stop in time
+    // Use the current velocity (+), target velocity of 0, and a of our limit
+    // Use constant acceleration eqns: V=Vo+a*t and x=Vo*t+1/2*a*t
+    // Start with time to accelerate to 0 velocity
+    // 0=Vo+a*t
+    // t = -Vo/a
+    // Plug in to find distance to stop
+    // x = Vo*(-Vo/a) + 1/2*a*(-Vo/a)^2
+    // x = -(Vo)^2/a + 1/2*Vo^2/a
+    // x = -(Vo)^2/a
+    // a is negative since we want to slow down, cancels negative on top
+    int32_t distToStop = (static_cast<int64_t>(m_velCurrentQx)*m_velCurrentQx/
+                         m_accelLimitQx) >> FRACT_BITS;
+    // The distance to stop is how many steps it will take to slow to 0 velocity
+    // If the number of commanded steps is less than that, we cannot stop in 
+    // time and must overshoot and come back. This only applies if the commanded
+    // steps are in the direction that we are currently going. 
+    m_moveOvershoot = (m_stepsCommanded < distToStop) && (newDir == lastDir);
+
+    // Determine if there is a direction change. If the movement has stopped
+    // (vel == 0), then a direction change can safely happen. Otherwise, compare
+    // current and previous direction to see if a change happened. A direction
+    // change is also required if we go past out target and overshoot.
+    m_moveDirChange = m_velCurrentQx && ((newDir != lastDir) || m_moveOvershoot);
+
+    // If there was a direction change, we need to keep going in the same 
+    // direction to safely come to a stop, then move the other way.
+    m_direction = m_moveDirChange ? lastDir : newDir;
+
+    m_velocityMove = false;
     m_moveState = MS_START;
     __enable_irq();
-
     return true;
 }
+
 
 /*
     This function commands a velocity move.
@@ -344,8 +431,14 @@ bool StepGenerator::Move(int32_t dist, bool absolute) {
 bool StepGenerator::MoveVelocity(int32_t velocity) {
     // Block the interrupt while changing the command
     __disable_irq();
-    m_direction = (velocity < 0);
-    m_velMoveDirChange = velocity && m_velCurrentQx && m_direction != m_directionLast;
+    bool lastDir = m_direction;
+    bool newDir = (velocity < 0);
+    m_moveDirChange = velocity && m_velCurrentQx && newDir != lastDir;
+
+    // If there was a direction change, we need to keep going in the same
+    // direction to safely come to a stop, then move the other way.
+    m_direction = m_moveDirChange ? lastDir : newDir;
+
     m_velocityMove = true;
 
     int32_t velAbsolute = abs(velocity);
@@ -390,6 +483,14 @@ void StepGenerator::AltVelMax(int32_t velMax) {
         min(velLim64, static_cast<int64_t>(m_stepsPerSampleMax) << FRACT_BITS);
     // Ensure we didn't overflow 32-bit int
     m_altVelLimitQx = min(velLim64, INT32_MAX);
+}
+
+int32_t StepGenerator::VelocityRefCommanded() {
+    // Reverse the calculation in AltVelMax to get the velocity in the same
+    // units that the user put in. Add half a decimal for rounding.
+    int32_t velTemp = ((static_cast<int64_t>(m_velCurrentQx)*SampleRateHz +
+    (1 << (FRACT_BITS-1))) >> FRACT_BITS);
+    return m_direction ? -velTemp : velTemp;
 }
 
 /*

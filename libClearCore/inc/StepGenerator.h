@@ -75,9 +75,14 @@ public:
 
         \param[in] dist The distance of the move in step pulses
         \param[in] absolute (optional) True if the dist argument is an absolute
-        position. Default: false.
+        position. Relative moves will modify the current target position.
+        Default: false.
+        \param[in] immediate (optional) True if the movement should overwrite 
+        a current position movement. Relative moves made during a 
+        velocity move will relative to the current position.
+        Default: true.
     **/
-    bool Move(int32_t dist, bool absolute = false);
+    bool Move(int32_t dist, bool absolute = false, bool immediate = true);
 
     /**
         \brief Issues a velocity move at the specified velocity.
@@ -134,6 +139,21 @@ public:
     }
 
     /**
+        \brief Accessor for the StepGenerator's momentary velocity
+
+        \code{.cpp}
+        if (ConnectorM0.VelocityRefCommanded() > 1000) {
+            // M-0's current velocity is above 1000
+        }
+        \endcode
+
+        \return Returns the momentary commanded position.
+        /note Velocity changes as the motor accelerates and decelerates, this 
+        should not be used to track the motion of the motor
+    **/
+    int32_t VelocityRefCommanded();
+
+    /**
         \brief Sets the maximum velocity in step pulses per second.
 
         Value will be clipped if out of bounds
@@ -178,6 +198,23 @@ public:
         return MoveStateGet() == MS_IDLE;
     }
 
+    /**
+        \brief Function to check if the commanded move is at the cruising 
+        velocity - Acceleration portion of movement has finished.
+
+        \code{.cpp}
+        if (ConnectorM0.CruiseVelocityReached) {
+            // The commanded move is at the cruising velocity
+        }
+        \endcode
+
+        \return Returns true if there the move is in the cruise state
+        \note The motor will still need to decelerate after cruising
+    **/
+    bool CruiseVelocityReached() {
+        return MoveStateGet() == MS_CRUISE;
+    }
+
 protected:
     typedef enum {
         MS_IDLE,
@@ -193,7 +230,6 @@ protected:
     uint32_t m_stepsPerSampleMax;
     MOVE_STATES m_moveState;
     bool m_direction;
-    bool m_directionLast;
 
     volatile const bool &Direction() {
         return m_direction;
@@ -215,8 +251,9 @@ private:
     int32_t m_stepsCommanded;
     int32_t m_stepsSent;      // Accumulated integer position
 
-    bool m_velocityMove;       // A Velocity move is active
-    bool m_velMoveDirChange;   // The velocity move is changing direction
+    bool m_velocityMove;      // A Velocity move is active
+    bool m_moveDirChange;     // The move is changing direction
+    bool m_moveOvershoot;     // The new requested position is too close
 
     // All of the position, velocity and acceleration parameters are signed and
     // in Q format, with all arithmetic performed in fixed point.
