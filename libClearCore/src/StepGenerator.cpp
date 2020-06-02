@@ -362,6 +362,7 @@ bool StepGenerator::Move(int32_t dist, bool absolute, bool immediate) {
     // move
     if (m_velocityMove){
         m_stepsCommanded = 0;
+        m_stepsSent = 0;
     }
 
     // Block the interrupt while changing the command
