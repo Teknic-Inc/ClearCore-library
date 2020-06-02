@@ -98,7 +98,14 @@ void StepGenerator::StepsCalculated() {
                 else {
                     m_velTargetQx = m_velLimitQx;
                 }
-                m_moveState = MS_ACCEL;
+                if (m_velCurrentQx > m_velTargetQx) {
+                    // Decelerate to reach the target velocity
+                    m_moveState = MS_DECEL_VEL;
+                }
+                else {
+                    // Accelerate to reach the target velocity
+                    m_moveState = MS_ACCEL;
+                }
             }
         }
     }
@@ -256,7 +263,7 @@ void StepGenerator::StepsCalculated() {
                     // now go the original distance plus how far we went slowing
                     if (m_moveOvershoot) {
                         m_stepsCommanded = m_stepsSent - m_stepsCommanded;
-                        } else {
+                    } else {
                         m_stepsCommanded += m_stepsSent;
                     }
                     
@@ -268,6 +275,11 @@ void StepGenerator::StepsCalculated() {
                     m_moveDirChange = false;
                 }
                 else {
+                    // Calculate the decel point
+                    uint64_t accelDistQx = (static_cast<uint64_t>(m_velCurrentQx) *
+                        m_velCurrentQx / m_accelCurrentQx) >> 1;
+                    m_posnDecelQx = m_posnTargetQx - accelDistQx;
+
                     m_moveState = MS_CRUISE;
                 }
             }
@@ -411,10 +423,10 @@ bool StepGenerator::Move(int32_t dist, bool absolute, bool immediate) {
     // Plug in to find distance to stop
     // x = Vo*(-Vo/a) + 1/2*a*(-Vo/a)^2
     // x = -(Vo)^2/a + 1/2*Vo^2/a
-    // x = -(Vo)^2/a
+    // x = -(Vo)^2/2a
     // a is negative since we want to slow down, cancels negative on top
     int32_t distToStop = (static_cast<int64_t>(m_velCurrentQx)*m_velCurrentQx/
-                         m_accelLimitQx) >> FRACT_BITS;
+                         m_accelLimitQx) >> (FRACT_BITS+1);
     // The distance to stop is how many steps it will take to slow to 0 velocity
     // If the number of commanded steps is less than that, we cannot stop in 
     // time and must overshoot and come back. This only applies if the commanded
