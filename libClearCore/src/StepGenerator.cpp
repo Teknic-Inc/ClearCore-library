@@ -320,7 +320,11 @@ StepGenerator::StepGenerator()
       m_accelCurrentQx(0),
       m_posnTargetQx(0),
       m_velTargetQx(0),
-      m_posnDecelQx(0) {}
+      m_posnDecelQx(0),
+      m_velLimitPendingQx(1),
+      m_altVelLimitPendingQx(0),
+      m_accelLimitPendingQx(2),
+      m_altDecelLimitPendingQx(2) {}
 
 /*
     This function clears the current move and puts the motor in a
@@ -339,6 +343,7 @@ void StepGenerator::MoveStopAbrupt() {
     m_eStopDecelMove = false;
     m_stepsCommanded = 0;
     m_stepsPrevious = 0;
+    UpdatePendingMoveLimits();
     __enable_irq();
 }
 
@@ -427,7 +432,11 @@ bool StepGenerator::Move(int32_t dist, bool absolute, bool immediate) {
 
     m_velocityMove = false;
     m_eStopDecelMove = false;
+    UpdatePendingMoveLimits();
     m_moveState = MS_START;
+
+
+
     __enable_irq();
     return true;
 }
@@ -452,6 +461,7 @@ bool StepGenerator::MoveVelocity(int32_t velocity) {
 
     int32_t velAbsolute = abs(velocity);
     AltVelMax(velAbsolute);
+    UpdatePendingMoveLimits();
     m_stepsCommanded = INT32_MAX;
     m_posnCurrentQx &= ~(UINT64_MAX << FRACT_BITS);
     m_stepsSent = 0;
@@ -471,6 +481,7 @@ void StepGenerator::MoveStopDecel(int32_t decelMax) {
     m_eStopDecelMove = true;
     m_velocityMove = true;
     AltVelMax(0);
+    UpdatePendingMoveLimits();
     m_moveState = MS_START;
     __enable_irq();
 }
@@ -489,7 +500,7 @@ void StepGenerator::VelMax(int32_t velMax) {
     // Ensure we didn't overflow 32-bit int
     velLim64 = min(velLim64, INT32_MAX);
     // Enforce minimum velocity of 1 step pulse/sample
-    m_velLimitQx = max(velLim64, 1);
+    m_velLimitPendingQx = max(velLim64, 1);
 }
 
 /*
@@ -504,7 +515,7 @@ void StepGenerator::AltVelMax(int32_t velMax) {
     velLim64 =
         min(velLim64, static_cast<int64_t>(m_stepsPerSampleMax) << FRACT_BITS);
     // Ensure we didn't overflow 32-bit int
-    m_altVelLimitQx = min(velLim64, INT32_MAX);
+    m_altVelLimitPendingQx = min(velLim64, INT32_MAX);
 }
 
 int32_t StepGenerator::VelocityRefCommanded() {
@@ -524,13 +535,13 @@ void StepGenerator::AccelMax(int32_t accelMax) {
     int64_t accelLim64 = ((static_cast<int64_t>(accelMax) << FRACT_BITS) /
                           (SampleRateHz * SampleRateHz));
     // Ensure we didn't overflow 32-bit int
-    m_accelLimitQx = min(accelLim64, INT32_MAX);
+    m_accelLimitPendingQx = min(accelLim64, INT32_MAX);
     // Since accel has to be divided by 2 when calculating position increments,
     // make sure it is even
-    m_accelLimitQx &= ~1L;
+    m_accelLimitPendingQx &= ~1L;
     // Enforce minimum acceleration of 2 step pulses/sample^2
-    if (m_accelLimitQx < 2) {
-        m_accelLimitQx = 2;
+    if (m_accelLimitPendingQx < 2) {
+        m_accelLimitPendingQx = 2;
     }
 }
 
@@ -545,7 +556,7 @@ void StepGenerator::EStopDecelMax(int32_t decelMax) {
     int64_t decelLim64 = ((static_cast<int64_t>(decelMax) << FRACT_BITS) /
                           (SampleRateHz * SampleRateHz));
     // Ensure we didn't overflow 32-bit int
-    m_altDecelLimitQx = min(decelLim64, INT32_MAX);
+    m_altDecelLimitPendingQx = min(decelLim64, INT32_MAX);
     // Since accel has to be divided by 2 when calculating position increments,
     // make sure it is even
     m_altDecelLimitQx &= ~1L;
@@ -569,7 +580,7 @@ void StepGenerator::StepsPerSampleMaxSet(uint32_t maxSteps) {
     // Enforce minimum velocity of 1 step pulse/sample
     velLim64 = max(velLim64, 1);
     // Clip velocity limit if higher than max velocity limit
-    m_velLimitQx = min(velLim64, m_velLimitQx);
+    m_velLimitPendingQx = min(velLim64, m_velLimitQx);
 }
 
 } // ClearCore namespace

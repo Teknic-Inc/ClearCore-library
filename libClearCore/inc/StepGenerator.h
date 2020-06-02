@@ -300,10 +300,31 @@ private:
     int32_t m_velTargetQx;    // Adjusted velocity limit
     int64_t m_posnDecelQx;    // Position to start decelerating
 
+    // Pending velocity and acceleration parameters that shouldn't be applied
+    // until a Move function is called again
+    int32_t m_velLimitPendingQx;     // Velocity limit
+    int32_t m_altVelLimitPendingQx;  // Velocity move Velocity limit
+    int32_t m_accelLimitPendingQx;   // Acceleration limit
+    int32_t m_altDecelLimitPendingQx;// E-Stop Deceleration limit
+
     virtual void OutputDirection() = 0;
     void StepsPerSampleMaxSet(uint32_t maxSteps);
 
     void AltVelMax(int32_t velMax);
+
+    /**
+        \brief Private helper function for Move functions to call that 
+        updates the internal vel/accel limits to those set by the user.
+
+        Used to latch limits so a move followed immediate by a limit change 
+        is not used until the next move
+    **/
+    void UpdatePendingMoveLimits(){
+        m_velLimitQx = m_velLimitPendingQx;
+        m_altVelLimitQx = m_altVelLimitPendingQx;
+        m_accelLimitQx = m_accelLimitPendingQx;
+        m_altDecelLimitQx = m_altDecelLimitPendingQx;
+    }
 };
 
 } // ClearCore namespace
