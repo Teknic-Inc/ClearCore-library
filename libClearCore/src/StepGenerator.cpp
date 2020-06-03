@@ -364,9 +364,9 @@ void StepGenerator::MoveStopAbrupt() {
 
     The function will return true if the move was accepted.
 */
-bool StepGenerator::Move(int32_t dist, int target) {
+bool StepGenerator::Move(int32_t dist, int moveTarget) {
     // Check if the move overwrites a current move and it shouldn't
-    if ((target == NONABSOLUTE_NONIMMEDIATE || target == ABSOLUTE_NONIMMEDIATE) &&
+    if ((moveTarget == NONABSOLUTE_NONIMMEDIATE || moveTarget == ABSOLUTE_NONIMMEDIATE) &&
         !StepsComplete() ) {
         return false;
     }
@@ -382,7 +382,7 @@ bool StepGenerator::Move(int32_t dist, int target) {
     __disable_irq();
     bool lastDir = m_direction;
     bool newDir;
-    if (target == ABSOLUTE_IMMEDIATE || target == ABSOLUTE_NONIMMEDIATE) {
+    if (moveTarget == ABSOLUTE_IMMEDIATE || moveTarget == ABSOLUTE_NONIMMEDIATE) {
         m_stepsCommanded = dist - m_posnAbsolute;
     }
     else {

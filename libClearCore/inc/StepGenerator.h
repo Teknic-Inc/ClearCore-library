@@ -76,20 +76,19 @@ public:
         based on the zero position at program-start.
 
         \code{.cpp}
-        // Perform a 5000 step pulse absolute move
-        ConnectorM0.Move(5000, true);
+        // Perform a 5000 step pulse absolute and immediate move
+        ConnectorM0.Move(5000, StepGenerator::ABSOLUTE_IMMEDIATE);
         \endcode
 
         \param[in] dist The distance of the move in step pulses
-        \param[in] absolute (optional) True if the dist argument is an absolute
-        position. Relative moves will modify the current target position.
-        Default: false.
-        \param[in] immediate (optional) True if the movement should overwrite 
-        a current position movement. Relative moves made during a 
-        velocity move will relative to the current position.
-        Default: true.
+        \param[in] moveTarget (optional) controls absolute and immediate move
+        values using the StepGenerator::MOVE_TARGETS emum. Immediate moves will
+        overwrite a current position movement. Relative moves will modify the 
+        current target position. Relative moves made during a velocity move will 
+        be relative to the current position.
+        Default: StepGenerator::NONABSOLUTE_IMMEDIATE
     **/
-    bool Move(int32_t dist, int target = NONABSOLUTE_IMMEDIATE);
+    bool Move(int32_t dist, int moveTarget = NONABSOLUTE_IMMEDIATE);
 
     /**
         \brief Issues a velocity move at the specified velocity.
