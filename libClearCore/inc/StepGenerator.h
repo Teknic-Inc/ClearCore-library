@@ -62,6 +62,13 @@ public:
     StepGenerator();
 #endif
 
+    enum {
+        ABSOLUTE_IMMEDIATE, // TRUE TRUE
+        ABSOLUTE_NONIMMEDIATE, // TRUE FALSE
+        NONABSOLUTE_IMMEDIATE, // FALSE TRUE     DEFAULT
+        NONABSOLUTE_NONIMMEDIATE, // FALSE FALSE
+    } MOVE_TARGETS;
+
     /**
         \brief Issues a positional move for the specified distance.
         
@@ -82,7 +89,7 @@ public:
         velocity move will relative to the current position.
         Default: true.
     **/
-    bool Move(int32_t dist, bool absolute = false, bool immediate = true);
+    bool Move(int32_t dist, int target = NONABSOLUTE_IMMEDIATE);
 
     /**
         \brief Issues a velocity move at the specified velocity.
