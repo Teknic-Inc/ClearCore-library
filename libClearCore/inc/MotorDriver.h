@@ -770,6 +770,7 @@ protected:
     // HLFB state return
     HlfbStates m_hlfbState;
     bool m_hlfbPwmReadingPending;
+    uint16_t m_hlfbStateChangeCounter;
 
     // Inversion mask of actual enable, direction, and HLFB state
     PolarityInversionsSD m_polarityInversions;
