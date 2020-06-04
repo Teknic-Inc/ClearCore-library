@@ -62,12 +62,11 @@ public:
     StepGenerator();
 #endif
 
-    enum {
-        ABSOLUTE_IMMEDIATE, // TRUE TRUE
-        ABSOLUTE_NONIMMEDIATE, // TRUE FALSE
-        NONABSOLUTE_IMMEDIATE, // FALSE TRUE     DEFAULT
-        NONABSOLUTE_NONIMMEDIATE, // FALSE FALSE
-    } MOVE_TARGETS;
+    typedef enum {
+        MOVE_TARGET_ABSOLUTE,
+        MOVE_TARGET_REL_CUR_POSN,
+        MOVE_TARGET_REL_END_POSN,
+    } MOVE_TARGET;
 
     /**
         \brief Issues a positional move for the specified distance.
@@ -76,19 +75,22 @@ public:
         based on the zero position at program-start.
 
         \code{.cpp}
-        // Perform a 5000 step pulse absolute and immediate move
-        ConnectorM0.Move(5000, StepGenerator::ABSOLUTE_IMMEDIATE);
+        // Perform a 5000 step pulse, absolute, and immediate move
+        ConnectorM0.Move(5000, StepGenerator::MOVE_TARGET_ABSOLUTE, true);
         \endcode
 
         \param[in] dist The distance of the move in step pulses
-        \param[in] moveTarget (optional) controls absolute and immediate move
-        values using the StepGenerator::MOVE_TARGETS emum. Immediate moves will
-        overwrite a current position movement. Relative moves will modify the 
-        current target position. Relative moves made during a velocity move will 
-        be relative to the current position.
-        Default: StepGenerator::NONABSOLUTE_IMMEDIATE
+        \param[in] moveTarget (optional) Specify the type of movement that 
+        should be done. Absolute, relative to the current position, or relative 
+        to the end position of the current move.
+        Default: MOVE_TARGET_REL_END_POSN
+        \param[in] immediate (optional) True if the movement should overwrite
+        a current position movement. Relative moves made during a
+        velocity move will relative to the current position.
+        Default: true.
     **/
-    bool Move(int32_t dist, int moveTarget = NONABSOLUTE_IMMEDIATE);
+    bool Move(int32_t dist, MOVE_TARGET moveTarget = MOVE_TARGET_REL_END_POSN, 
+                bool immediate = true);
 
     /**
         \brief Issues a velocity move at the specified velocity.

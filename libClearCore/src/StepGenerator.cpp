@@ -364,10 +364,9 @@ void StepGenerator::MoveStopAbrupt() {
 
     The function will return true if the move was accepted.
 */
-bool StepGenerator::Move(int32_t dist, int moveTarget) {
+bool StepGenerator::Move(int32_t dist, MOVE_TARGET moveTarget, bool immediate) {
     // Check if the move overwrites a current move and it shouldn't
-    if ((moveTarget == NONABSOLUTE_NONIMMEDIATE || moveTarget == ABSOLUTE_NONIMMEDIATE) &&
-        !StepsComplete() ) {
+    if (!immediate && !StepsComplete() ) {
         return false;
     }
 
@@ -382,29 +381,37 @@ bool StepGenerator::Move(int32_t dist, int moveTarget) {
     __disable_irq();
     bool lastDir = m_direction;
     bool newDir;
-    if (moveTarget == ABSOLUTE_IMMEDIATE || moveTarget == ABSOLUTE_NONIMMEDIATE) {
-        m_stepsCommanded = dist - m_posnAbsolute;
-    }
-    else {
-        //m_stepsCommanded += (newDir ? -dist : dist);
-        // Since the steps scale is relative to start of move to prevent 
-        // overflow, the scale shifts by the number of steps taken
-        // So account for this, the current steps should be taken off of the
-        // previous commanded amount, then the new command should be added
-        // The steps send are in the direction of the commanded steps, subtract
-        // that first. Steps taken is always less than commanded, result (+)
-        m_stepsCommanded -= m_stepsSent;
-        // Convert magnitude + direction format to signed int
-        m_stepsCommanded = m_direction ? -m_stepsCommanded : m_stepsCommanded ;
-        // Now stepsCommanded and distance are signed and in the global 
-        // direction. Add them
-        m_stepsCommanded += dist;
-        // Steps commanded and dir will be calculated later.
+    switch (moveTarget) {
+        case MOVE_TARGET_ABSOLUTE:
+            m_stepsCommanded = dist - m_posnAbsolute;   
+            break;
+        case MOVE_TARGET_REL_CUR_POSN:
+            m_stepsCommanded = dist;
+            break;
+        case MOVE_TARGET_REL_END_POSN:
+        default:
+            // relative end posn
+            // m_stepsCommanded += (newDir ? -dist : dist);
+            // Since the steps scale is relative to start of move to prevent 
+            // overflow, the scale shifts by the number of steps taken
+            // So account for this, the current steps should be taken off of the
+            // previous commanded amount, then the new command should be added
+            // The steps send are in the direction of the commanded steps, subtract
+            // that first. Steps taken is always less than commanded, result (+)
+            m_stepsCommanded -= m_stepsSent;
+            // Convert magnitude + direction format to signed int
+            m_stepsCommanded = m_direction ? -m_stepsCommanded : m_stepsCommanded ;
+            // Now stepsCommanded and distance are signed and in the global 
+            // direction. Add them
+            m_stepsCommanded += dist;
+            // Steps commanded and dir will be calculated later.
+            break;
     }
 
     // Zero out the steps and integer portion of current position to
     // reduce chance of overflow
     m_stepsSent = 0;
+
     // Zero the integer portion of the current position. We want to keep
     // partial steps so movement is smooth. 
     m_posnCurrentQx = m_posnCurrentQx & ~(UINT64_MAX << FRACT_BITS);
@@ -449,12 +456,9 @@ bool StepGenerator::Move(int32_t dist, int moveTarget) {
     UpdatePendingMoveLimits();
     m_moveState = MS_START;
 
-
-
     __enable_irq();
     return true;
 }
-
 
 /*
     This function commands a velocity move.
