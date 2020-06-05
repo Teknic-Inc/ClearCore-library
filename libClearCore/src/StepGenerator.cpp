@@ -317,11 +317,8 @@ bool StepGenerator::Move(int32_t dist, bool absolute) {
     // Block the interrupt while changing the command
     __disable_irq();
     if (absolute) {
-        // Invert the absolute position so it's easier to use and think about
-        // in code
-        int32_t posn = -m_posnAbsolute;
-        m_direction = (dist < posn);
-        m_stepsCommanded = m_direction ? posn - dist : dist - posn;
+        m_direction = (dist < m_posnAbsolute);
+        m_stepsCommanded = m_direction ? m_posnAbsolute - dist : dist - m_posnAbsolute;
     }
     else {
         m_direction = (dist < 0);
