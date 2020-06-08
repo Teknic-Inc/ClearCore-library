@@ -31,10 +31,14 @@
 *.out
 *.app
 
-libClearCore/UnitTests/
+# This is the one library that we need
+!UnitTests/lib/libCppUTest.a
+
+
 libClearCore/Doc/DoxygenOut/html/
 jlink.*
 *.componentinfo.xml
 .vs/
 Debug/
 Release/
+Test/
