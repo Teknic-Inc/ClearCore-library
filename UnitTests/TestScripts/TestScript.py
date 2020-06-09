@@ -225,10 +225,10 @@ def main():
     ret = copyTestSketch()
     if not ret:
         exit(1)
-    buildProject()
+    ret = buildProject()
     if not ret:
         exit(2)
-    flashClearCore()
+    ret = flashClearCore()
     if not ret:
         exit(3)
     
