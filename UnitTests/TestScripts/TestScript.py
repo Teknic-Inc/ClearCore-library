@@ -18,7 +18,7 @@ from pathlib import Path
 import shutil
 
 # Important Directory Locations
-testScriptLoc = os.path.join(os.getcwd(), "./")
+testScriptLoc = os.path.join(os.path.realpath(__file__), "../")
 testLoc = os.path.join(testScriptLoc, "../")
 testSketchesLoc = os.path.join(testLoc, "TestSketches")
 teknicLoc = os.path.join(testLoc, "../")
@@ -36,6 +36,14 @@ binaryName = "ClearCoreArduino.bin"
 
 uploadPort = 'COM29'
 baudRate = 115200
+
+
+# print( "testScriptLoc  " + os.path.abspath(testScriptLoc))
+# print( "testLoc  " + os.path.abspath(testLoc))
+# print( "testSketchesLoc  " + os.path.abspath(testSketchesLoc))
+# print( "teknicLoc  " + os.path.abspath(teknicLoc))
+# print( "libClearCoreLoc  " + os.path.abspath(libClearCoreLoc))
+# print( "clearCoreArduinoLoc  " + os.path.abspath(clearCoreArduinoLoc))
 
 
 def execute(command):
@@ -164,8 +172,9 @@ def copyTestSketch(sketchName="UnitTestRunner.cpp"):
     dstFile = os.path.join(clearCoreArduinoLoc, "TestSketch.cpp")
     print("Removing Current Test Sketch " + os.path.abspath(dstFile))
     try: 
-        os.remove(dstFile) 
+        os.remove(os.path.abspath(dstFile)) 
     except OSError as error: 
+        print(error)
         print("File " + os.path.abspath(dstFile) + " can not be removed") 
     print("Copying " + os.path.abspath(srcFile) + " to " + os.path.abspath(dstFile))
     try:
