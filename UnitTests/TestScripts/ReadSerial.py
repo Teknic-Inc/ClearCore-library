@@ -8,15 +8,67 @@ from datetime import datetime
 import argparse
 # Timing used for timeouts
 import time
+# To call external programs
+import subprocess
+# For OS Fns
+import os
+# Path generation
+from pathlib import Path
+# For file manipulation
+import shutil
 
+# Important Directory Locations
+testScriptLoc = os.path.join(os.getcwd(), "./")
+testLoc = os.path.join(testScriptLoc, "../")
+testSketchesLoc = os.path.join(testLoc, "TestSketches")
+teknicLoc = os.path.join(testLoc, "../")
+libClearCoreLoc = os.path.join(teknicLoc, "libClearCore")
+clearCoreArduinoLoc = os.path.join(teknicLoc, "../")
+
+flashClearCoreSciptLoc = clearCoreArduinoLoc
+flashClearCoreScript = "flash_clearcore.cmd"
+
+atmelConfigType = "Test"
+atmelOutFile = "AtmelOutput.txt"
+
+binaryLoc = os.path.join(clearCoreArduinoLoc, atmelConfigType)
+binaryName = "ClearCoreArduino.bin"
 
 uploadPort = 'COM29'
 baudRate = 115200
 
 
+def execute(command):
+    print(' '.join(command))
+    process = subprocess.Popen(command, 
+                               shell=False, 
+                               stdout=subprocess.PIPE, 
+                               stderr=subprocess.STDOUT)
+    output = "".encode('ascii')
+
+    # Poll process for new output until finished
+    for line in iter(process.stdout.readline, b''):
+        print(line.decode().strip('\n'), end=None)
+        output += line
+        
+    process.wait()
+    exitCode = process.returncode
+
+    if exitCode == 0:
+        return output
+    else:
+        raise Exception(command, exitCode, output)
+
+def find(pattern, path):
+    result = []
+    for root, dirs, files in os.walk(path):
+        for name in files:
+            if fnmatch.fnmatch(name, pattern):
+                result.append(os.path.join(root, name))
+    return result
+
 # Batch Command to retrive the com port
 #for /f "usebackq" %%B in (`wmic path Win32_SerialPort Where "PNPDeviceID LIKE 'USB\\VID_2890&PID_8022%%'" Get DeviceID 2^> nul ^| FINDSTR "COM"`) do echo %%B
-
 def readSerialData(comPort):
     didError = False
     
@@ -39,7 +91,7 @@ def readSerialData(comPort):
             connectionAttempts = connectionAttempts + 1
             if connectionAttemps > 10:
                 print("Could not open " + comPort)
-                return 2
+                return 8
             time.sleep(1)
             
     
@@ -106,7 +158,59 @@ def readSerialData(comPort):
     else:
         return 0
 
+def copyTestSketch(sketchName="UnitTestRunner.cpp"):
+    print("Copying Test Sketch")
+    srcFile = os.path.join(testSketchesLoc, sketchName)
+    dstFile = os.path.join(clearCoreArduinoLoc, "TestSketch.cpp")
+    print("Removing Current Test Sketch " + os.path.abspath(dstFile))
+    try: 
+        os.remove(dstFile) 
+    except OSError as error: 
+        print("File " + os.path.abspath(dstFile) + " can not be removed") 
+    print("Copying " + os.path.abspath(srcFile) + " to " + os.path.abspath(dstFile))
+    try:
+        shutil.copy(os.path.abspath(srcFile), os.path.abspath(dstFile))
+    except:
+        print("Could Not copy " + os.path.abspath(srcFile) + " to " + os.path.abspath(dstFile))
+        return False
+    return True
+    
+    
+def flashClearCore():
+    print("Flashing binary to ClearCore")
+    #cd ClearCore_Arduino/
+    #flash_clearcore.cmd Test/ClearCoreArduino.bin
+    flashCmd = [ os.path.join(flashClearCoreSciptLoc, flashClearCoreScript),
+                os.path.abspath(os.path.join(binaryLoc, binaryName)) ]
+    
+    try:
+        execute(flashCmd)
+    except subprocess.CalledProcessError as e:
+        print("Flashing ClearCore Failed")
+        sys.exit(97)
+    except:
+        print("Flashing ClearCore Failed")
+    return True
+
+def buildProject():
+    print("Building Atmel Project")
+    #cd ClearCore_Arduino/
+    #atmelstudio.exe ClearCore.atsln /rebuild Test /out AtmelOutput.txt || ( type AtmelOutput.txt & EXIT /B 1 )
+    buildCmd = [ "atmelstudio.exe",
+                os.path.abspath(os.path.join(clearCoreArduinoLoc, "ClearCore.atsln")),
+                "/rebuild", atmelConfigType, "/out", atmelOutFile]
+    
+    try:
+        execute(buildCmd)
+    except subprocess.CalledProcessError as e:
+        print("Building ClearCore Failed")
+        sys.exit(98)
+    except:
+        print("Building ClearCore Failed")
+    return True
+
 def main():
+
     parser = argparse.ArgumentParser(description='Read Test Data from ClearCore')
     
     parser.add_argument('--port', '-p', nargs='?', type=str, default=uploadPort,
@@ -117,6 +221,17 @@ def main():
     args = parser.parse_args()
     
     baudRate = args.baud
+    
+    ret = copyTestSketch()
+    if not ret:
+        exit(1)
+    buildProject()
+    if not ret:
+        exit(2)
+    flashClearCore()
+    if not ret:
+        exit(3)
+    
     ret = readSerialData(args.port)
     if ret != 0:
         print("Tests failed!")
