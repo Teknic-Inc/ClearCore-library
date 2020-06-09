@@ -94,10 +94,13 @@ def readSerialData(comPort):
     while not ser.is_open:
         try:
             ser.open()
+        except PermissionError as error:
+            print("Access to port " + comPort + " is denided")
+            return 9
         except:
             print("Attempt " + str(connectionAttempts) + " failed to connect to " + comPort)
             connectionAttempts = connectionAttempts + 1
-            if connectionAttemps > 10:
+            if connectionAttempts > 10:
                 print("Could not open " + comPort)
                 return 8
             time.sleep(1)
