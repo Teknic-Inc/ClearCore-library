@@ -9,28 +9,40 @@ import argparse
 # Timing used for timeouts
 import time
 
-LOG_FILE_NAME = "ClearCore_TestLog_%Y%m%d-%H%M%S.txt"
-INPUT_FILE_NAME = "Dummy CC Test Output.txt"
-
-TEST_TIMEOUT_SEC = 600
 
 uploadPort = 'COM29'
+baudRate = 115200
+
 
 # Batch Command to retrive the com port
 #for /f "usebackq" %%B in (`wmic path Win32_SerialPort Where "PNPDeviceID LIKE 'USB\\VID_2890&PID_8022%%'" Get DeviceID 2^> nul ^| FINDSTR "COM"`) do echo %%B
 
-def readData(comPort):
+def readSerialData(comPort):
     didError = False
     
     print('Attempting to connect to Serial Port ' + comPort)
     # TODO: Check for port availability and attempt re-tries
-    ser = serial.Serial(
-        port=comPort,\
-        baudrate=115200,\
-        parity=serial.PARITY_NONE,\
-        stopbits=serial.STOPBITS_ONE,\
-        bytesize=serial.EIGHTBITS,\
-            timeout=0)
+    ser = serial.Serial()
+    ser.baudrate = baudRate
+    ser.parity = serial.PARITY_NONE
+    ser.stopbits = serial.STOPBITS_ONE
+    ser.bytesize = bytesize=serial.EIGHTBITS
+    ser.timeout = 1000
+    ser.port=comPort
+    
+    connectionAttempts = 1
+    while not ser.is_open:
+        try:
+            ser.open()
+        except:
+            print("Attempt " + str(connectionAttempts) + " failed to connect to " + comPort)
+            connectionAttempts = connectionAttempts + 1
+            if connectionAttemps > 10:
+                print("Could not open " + comPort)
+                return 2
+            time.sleep(1)
+            
+    
 
     print("Serial Sniffer Connected to Port " + ser.portstr)
     count=1
@@ -60,7 +72,6 @@ def readData(comPort):
                 continue
             line = line + c.decode("utf-8")
             #print(line)
-        #line = str(line)
         print('ClearCore:' + line)
     
         if passTestReg.match(line):
@@ -73,7 +84,7 @@ def readData(comPort):
             #print('{:3d}'.format(count) + " Failed")
             didError = True
         elif finishReg.search(line):
-            testRunning = false
+            testRunning = False
         else:
             testDetails = True
             #print('{:3d}'.format(count) + " Unknown")
@@ -88,7 +99,8 @@ def readData(comPort):
             testDetailsText = ""
         testDetailsPrev = testDetails
         count = count+1
-
+    
+    ser.close()
     if didError:
         return 7
     else:
@@ -99,13 +111,15 @@ def main():
     
     parser.add_argument('--port', '-p', nargs='?', type=str, default=uploadPort,
                         help='Specify port that ClearCore is on')
+    parser.add_argument('--baud', nargs='?', type=int, default=115200,
+                        help='Specify baud rate')
 
     args = parser.parse_args()
     
-
-    ret = readData(uploadPort)
+    baudRate = args.baud
+    ret = readSerialData(args.port)
     if ret != 0:
-        print("Tests failed!!!!!!")
+        print("Tests failed!")
     exit(ret)
 
 if __name__ == "__main__":
