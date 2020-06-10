@@ -71,11 +71,17 @@ public:
         \brief Issues a positional move for the specified distance.
         
         \note When making absolute moves, ClearCore tracks the current position
-        based on the zero position at program-start.
+        based on the zero position at program-start. If there is a move in
+        progress when a new Move is issued, the target position will be adjusted
+        according to the moveTarget parameter, the new acceleration and velocity
+        limits will be applied, and the new move is merged seamlessly with the 
+        previous motion. If you want to make sure that the previous move fully 
+        completes without being merged with a new command, wait for StepsComplete
+        to return true.
 
         \code{.cpp}
         // Interrupt any on-going move and move to the absolute position 5000
-        ConnectorM0.Move(5000, StepGenerator::MOVE_TARGET_ABSOLUTE, true);
+        ConnectorM0.Move(5000, StepGenerator::MOVE_TARGET_ABSOLUTE);
         \endcode
 
         \param[in] dist The distance of the move in step pulses
@@ -83,13 +89,8 @@ public:
         should be done. Absolute or relative to the end position of the current 
         move. Invalid will result in move relative to the end position.
         Default: MOVE_TARGET_REL_END_POSN
-        \param[in] immediate (optional) True if the movement should overwrite
-        a current position movement. Relative moves made during a
-        velocity move will relative to the current position.
-        Default: true.
     **/
-    bool Move(int32_t dist, MOVE_TARGET moveTarget = MOVE_TARGET_REL_END_POSN, 
-                bool immediate = true);
+    bool Move(int32_t dist, MOVE_TARGET moveTarget = MOVE_TARGET_REL_END_POSN);
 
     /**
         \brief Issues a velocity move at the specified velocity.
