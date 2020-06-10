@@ -34,13 +34,21 @@ jobs:
         run: |
             set gitbranch=${{github.ref}}
             set gitbranch=%gitbranch:~11,100%
+            echo "TODO: Set fallbackBranch to develop"
             set fallbackBranch=feature/UnitTests
-            
+            echo "Working Branch: %gitbranch%"
+            echo "Fallback Branch: %fallbackBranch%"
             rmdir /S /Q ClearCore_Arduino
-            git clone -b "%gitbranch%" https://git-server.teknic.com/CustomerPackages/ClearCore_Arduino.git || (git clone -b "%fallbackBranch%" https://git-server.teknic.com/CustomerPackages/ClearCore_Arduino.git)
+            git clone https://git-server.teknic.com/CustomerPackages/ClearCore_Arduino.git -b "%gitbranch%" --single-branch || (git clone https://git-server.teknic.com/CustomerPackages/ClearCore_Arduino.git -b "%fallbackBranch%" --single-branch)
             cd ClearCore_Arduino/
+            echo "ClearCore_Arduino Branch:"
+            git branch
             rmdir /S /Q Teknic
-            git clone -b "%gitbranch%" https://github.com/Teknic-Inc/ClearCore-library.git Teknic || (git clone -b "%fallbackBranch%" https://github.com/Teknic-Inc/ClearCore-library.git Teknic)
+            git clone https://github.com/Teknic-Inc/ClearCore-library.git -b "%gitbranch%" --single-branch Teknic || (git clone https://github.com/Teknic-Inc/ClearCore-library.git -b "%fallbackBranch%" --single-branch Teknic)
+            cd Teknic
+            echo "ClearCore Library Branch:"
+            git branch
+            cd ../
             mkdir variants\clearcore\Third Party
             git clone -b master https://git-server.teknic.com/CustomerPackages/same53.git "variants\clearcore\Third Party\same53"
             
