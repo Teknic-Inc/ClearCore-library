@@ -47,7 +47,7 @@ if "%~1"=="" (
     %waitFiveSeconds%
     exit /b 1
 )
-if not exist %~f1 (
+if not exist "%~f1" (
     echo Error: The supplied filepath "%~f1" does not exist! Please provide a valid path to a binary file.
     %waitFiveSeconds%
     exit /b 2
@@ -69,7 +69,7 @@ rem ------------
 
 set "bossacPath=%~dp0\bossac\bossac.exe"
 
-if not exist %bossacPath% (
+if not exist "%bossacPath%" (
     echo Error: Could not find bossac uploader!
     %waitFiveSeconds%
     exit /b 4

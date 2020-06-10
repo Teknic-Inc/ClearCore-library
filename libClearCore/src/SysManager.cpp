@@ -38,7 +38,6 @@
 #include "DigitalInOutAnalogOut.h"
 #include "DigitalInOutHBridge.h"
 #include "DmaManager.h"
-#include "EncoderInput.h"
 #include "EthernetManager.h"
 #include "HardwareMapping.h"
 #include "InputManager.h"
@@ -94,7 +93,6 @@ extern CcioBoardManager &CcioMgr;
 extern InputManager &InputMgr;
 extern MotorManager &MotorMgr;
 extern NvmManager &NvmMgr;
-extern EncoderInput &EncoderIn;
 extern StatusManager &StatusMgr;
 extern UsbManager &UsbMgr;
 extern SysTiming &TimingMgr;
@@ -259,7 +257,6 @@ void SysManager::Initialize() {
     AdcMgr.Initialize();
     CcioMgr.Initialize();
     UsbMgr.Initialize();
-    EncoderIn.Initialize();
 
     // Configure external interrupt controller
     SET_CLOCK_SOURCE(EIC_GCLK_ID, 0);
@@ -329,7 +326,6 @@ void SysManager::UpdateFastImpl() {
     }
 
     InputMgr.UpdateEnd();
-    EncoderIn.Update();
 
     // Update subsystems in the background
     ShiftReg.Update();
