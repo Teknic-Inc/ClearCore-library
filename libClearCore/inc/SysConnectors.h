@@ -76,14 +76,14 @@ typedef enum {
     CLEARCORE_PIN_USB,  ///< [20] USB ClearCore::SerialUsb Connector
     CLEARCORE_PIN_MAX,  ///< [21] Count of Connectors on the ClearCore board
     // Motor inputs
-    CLEARCORE_PIN_INA_M0,   ///< [22] M-0 ClearCore::MotorDriver InA
-    CLEARCORE_PIN_INA_M1,   ///< [23] M-1 ClearCore::MotorDriver InA
-    CLEARCORE_PIN_INA_M2,   ///< [24] M-2 ClearCore::MotorDriver InA
-    CLEARCORE_PIN_INA_M3,   ///< [25] M-3 ClearCore::MotorDriver InA
-    CLEARCORE_PIN_INB_M0,   ///< [26] M-0 ClearCore::MotorDriver InB
-    CLEARCORE_PIN_INB_M1,   ///< [27] M-1 ClearCore::MotorDriver InB
-    CLEARCORE_PIN_INB_M2,   ///< [28] M-2 ClearCore::MotorDriver InB
-    CLEARCORE_PIN_INB_M3,   ///< [29] M-3 ClearCore::MotorDriver InB
+    CLEARCORE_PIN_M0_INA,   ///< [22] M-0 ClearCore::MotorDriver InA
+    CLEARCORE_PIN_M1_INA,   ///< [23] M-1 ClearCore::MotorDriver InA
+    CLEARCORE_PIN_M2_INA,   ///< [24] M-2 ClearCore::MotorDriver InA
+    CLEARCORE_PIN_M3_INA,   ///< [25] M-3 ClearCore::MotorDriver InA
+    CLEARCORE_PIN_M0_INB,   ///< [26] M-0 ClearCore::MotorDriver InB
+    CLEARCORE_PIN_M1_INB,   ///< [27] M-1 ClearCore::MotorDriver InB
+    CLEARCORE_PIN_M2_INB,   ///< [28] M-2 ClearCore::MotorDriver InB
+    CLEARCORE_PIN_M3_INB,   ///< [29] M-3 ClearCore::MotorDriver InB
     // CCIO-8 Pins
     CLEARCORE_PIN_CCIO_BASE = 64,///< [64] Base index of CCIO-8 connectors
     CLEARCORE_PIN_CCIOA0 = CLEARCORE_PIN_CCIO_BASE, ///< CCIO-8 board 1, connector 0
