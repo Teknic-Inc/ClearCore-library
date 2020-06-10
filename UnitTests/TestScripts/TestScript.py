@@ -81,7 +81,6 @@ def readSerialData(comPort):
     didError = False
     
     print('Attempting to connect to Serial Port ' + comPort)
-    # TODO: Check for port availability and attempt re-tries
     ser = serial.Serial()
     ser.baudrate = baudRate
     ser.parity = serial.PARITY_NONE
@@ -114,7 +113,8 @@ def readSerialData(comPort):
     passTestReg =  re.compile('(?i)(TEST)\(([A-Za-z0-9]+), ([A-Za-z0-9]+)(\) - )([0-9]+)( ms)')
     errorReg = re.compile('(?i)error')
     failReg = re.compile('(?i)fail')
-    finishReg = re.compile('(?i)Unit tests Complete')
+    finishReg = re.compile('(?i)tests Complete')
+    finishReg2 = re.compile('(?i)Tests Finished')
 
     testDetailsPrev = False
     testDetails = False
@@ -146,7 +146,7 @@ def readSerialData(comPort):
         elif errorReg.search(line) or failReg.search(line):
             #print('{:3d}'.format(count) + " Failed")
             didError = True
-        elif finishReg.search(line):
+        elif finishReg.search(line) or finishReg2.search(line):
             testRunning = False
         else:
             testDetails = True
@@ -187,6 +187,14 @@ def copyTestSketch(sketchName="UnitTestRunner.cpp"):
         return False
     return True
     
+def findTestSketches():
+    files = []
+    for file in os.listdir(testSketchesLoc):
+        if file.endswith(".cpp"):
+            #files.append(os.path.join(os.path.abspath(testSketchesLoc), file))
+            files.append(file)
+    print(files)
+    return files
     
 def flashClearCore():
     print("Flashing binary to ClearCore")
@@ -216,9 +224,11 @@ def buildProject():
         execute(buildCmd)
     except subprocess.CalledProcessError as e:
         print("Building ClearCore Failed")
-        sys.exit(98)
+        print(e)
+        exit(98)
     except:
         print("Building ClearCore Failed")
+        exit(98)
     return True
 
 def main():
@@ -234,20 +244,25 @@ def main():
     
     baudRate = args.baud
     
-    ret = copyTestSketch()
-    if not ret:
-        exit(1)
-    ret = buildProject()
-    if not ret:
-        exit(2)
-    ret = flashClearCore()
-    if not ret:
-        exit(3)
-    
-    ret = readSerialData(args.port)
-    if ret != 0:
-        print("Tests failed!")
-    exit(ret)
+    for testSketch in findTestSketches():
+        print("Running Test Sketch " + testSketch)
+        #ret = copyTestSketch(testSketch)
+        ret = copyTestSketch(testSketch)
+        if not ret:
+            exit(1)
+        ret = buildProject()
+        if not ret:
+            exit(2)
+        ret = flashClearCore()
+        if not ret:
+            exit(3)
+        
+        ret = readSerialData(args.port)
+        if ret != 0:
+            print("Tests failed!")
+            exit(ret)
+            
+    exit(0)
 
 if __name__ == "__main__":
     main()
