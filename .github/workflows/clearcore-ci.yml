@@ -23,23 +23,23 @@ jobs:
             echo "The event name is ${{ github.ref }}"
             echo "$GITHUB_CONTEXT"
             set mystr=$GITHUB_CONTEXT$.github.ref
-            echo "$mystr"
+            echo $mystr$
     
       - name: Get Env
         run: |
             SET
         
-      - name: Repository Setup
-        run: |
-            rmdir /S /Q ClearCore_Arduino
-            git clone -b feature/UnitTests https://git-server.teknic.com/CustomerPackages/ClearCore_Arduino.git
-            cd ClearCore_Arduino/
-            rmdir /S /Q Teknic
-            git clone -b feature/UnitTests https://github.com/Teknic-Inc/ClearCore-library.git Teknic
-            mkdir variants\clearcore\Third Party
-            git clone -b master https://git-server.teknic.com/CustomerPackages/same53.git "variants\clearcore\Third Party\same53"
+      # - name: Repository Setup
+        # run: |
+            # rmdir /S /Q ClearCore_Arduino
+            # git clone -b feature/UnitTests https://git-server.teknic.com/CustomerPackages/ClearCore_Arduino.git
+            # cd ClearCore_Arduino/
+            # rmdir /S /Q Teknic
+            # git clone -b feature/UnitTests https://github.com/Teknic-Inc/ClearCore-library.git Teknic
+            # mkdir variants\clearcore\Third Party
+            # git clone -b master https://git-server.teknic.com/CustomerPackages/same53.git "variants\clearcore\Third Party\same53"
             
-      - name: Test Script
-        run: | 
-            cd ClearCore_Arduino/
-            Teknic\UnitTests\TestScripts\TestScript.py
+      # - name: Test Script
+        # run: | 
+            # cd ClearCore_Arduino/
+            # Teknic\UnitTests\TestScripts\TestScript.py
