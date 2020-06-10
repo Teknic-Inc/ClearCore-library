@@ -1,0 +1,43 @@
+name: C/C++ CI
+
+on:
+  push
+
+#https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions
+
+
+jobs:
+  
+  build:
+
+    runs-on: [self-hosted, windows]
+    
+    defaults:
+      run:
+        shell: cmd
+
+    steps:
+    
+      - name: Some Gitinfo
+        run: |
+            echo "The event name is ${{ github.ref }}"
+            echo "$GITHUB_CONTEXT"
+    
+      - name: Get Env
+        run: |
+            SET
+        
+      - name: Repository Setup
+        run: |
+            rmdir /S /Q ClearCore_Arduino
+            git clone -b feature/UnitTests https://git-server.teknic.com/CustomerPackages/ClearCore_Arduino.git
+            cd ClearCore_Arduino/
+            rmdir /S /Q Teknic
+            git clone -b feature/UnitTests https://github.com/Teknic-Inc/ClearCore-library.git Teknic
+            mkdir variants\clearcore\Third Party
+            git clone -b master https://git-server.teknic.com/CustomerPackages/same53.git "variants\clearcore\Third Party\same53"
+            
+      - name: Test Script
+        run: | 
+            cd ClearCore_Arduino/
+            Teknic\UnitTests\TestScripts\TestScript.py
