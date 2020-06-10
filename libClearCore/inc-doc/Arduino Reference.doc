@@ -27,6 +27,21 @@ This section serves as a reference guide for the ClearCore Arduino wrapper funct
 <tr><td>#ConnectorCOM1 <td><center>Serial1</center>
 </table>
 
+<table>
+<caption>ClearCore motor input aliases</caption>
+<tr><th>Name<th>Arduino Alias
+<tr><td> <td><center>IO0</center>
+<tr><td>M-0 Input A <td><center>M0INA</center>
+<tr><td>M-0 Input B <td><center>M0INB</center>
+<tr><td>M-1 Input A <td><center>M1INA</center>
+<tr><td>M-1 Input B <td><center>M1INB</center>
+<tr><td>M-2 Input A <td><center>M2INA</center>
+<tr><td>M-2 Input B <td><center>M2INB</center>
+<tr><td>M-3 Input A <td><center>M3INA</center>
+<tr><td>M-3 Input B <td><center>M3INB</center>
+</table>
+
+
 <h2> Deviations from standard Arduino </h2>
     - The pin mode INPUT_PULLUP has no functional difference from INPUT. The two may be used interchangeably.
     - analogRead() has an extra optional parameter to specify the desired units of the 
@@ -78,7 +93,7 @@ This section serves as a reference guide for the ClearCore Arduino wrapper funct
     - <a href="https://www.arduino.cc/reference/en/language/functions/digital-io/digitalread/" >Arduino.cc Reference</a>
     
 <h3> digitalWrite(pin, value) </h3>
-    - Valid pins: IO0, IO1, IO2, IO3, IO4, IO5
+    - Valid pins: IO0, IO1, IO2, IO3, IO4, IO5, M0INA, M0INB, M1INA, M1INB, M2INA, M2INB, M3INA, M3INB
     - Write a HIGH or a LOW value to a digital pin.
     - <a href="https://www.arduino.cc/reference/en/language/functions/digital-io/digitalwrite/" >Arduino.cc Reference</a>
     
