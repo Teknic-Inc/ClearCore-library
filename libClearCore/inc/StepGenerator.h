@@ -80,8 +80,8 @@ public:
 
         \param[in] dist The distance of the move in step pulses
         \param[in] moveTarget (optional) Specify the type of movement that 
-        should be done. Absolute, relative to the current position, or relative 
-        to the end position of the current move.
+        should be done. Absolute or relative to the end position of the current 
+        move.
         Default: MOVE_TARGET_REL_END_POSN
         \param[in] immediate (optional) True if the movement should overwrite
         a current position movement. Relative moves made during a
