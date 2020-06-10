@@ -17,18 +17,6 @@ jobs:
         shell: cmd
 
     steps:
-    
-      - name: Some Gitinfo
-        run: |
-            echo "The event name is ${{ github.ref }}"
-            set mystr=${{github.ref}}
-            echo %mystr%
-            set mystr=%mystr:~11,100%
-            echo %mystr%
-    
-      - name: Get Env
-        run: |
-            SET
         
       - name: Repository Setup
         run: |
@@ -52,7 +40,7 @@ jobs:
             mkdir variants\clearcore\Third Party
             git clone -b master https://git-server.teknic.com/CustomerPackages/same53.git "variants\clearcore\Third Party\same53"
             
-      # - name: Test Script
-        # run: | 
-            # cd ClearCore_Arduino/
-            # Teknic\UnitTests\TestScripts\TestScript.py
+      - name: Test Script
+        run: | 
+            cd ClearCore_Arduino/
+            Teknic\UnitTests\TestScripts\TestScript.py
