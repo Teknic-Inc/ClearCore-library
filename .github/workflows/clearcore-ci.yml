@@ -22,7 +22,7 @@ jobs:
         run: |
             echo "The event name is ${{ github.ref }}"
             echo "$GITHUB_CONTEXT"
-            set mystr=${github.ref}
+            set mystr=${{github.ref}}
             echo %mystr%
     
       - name: Get Env
