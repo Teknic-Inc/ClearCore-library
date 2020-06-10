@@ -74,14 +74,14 @@ public:
         based on the zero position at program-start.
 
         \code{.cpp}
-        // Perform a 5000 step pulse, absolute, and immediate move
+        // Interrupt any on-going move and move to the absolute position 5000
         ConnectorM0.Move(5000, StepGenerator::MOVE_TARGET_ABSOLUTE, true);
         \endcode
 
         \param[in] dist The distance of the move in step pulses
         \param[in] moveTarget (optional) Specify the type of movement that 
         should be done. Absolute or relative to the end position of the current 
-        move.
+        move. Invalid will result in move relative to the end position.
         Default: MOVE_TARGET_REL_END_POSN
         \param[in] immediate (optional) True if the movement should overwrite
         a current position movement. Relative moves made during a
