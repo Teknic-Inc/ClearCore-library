@@ -854,6 +854,8 @@ void AssertVelocity(int32_t targetVel){
       Serial.print("  Veloctity Test Finished:");
       Serial.println(testNum);
     testNum++;
+#else
+    Serial.println("Motion Tests Finished");
 #endif // Big Block Comment
 }
 
