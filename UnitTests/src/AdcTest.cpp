@@ -86,16 +86,20 @@ TEST(AdcTest, ReadingDelayAfterDigital) {
 
 
 #define ADC_DITHER_READINGS    100
-#define ADC_DITHER_MARGIN      0x0030
+#define ADC_DITHER_MARGIN      0x0090
 TEST(AdcTest, AdcDither) {
     uint16_t adcReadings[ADC_DITHER_READINGS] = {0};
     uint8_t iReading = 0;
+    uint16_t dither;
     ConnectorA9.Mode(Connector::ConnectorModes::INPUT_ANALOG);
     for (iReading = 0; iReading < ADC_DITHER_READINGS; iReading++) {
         adcReadings[iReading] = AdcMgr.ConvertedResult(AdcManager::ADC_AIN09);
         lastTick = tickCnt;
         // Test that the ADC reading dither is within reason
-        if (labs(adcReadings[iReading] - adcReadings[0]) > ADC_DITHER_MARGIN) {
+        dither = labs(adcReadings[iReading] - adcReadings[0]);
+        if (dither > ADC_DITHER_MARGIN) {
+            // We already failed, print out the values so they can be useful
+            LONGS_EQUAL(ADC_DITHER_MARGIN, dither);
             break;
         }
         while (lastTick == tickCnt) {
@@ -103,7 +107,7 @@ TEST(AdcTest, AdcDither) {
         }
     }
     // Check that we compared all of the readings that we wanted to
-    LONGS_EQUAL(iReading, ADC_DITHER_READINGS);
+    LONGS_EQUAL(ADC_DITHER_READINGS, iReading);
 }
 
 TEST(AdcTest, FilterTc100) {
