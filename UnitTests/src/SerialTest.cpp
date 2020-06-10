@@ -72,7 +72,7 @@ TEST(SerialTest, ValidSettings) {
     CHECK_FALSE(ConnectorCOM0.Parity(SerialBase::Parities::PARITY_O));
     CHECK_FALSE(ConnectorCOM0.Parity(SerialBase::Parities::PARITY_N));
 
-    //CHECK_TRUE(ConnectorCOM0.PortMode(SerialBase::USART));
+    CHECK_TRUE(ConnectorCOM0.PortMode(SerialBase::UART));
     CHECK_FALSE(ConnectorCOM0.CharSize(0));     // Valid settings are 5,6,7,8,9
     CHECK_FALSE(ConnectorCOM0.CharSize(1));
     CHECK_FALSE(ConnectorCOM0.CharSize(4));

@@ -153,7 +153,7 @@ def readSerialData(comPort):
         elif errorReg.search(line) or failReg.search(line):
             #print('{:3d}'.format(count) + " Failed")
             didError = True
-            testRunning = False
+            #testRunning = False
         elif finishReg.search(line) or finishReg2.search(line):
             testRunning = False
         else:
