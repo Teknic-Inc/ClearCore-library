@@ -22,6 +22,7 @@ jobs:
         run: |
             echo "The event name is ${{ github.ref }}"
             echo "$GITHUB_CONTEXT"
+            echo $GITHUB_CONTEXT.github.ref
     
       - name: Get Env
         run: |
