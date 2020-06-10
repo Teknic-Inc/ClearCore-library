@@ -62,6 +62,11 @@ public:
     StepGenerator();
 #endif
 
+    typedef enum {
+        MOVE_TARGET_ABSOLUTE,
+        MOVE_TARGET_REL_END_POSN,
+    } MOVE_TARGET;
+
     /**
         \brief Issues a positional move for the specified distance.
         
@@ -69,15 +74,22 @@ public:
         based on the zero position at program-start.
 
         \code{.cpp}
-        // Perform a 5000 step pulse absolute move
-        ConnectorM0.Move(5000, true);
+        // Interrupt any on-going move and move to the absolute position 5000
+        ConnectorM0.Move(5000, StepGenerator::MOVE_TARGET_ABSOLUTE, true);
         \endcode
 
         \param[in] dist The distance of the move in step pulses
-        \param[in] absolute (optional) True if the dist argument is an absolute
-        position. Default: false.
+        \param[in] moveTarget (optional) Specify the type of movement that 
+        should be done. Absolute or relative to the end position of the current 
+        move. Invalid will result in move relative to the end position.
+        Default: MOVE_TARGET_REL_END_POSN
+        \param[in] immediate (optional) True if the movement should overwrite
+        a current position movement. Relative moves made during a
+        velocity move will relative to the current position.
+        Default: true.
     **/
-    bool Move(int32_t dist, bool absolute = false);
+    bool Move(int32_t dist, MOVE_TARGET moveTarget = MOVE_TARGET_REL_END_POSN, 
+                bool immediate = true);
 
     /**
         \brief Issues a velocity move at the specified velocity.
@@ -103,6 +115,19 @@ public:
         \endcode
     **/
     void MoveStopAbrupt();
+
+    /**
+        Interrupts the current move; Slows the motor at the decel rate
+
+        \code{.cpp}
+        // Command an abrupt stop
+        ConnectorM0.MoveStopAbrupt();
+        \endcode
+
+        \param[in] velMax The new velocity limit. Passing 0 keeps the 
+        previous deceleration rate
+    **/
+    void MoveStopDecel(int32_t decelMax = 0);
 
     /**
         \brief Sets the absolute commanded position to the given value.
@@ -134,6 +159,21 @@ public:
     }
 
     /**
+        \brief Accessor for the StepGenerator's momentary velocity
+
+        \code{.cpp}
+        if (ConnectorM0.VelocityRefCommanded() > 1000) {
+            // M-0's current velocity is above 1000
+        }
+        \endcode
+
+        \return Returns the momentary commanded position.
+        /note Velocity changes as the motor accelerates and decelerates, this 
+        should not be used to track the motion of the motor
+    **/
+    int32_t VelocityRefCommanded();
+
+    /**
         \brief Sets the maximum velocity in step pulses per second.
 
         Value will be clipped if out of bounds
@@ -162,6 +202,21 @@ public:
     void AccelMax(int32_t accelMax);
 
     /**
+        \brief Sets the maximum deceleration for E-stop Deceleration in 
+        step pulses per second^2. This is only for MoveStopDecel.
+
+        Value will be clipped if out of bounds
+
+        \code{.cpp}
+        // Set the StepGenerator's maximum velocity to 15000 step pulses/sec^2
+        ConnectorM0.AccelMax(15000);
+        \endcode
+
+        \param[in] decelMax The new deceleration limit
+    **/
+    void EStopDecelMax(int32_t decelMax);
+
+    /**
         \brief Function to check if no steps are currently being commanded to
         the motor.
 
@@ -176,6 +231,23 @@ public:
     **/
     bool StepsComplete() {
         return MoveStateGet() == MS_IDLE;
+    }
+
+    /**
+        \brief Function to check if the commanded move is at the cruising 
+        velocity - Acceleration portion of movement has finished.
+
+        \code{.cpp}
+        if (ConnectorM0.CruiseVelocityReached) {
+            // The commanded move is at the cruising velocity
+        }
+        \endcode
+
+        \return Returns true if there the move is in the cruise state
+        \note The motor will still need to decelerate after cruising
+    **/
+    bool CruiseVelocityReached() {
+        return MoveStateGet() == MS_CRUISE;
     }
 
 protected:
@@ -193,7 +265,6 @@ protected:
     uint32_t m_stepsPerSampleMax;
     MOVE_STATES m_moveState;
     bool m_direction;
-    bool m_directionLast;
 
     volatile const bool &Direction() {
         return m_direction;
@@ -215,8 +286,10 @@ private:
     int32_t m_stepsCommanded;
     int32_t m_stepsSent;      // Accumulated integer position
 
-    bool m_velocityMove;       // A Velocity move is active
-    bool m_velMoveDirChange;   // The velocity move is changing direction
+    bool m_eStopDecelMove;    // An e-stop deceleration is active
+    bool m_velocityMove;      // A Velocity move is active
+    bool m_moveDirChange;     // The move is changing direction
+    bool m_moveOvershoot;     // The new requested position is too close
 
     // All of the position, velocity and acceleration parameters are signed and
     // in Q format, with all arithmetic performed in fixed point.
@@ -226,6 +299,7 @@ private:
     int32_t m_velLimitQx;     // Velocity limit
     int32_t m_altVelLimitQx;  // Velocity move Velocity limit
     int32_t m_accelLimitQx;   // Acceleration limit
+    int32_t m_altDecelLimitQx;// E-Stop Deceleration limit
     int64_t m_posnCurrentQx;  // Current position
     int32_t m_velCurrentQx;   // Current velocity
     int32_t m_accelCurrentQx; // Current acceleration
@@ -233,10 +307,31 @@ private:
     int32_t m_velTargetQx;    // Adjusted velocity limit
     int64_t m_posnDecelQx;    // Position to start decelerating
 
+    // Pending velocity and acceleration parameters that shouldn't be applied
+    // until a Move function is called again
+    int32_t m_velLimitPendingQx;     // Velocity limit
+    int32_t m_altVelLimitPendingQx;  // Velocity move Velocity limit
+    int32_t m_accelLimitPendingQx;   // Acceleration limit
+    int32_t m_altDecelLimitPendingQx;// E-Stop Deceleration limit
+
     virtual void OutputDirection() = 0;
     void StepsPerSampleMaxSet(uint32_t maxSteps);
 
     void AltVelMax(int32_t velMax);
+
+    /**
+        \brief Private helper function for Move functions to call that 
+        updates the internal vel/accel limits to those set by the user.
+
+        Used to latch limits so a move followed immediate by a limit change 
+        is not used until the next move
+    **/
+    void UpdatePendingMoveLimits(){
+        m_velLimitQx = m_velLimitPendingQx;
+        m_altVelLimitQx = m_altVelLimitPendingQx;
+        m_accelLimitQx = m_accelLimitPendingQx;
+        m_altDecelLimitQx = m_altDecelLimitPendingQx;
+    }
 };
 
 } // ClearCore namespace
