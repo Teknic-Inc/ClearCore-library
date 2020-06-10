@@ -21,8 +21,9 @@ jobs:
       - name: Some Gitinfo
         run: |
             echo "The event name is ${{ github.ref }}"
-            echo "$GITHUB_CONTEXT"
             set mystr=${{github.ref}}
+            echo %mystr%
+            set mystr=%mystr:~11,100%
             echo %mystr%
     
       - name: Get Env
