@@ -64,7 +64,6 @@ public:
 
     typedef enum {
         MOVE_TARGET_ABSOLUTE,
-        MOVE_TARGET_REL_CUR_POSN,
         MOVE_TARGET_REL_END_POSN,
     } MOVE_TARGET;
 
