@@ -364,11 +364,7 @@ void StepGenerator::MoveStopAbrupt() {
 
     The function will return true if the move was accepted.
 */
-bool StepGenerator::Move(int32_t dist, MOVE_TARGET moveTarget, bool immediate) {
-    // Check if the move overwrites a current move and it shouldn't
-    if (!immediate && !StepsComplete() ) {
-        return false;
-    }
+bool StepGenerator::Move(int32_t dist, MOVE_TARGET moveTarget) {
 
     // Make relative moves be based off of current position during a velocity
     // move
