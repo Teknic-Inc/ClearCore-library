@@ -385,9 +385,6 @@ bool StepGenerator::Move(int32_t dist, MOVE_TARGET moveTarget, bool immediate) {
         case MOVE_TARGET_ABSOLUTE:
             m_stepsCommanded = dist - m_posnAbsolute;   
             break;
-        case MOVE_TARGET_REL_CUR_POSN:
-            m_stepsCommanded = dist;
-            break;
         case MOVE_TARGET_REL_END_POSN:
         default:
             // relative end posn
