@@ -122,21 +122,28 @@ def readSerialData(comPort):
     testDetailsTxt = ""
 
     testRunning = True
-    timeOfLastReading = time.time();
+    timeOfLastReading = time.time()
     while testRunning:
         #this will store the line
         line = ""
         while True:
             c = ser.read(1)
+            if time.time() - timeOfLastReading > 600:
+                # Put something in the line
+                line = line + "Serial Read Timeout"
+                didError = True
+                testRunning = False
+                break;
             if c.decode("utf-8") == '\n':
                 break
             if c == b'':
                 #print("Empty Char")
                 continue
+            timeOfLastReading = time.time()
             line = line + c.decode("utf-8")
             #print(line)
         print('ClearCore:' + line)
-    
+        
         if passTestReg.match(line):
             #print('{:3d}'.format(count) + " Passes")
             testDetails = False
@@ -146,6 +153,7 @@ def readSerialData(comPort):
         elif errorReg.search(line) or failReg.search(line):
             #print('{:3d}'.format(count) + " Failed")
             didError = True
+            testRunning = False
         elif finishReg.search(line) or finishReg2.search(line):
             testRunning = False
         else:
@@ -222,12 +230,18 @@ def buildProject():
     
     try:
         execute(buildCmd)
+        with open(atmelOutFile, 'r') as f:
+            print(f.read())
     except subprocess.CalledProcessError as e:
         print("Building ClearCore Failed")
         print(e)
+        with open(atmelOutFile, 'r') as f:
+            print(f.read())
         exit(98)
     except:
         print("Building ClearCore Failed")
+        with open(atmelOutFile, 'r') as f:
+            print(f.read())
         exit(98)
     return True
 

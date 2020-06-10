@@ -103,7 +103,7 @@ void setup() {
     timeout = 3600;
     while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {
         if ( millis() - startTime > timeout ){
-              Serial.printtln("Timeout waiting for HLFB, Test Setup Failure");
+              Serial.println("Timeout waiting for HLFB, Test Setup Failure");
             // test failed, block
             while(true) { continue; }
         }
@@ -115,7 +115,7 @@ void setup() {
 int testNum = 0;
 void loop() {
     // Put your main code here, it will run repeatedly:
-    
+#if 0    
     int32_t targetPos = 0;
     int32_t oldTargetPos;
     bool expectedMoveStatus = true;
@@ -783,6 +783,7 @@ void loop() {
         delay(100);
     }
 
+
 }
 
 
@@ -853,73 +854,10 @@ void AssertVelocity(int32_t targetVel){
       Serial.print("  Veloctity Test Finished:");
       Serial.println(testNum);
     testNum++;
+#endif // Big Block Comment
 }
 
 
 
 
 
-void MoveDistanceImmediate(int distance);
-void MoveDistance(int distance);
-
-//void loop() {
-    //// Put your main code here, it will run repeatedly:
-    //// Move back 12800 counts (negative direction), then wait 2000ms
-    //MoveDistanceImmediate(-6400);
-    //delay(2000);
-    //MoveDistanceImmediate(6400);
-    //delay(2000);
-    ////MoveDistance(-6400);
-    ////delay(2000);
-    ////MoveDistance(6400);
-    ////delay(2000);
-//}
-/*------------------------------------------------------------------------------
- * MoveDistanceImmediate
- *
- *    Command "distance" number of step pulses away from the current position
- *    Prints the move status to the USB serial port
- *    Returns when HLFB asserts (indicating the motor has reached the commanded
- *    position)
- *
- * Parameters:
- *    int distance  - The distance, in step pulses, to move
- *
- * Returns: None
- */
-void MoveDistanceImmediate(int distance) {
-    bool status;
-    Serial.print("Moving distance: ");
-    Serial.println(distance);
-    // Command the move of incremental distance
-    status = motor.Move(distance, false, true);
-    Serial.print("Moving..");
-    Serial.println(status);
-    // Uncomment to pause between moves
-//    Serial.println("Moving.. Waiting for HLFB");
-    //while (!motor.StepsComplete() || motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {
-        //continue;
-    //}
-    delay(250);
-    status = motor.Move(distance*2, false, true);
-    Serial.print("Move interrupted (exptected = 1): ");
-    Serial.println(status);
-    // Waits for HLFB to assert (signaling the move has successfully completed)
-    Serial.println("Moving.. Waiting for HLFB");
-    while (!motor.StepsComplete() || motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {
-        continue;
-    }
-}
-void MoveDistance(int distance) {
-    Serial.print("Moving distance: ");
-    Serial.println(distance);
-    // Command the move of incremental distance
-    motor.Move(distance);
-    // Waits for HLFB to assert (signaling the move has successfully completed)
-    Serial.println("Moving.. Waiting for HLFB");
-    while (!motor.StepsComplete() || motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {
-        continue;
-    }
-    Serial.println("Move Done");
-}
-//------------------------------------------------------------------------------
