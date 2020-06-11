@@ -82,7 +82,7 @@ jobs:
       - name: Test Script
         run: | 
             cd ClearCore_Arduino\Teknic\
-            UnitTests\TestScripts\Style\tools\AStyle.exe --options=UnitTests\TestScripts\Style\configuration\astyle.cfg --dry-run "libClearCore\inc\*.h" "libClearCore\src\*.cpp" > AStyleOut.txt
+            AStyle.exe --options=UnitTests\TestScripts\Style\configuration\astyle.cfg --dry-run "libClearCore\inc\*.h" "libClearCore\src\*.cpp" > AStyleOut.txt
             type AStyleOut.txt
             rem "Use Findstr to detech if a file was formatted"
             rem "Search for the formatted text, if it exists, test failed"
