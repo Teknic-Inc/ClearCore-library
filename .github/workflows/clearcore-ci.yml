@@ -88,7 +88,7 @@ jobs:
             rem "Search for the formatted text, if it exists, test failed"
             rem "The problem is that Findstr exits 1 if text is not found, but this is our pass case"
             rem "This gross logic Inverts the logic"
-            FINDSTR "Formatted" AStyleOut.txt || (set errorlevel=0 && ( echo "AStyle Did not find changes") && (EXIT /B 1))
+            FINDSTR "Formatted" AStyleOut.txt || (set errorlevel=0 && ( echo "AStyle Did not find changes") && (EXIT /B 0))
             FINDSTR "Formatted" AStyleOut.txt && (echo "AStyle Found Changes" && (EXIT /B 1) )
             
             
