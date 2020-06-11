@@ -137,7 +137,8 @@ void MoveDistance(int32_t distance) {
 
     // Waits for HLFB to assert (signaling the move has successfully completed)
     SerialPort.SendLine("Moving.. Waiting for HLFB");
-    while (!motor.StepsComplete() || motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {
+    while (!motor.StepsComplete() ||
+            motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {
         continue;
     }
 

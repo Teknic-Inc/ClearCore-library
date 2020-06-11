@@ -58,21 +58,31 @@
 **/
 typedef union {
     struct {
-        uint32_t OWN : 1;     /*!< bit:  0       Ownership of this buffer.                 */
-        uint32_t WRAP : 1;    /*!< bit:  1       Last descriptor in receive buffer list    */
-        uint32_t ADDR : 30;   /*!< bit:  2..31   Address of beginning of buffer            */
-        uint32_t LEN : 13;    /*!< bit:  0..12   Length of the received frame              */
-        uint32_t FCS : 1;     /*!< bit:  13      Meaning depending on jumbo frames and ignore FCS */
-        uint32_t SF : 1;      /*!< bit:  14      Start of Frame                           */
+uint32_t OWN :
+        1;     /*!< bit:  0       Ownership of this buffer.                 */
+uint32_t WRAP :
+        1;    /*!< bit:  1       Last descriptor in receive buffer list    */
+uint32_t ADDR :
+        30;   /*!< bit:  2..31   Address of beginning of buffer            */
+uint32_t LEN :
+        13;    /*!< bit:  0..12   Length of the received frame              */
+uint32_t FCS :
+        1;     /*!< bit:  13      Meaning depending on jumbo frames and ignore FCS */
+uint32_t SF :
+        1;      /*!< bit:  14      Start of Frame                           */
         uint32_t EF : 1;      /*!< bit:  15      End of Frame   */
         uint32_t CFI : 1;     /*!< bit:  16      Canonical Format Indicator   */
         uint32_t VLAN : 3;    /*!< bit:  17..19  VLAN priority  */
         uint32_t PTAG : 1;    /*!< bit:  20      Priority Tag detected */
         uint32_t VTAG : 1;    /*!< bit:  21      VLAN Tag detected */
-        uint32_t CSM : 2;     /*!< bit:  22..23  Meaning depends on whether RX checksum offloading enabled */
-        uint32_t SNAP : 1;    /*!< bit   24      Meaning depends on whether RX checksum offloading enabled */
-        uint32_t SPAMI : 2;   /*!< bit   25..26  Specific Address Register Match -- which address */
-        uint32_t SPAM : 1;    /*!< bit   27      Specific Address Register Match found */
+uint32_t CSM :
+        2;     /*!< bit:  22..23  Meaning depends on whether RX checksum offloading enabled */
+uint32_t SNAP :
+        1;    /*!< bit   24      Meaning depends on whether RX checksum offloading enabled */
+uint32_t SPAMI :
+        2;   /*!< bit   25..26  Specific Address Register Match -- which address */
+uint32_t SPAM :
+        1;    /*!< bit   27      Specific Address Register Match found */
         uint32_t: 1;          /*!< bit   28      Reserved */
         uint32_t UHM : 1;     /*!< bit   29      Unicast Hash Match */
         uint32_t MHM : 1;     /*!< bit   30      Multicast Hash Match */
@@ -92,15 +102,21 @@ typedef union {
         uint32_t LEN : 14;    /*!< bit   0..13   Length of buffer */
         uint32_t: 1;          /*!< bit   14      Reserved */
         uint32_t LB : 1;      /*!< bit   15      Last Buffer of the current frame */
-        uint32_t CRC : 1;     /*!< bit   16      Data in buffer already contains a valid CRC */
+uint32_t CRC :
+        1;     /*!< bit   16      Data in buffer already contains a valid CRC */
         uint32_t: 3;          /*!< bit   17..19  Reserved */
-        uint32_t CSER : 3;    /*!< bit   20..22  Transmit IP/TCP/UDP checksum generation offload errors */
+uint32_t CSER :
+        3;    /*!< bit   20..22  Transmit IP/TCP/UDP checksum generation offload errors */
         uint32_t: 3;          /*!< bit   23..25  Reserved */
-        uint32_t LCERR : 1;   /*!< bit   26      Late collision, transmit error detected */
-        uint32_t FCERR : 1;   /*!< bit   27      Transmit frame corruption due to AHB error */
+uint32_t LCERR :
+        1;   /*!< bit   26      Late collision, transmit error detected */
+uint32_t FCERR :
+        1;   /*!< bit   27      Transmit frame corruption due to AHB error */
         uint32_t: 1;          /*!< bit   28      Reserved */
-        uint32_t RLERR : 1;   /*!< bit   29      Retry limit exceeded, transmit error detected */
-        uint32_t WRAP : 1;    /*!< bit   30      Marks last descriptor in transmit buffer descriptor list */
+uint32_t RLERR :
+        1;   /*!< bit   29      Retry limit exceeded, transmit error detected */
+uint32_t WRAP :
+        1;    /*!< bit   30      Marks last descriptor in transmit buffer descriptor list */
         uint32_t OWN : 1;     /*!< bit   31      Ownership of this buffer */
     } bit;
     uint32_t reg[2];

@@ -49,7 +49,8 @@ void setup() {
     // "CLEARCORE_PIN_CCIOC7", and do the same for the for-loop in the loop()
     // function below.
     for (int16_t pin = CLEARCORE_PIN_CCIOA0; pin <= CLEARCORE_PIN_CCIOA7; pin++) {
-        CcioMgr.PinByIndex(static_cast<ClearCorePins>(pin))->Mode(Connector::OUTPUT_DIGITAL);
+        CcioMgr.PinByIndex(static_cast<ClearCorePins>(pin))->Mode(
+            Connector::OUTPUT_DIGITAL);
     }
 
     // The connectors are all set up; start the loop with turning them all on.

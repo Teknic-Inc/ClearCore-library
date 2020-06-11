@@ -22,7 +22,7 @@
 
 /*
  * atomic_utils.h
- * 
+ *
  * Defines macros to aid in atomic gcc operations
  */
 

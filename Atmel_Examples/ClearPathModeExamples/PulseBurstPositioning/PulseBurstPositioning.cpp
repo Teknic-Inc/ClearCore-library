@@ -21,8 +21,8 @@
  *    the OK button).
  * 4. Ensure the Trigger Pulse Time in MSP is set to 20ms. To configure, click
  *    the "Setup..." button found under the "Trigger Pulse" label on the MSP's
- *    main window, fill in the text box, and hit the OK button. Setting this to 
- *    20ms allows trigger pulses to be as long as 60ms, which will accomodate 
+ *    main window, fill in the text box, and hit the OK button. Setting this to
+ *    20ms allows trigger pulses to be as long as 60ms, which will accomodate
  *    our 25ms pulses used later.
  *
  * ** Note: Homing is optional, and not required in this operational mode or in
@@ -50,7 +50,7 @@
 #define motor ConnectorM0
 
 // The TRIGGER_PULSE_TIME is set to 25ms to ensure it is within the
-// Trigger Pulse Range defined in the MSP software (Default is 20ms, which 
+// Trigger Pulse Range defined in the MSP software (Default is 20ms, which
 // allows a range of pulses up to 60ms)
 #define TRIGGER_PULSE_TIME 25
 
@@ -154,7 +154,8 @@ void MoveDistance(int32_t distance) {
 
     // Waits for HLFB to assert (signaling the move has successfully completed)
     SerialPort.SendLine("Moving.. Waiting for HLFB");
-    while (!motor.StepsComplete() || motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {
+    while (!motor.StepsComplete() ||
+            motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {
         continue;
     }
 

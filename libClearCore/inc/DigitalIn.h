@@ -310,7 +310,7 @@ public:
         \param[in] enable Whether this interrupt should be immediately enabled.
         \return true if the ISR was registered successfully, false otherwise.
 
-		\note Only connectors DI-6 through A-12 can trigger interrupts.
+        \note Only connectors DI-6 through A-12 can trigger interrupts.
     **/
     bool InterruptHandlerSet(voidFuncPtr callback = nullptr,
                              InputManager::InterruptTrigger trigger =
@@ -328,7 +328,7 @@ public:
         \param[in] enable If true, enable the interrupt. If false, disable the
         interrupt.
 
-		\note Only connectors DI-6 through A-12 can trigger interrupts.
+        \note Only connectors DI-6 through A-12 can trigger interrupts.
         \note InputManager has a global version of this function that enables
         or disables the interrupts for all connectors.
     **/

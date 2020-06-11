@@ -203,8 +203,8 @@ void ShiftRegister::DiagnosticLedSweep() {
     }
 
     // Illuminate bank 0 and 1 simultaneously
-    uint8_t largerBankLen = (LED_BANK_1_LEN > LED_BANK_0_LEN) ? LED_BANK_1_LEN 
-                                                              : LED_BANK_0_LEN;
+    uint8_t largerBankLen = (LED_BANK_1_LEN > LED_BANK_0_LEN) ? LED_BANK_1_LEN
+                            : LED_BANK_0_LEN;
     for (uint8_t i = 0; i < largerBankLen; i++) {
         if (i < LED_BANK_0_LEN) {
             m_altOutput |= LED_BANK_0[i];

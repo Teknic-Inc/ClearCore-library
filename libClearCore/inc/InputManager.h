@@ -156,7 +156,7 @@ public:
         \param[in] enable If true, enable the interrupt. If false, disable the
         interrupt.
 
-		\note Only connectors DI-6 through A-12 can trigger interrupts.
+        \note Only connectors DI-6 through A-12 can trigger interrupts.
     **/
     void InterruptEnable(int8_t extInt, bool enable);
 #endif
@@ -190,7 +190,7 @@ public:
 
         \return true if interrupts are enabled board-wide, false if not.
 
-		\note Only connectors DI-6 through A-12 can trigger interrupts.
+        \note Only connectors DI-6 through A-12 can trigger interrupts.
     **/
     bool InterruptsEnabled() {
         return m_interruptsEnabled;

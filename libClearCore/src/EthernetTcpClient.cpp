@@ -173,7 +173,7 @@ void EthernetTcpClient::Close() {
     if (m_tcpData->state != CLOSING) {
         TcpClose(m_tcpData->pcb, m_tcpData);
     }
-	m_tcpData = nullptr;
+    m_tcpData = nullptr;
     // Flush the received data.
     FlushInput();
 }

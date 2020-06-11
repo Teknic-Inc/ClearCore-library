@@ -13,7 +13,7 @@
  *
  * Requirements:
  * 1. A motor capable of step and direction must be connected to Connector M-0.
- * 2. The motor may optionally be connected to the MotorDriver's HLFB line if 
+ * 2. The motor may optionally be connected to the MotorDriver's HLFB line if
  *    the motor has a "servo on" type feedback feature.
  *
  * Links:
@@ -56,8 +56,8 @@ void setup() {
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
                           Connector::CPM_MODE_STEP_AND_DIR);
 
-    // These lines may be uncommented to invert the output signals of the 
-    // Enable, Direction, and HLFB lines. Some motors may have input polarities 
+    // These lines may be uncommented to invert the output signals of the
+    // Enable, Direction, and HLFB lines. Some motors may have input polarities
     // that are inverted from the ClearCore's polarity.
     //motor.PolarityInvertSDEnable(true);
     //motor.PolarityInvertSDDirection(true);
@@ -83,7 +83,7 @@ void setup() {
     // Enables the motor.
     motor.EnableRequest(true);
 
-    // Waits for HLFB to assert. Uncomment these lines if your motor has a 
+    // Waits for HLFB to assert. Uncomment these lines if your motor has a
     // "servo on" feature and it is wired to the HLFB line on the connector.
     //Serial.println("Waiting for HLFB...");
     //while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {

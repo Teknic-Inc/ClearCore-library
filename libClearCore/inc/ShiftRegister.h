@@ -311,7 +311,7 @@ private:
         index &= 0xf;   // guard against index out of bounds
         m_fadeCounter.m_analogMasks[index] = ledMask;
         state ? m_fadeCounter.m_activeMask |= 1 << index
-              : m_fadeCounter.m_activeMask &= ~(1 << index);
+                                              : m_fadeCounter.m_activeMask &= ~(1 << index);
         LedPattern(ledMask, LED_BLINK_FADE, state);
     }
 
@@ -337,7 +337,7 @@ private:
     void LedPattern(uint32_t ledMask, LED_BLINK_CODE pattern,
                     bool state) {
         state ? m_patternMasks[pattern] |= ledMask
-              : m_patternMasks[pattern] &= ~ledMask;
+                                           : m_patternMasks[pattern] &= ~ledMask;
     }
 
     /**
@@ -476,35 +476,38 @@ private:
 
     // the "close" LEDs
     static const uint8_t LED_BANK_0_LEN = 6;
-    const Masks LED_BANK_0[LED_BANK_0_LEN] = {SR_LED_IO_0_MASK, 
-        SR_LED_IO_1_MASK, SR_LED_IO_2_MASK, SR_LED_IO_3_MASK, SR_LED_IO_4_MASK,
-        SR_LED_IO_5_MASK};
-    
+    const Masks LED_BANK_0[LED_BANK_0_LEN] = {SR_LED_IO_0_MASK,
+                                              SR_LED_IO_1_MASK, SR_LED_IO_2_MASK, SR_LED_IO_3_MASK, SR_LED_IO_4_MASK,
+                                              SR_LED_IO_5_MASK
+                                             };
+
     // the "far" LEDs
     static const uint8_t LED_BANK_1_LEN = 7;
     const Masks LED_BANK_1[LED_BANK_1_LEN] = {SR_LED_ADI_12_MASK,
-        SR_LED_ADI_11_MASK, SR_LED_ADI_10_MASK, SR_LED_ADI_09_MASK,
-        SR_LED_DI_8_MASK, SR_LED_DI_7_MASK, SR_LED_DI_6_MASK};
-    
+                                              SR_LED_ADI_11_MASK, SR_LED_ADI_10_MASK, SR_LED_ADI_09_MASK,
+                                              SR_LED_DI_8_MASK, SR_LED_DI_7_MASK, SR_LED_DI_6_MASK
+                                             };
+
     // the "misc" LEDs
     static const uint8_t LED_BANK_2_LEN = 4;
-    const Masks LED_BANK_2[LED_BANK_2_LEN] = {SR_UNDERGLOW_MASK, 
-        SR_LED_USB_MASK, SR_LED_COM_0_MASK, SR_LED_COM_1_MASK};
-    
+    const Masks LED_BANK_2[LED_BANK_2_LEN] = {SR_UNDERGLOW_MASK,
+                                              SR_LED_USB_MASK, SR_LED_COM_0_MASK, SR_LED_COM_1_MASK
+                                             };
+
     static const uint16_t DELAY_TIME = 25; // milliseconds
-    
+
     // A mask that prevents sketches from changing Shift Register values that
     // aren't LEDs.
     const uint32_t SAFE_LED_MASK = SR_LED_IO_0_MASK | SR_LED_IO_1_MASK |
-        SR_LED_IO_2_MASK | SR_LED_IO_3_MASK | SR_LED_IO_4_MASK |
-        SR_LED_IO_5_MASK | SR_LED_DI_6_MASK | SR_LED_DI_7_MASK |
-        SR_LED_DI_8_MASK | SR_LED_ADI_09_MASK | SR_LED_ADI_10_MASK |
-        SR_LED_ADI_11_MASK | SR_LED_ADI_12_MASK | SR_LED_USB_MASK;
+                                   SR_LED_IO_2_MASK | SR_LED_IO_3_MASK | SR_LED_IO_4_MASK |
+                                   SR_LED_IO_5_MASK | SR_LED_DI_6_MASK | SR_LED_DI_7_MASK |
+                                   SR_LED_DI_8_MASK | SR_LED_ADI_09_MASK | SR_LED_ADI_10_MASK |
+                                   SR_LED_ADI_11_MASK | SR_LED_ADI_12_MASK | SR_LED_USB_MASK;
 
-    /** 
-        The below constants/data members are grouped for ease of use - the 
-        constants directly affect the associated counters and their physical 
-        output. 
+    /**
+        The below constants/data members are grouped for ease of use - the
+        constants directly affect the associated counters and their physical
+        output.
     **/
     const uint32_t FAST_COUNTER_PERIOD = 500;
     const uint32_t FAST_COUNTER_CC = 200;

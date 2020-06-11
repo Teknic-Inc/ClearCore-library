@@ -116,8 +116,9 @@ void setup() {
 
 void loop() {
     // Move a distance equal to 1 * POSITION_INCREMENT_1 = 750 counts
-    MoveIncrements(1, POSITION_INCREMENT_1);    // See below for the detailed
-                                                // function definition
+    // See below for the detailed function definition
+    MoveIncrements(1, POSITION_INCREMENT_1);
+
     // Stay settled for 1 second before moving again.
     Delay_ms(1000);
 

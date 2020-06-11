@@ -6,14 +6,14 @@
  *    read from or write to it. Up to 8 total CCIO-8 boards can be used.
  *
  * Description:
- *    This example sets up COM-0 to control up to 8 CCIO-8 Expansion Boards, 
- *    sets all CCIO-8 connectors to be either inputs or outputs depending on the 
- *    selected mode. In input mode, pin statuses are printed to the USB serial 
- *    port. In output mode, all pins outputs are sequentially turned on then off. 
+ *    This example sets up COM-0 to control up to 8 CCIO-8 Expansion Boards,
+ *    sets all CCIO-8 connectors to be either inputs or outputs depending on the
+ *    selected mode. In input mode, pin statuses are printed to the USB serial
+ *    port. In output mode, all pins outputs are sequentially turned on then off.
  *
  * Requirements:
- * ** A CCIO-8 Expansion Board, with power wired, and connected to COM-0. Any 
- *    other CCIO-8 boards should be chained off of this first board 
+ * ** A CCIO-8 Expansion Board, with power wired, and connected to COM-0. Any
+ *    other CCIO-8 boards should be chained off of this first board
  * ** Edit the value of "inputMode" below to select input mode or output mode
  * ** (For input mode) A number of inputs, like switches, wired to CCIO-8
  *    connectors.
@@ -88,7 +88,8 @@ void setup() {
         // Set each CCIO-8 pin to the correct mode. The CCIO-8 pins default to
         // being an input so the pin mode doesn't need to be set for input mode.
         for (uint8_t ccioPinIndex = 0; ccioPinIndex < ccioPinCount; ccioPinIndex++) {
-            CcioMgr.PinByIndex(static_cast<ClearCorePins>(CLEARCORE_PIN_CCIOA0 + ccioPinIndex))->Mode(Connector::OUTPUT_DIGITAL);
+            CcioMgr.PinByIndex(static_cast<ClearCorePins>(CLEARCORE_PIN_CCIOA0 +
+                               ccioPinIndex))->Mode(Connector::OUTPUT_DIGITAL);
         }
     }
 }
@@ -124,8 +125,10 @@ void loop() {
     // reads and non-PWM digital writes.
     if (inputMode) {
         // Read the digital state of CCIO-8 connectors 0 through 7 as inputs.
-        for (uint8_t ccioPinIndex = 0; ccioPinIndex < CCIO_PINS_PER_BOARD; ccioPinIndex++) {
-            uint16_t state = CcioMgr.PinByIndex(static_cast<ClearCorePins>(CLEARCORE_PIN_CCIOA0 + ccioPinIndex))->State();
+        for (uint8_t ccioPinIndex = 0; ccioPinIndex < CCIO_PINS_PER_BOARD;
+                ccioPinIndex++) {
+            uint16_t state = CcioMgr.PinByIndex(static_cast<ClearCorePins>
+                                                (CLEARCORE_PIN_CCIOA0 + ccioPinIndex))->State();
 
             snprintf(msg, MAX_MSG_LEN, "CCIO-A%d:   ", ccioPinIndex);
             SerialPort.Send(msg);
@@ -141,14 +144,17 @@ void loop() {
         // If you have multiple CCIO-8 boards attached, individual printouts
         // become hard to read. We can access all of the CCIO-8 bits at once and
         // print them out in hex.
-        snprintf(msg, MAX_MSG_LEN, "All CCIO-8 Inputs:   0x%0*llX", ccioBoardCount * 2, CcioMgr.InputState());
+        snprintf(msg, MAX_MSG_LEN, "All CCIO-8 Inputs:   0x%0*llX", ccioBoardCount * 2,
+                 CcioMgr.InputState());
         SerialPort.SendLine(msg);
 
         // The application may be only interested in the transitions of an input.
         // We can read the rise and fall registers and print them out.
-        snprintf(msg, MAX_MSG_LEN, "CCIO-8 Input Rise:   0x%0*llX", ccioBoardCount * 2, CcioMgr.InputsRisen());
+        snprintf(msg, MAX_MSG_LEN, "CCIO-8 Input Rise:   0x%0*llX", ccioBoardCount * 2,
+                 CcioMgr.InputsRisen());
         SerialPort.SendLine(msg);
-        snprintf(msg, MAX_MSG_LEN, "CCIO-8 Input Fall:   0x%0*llX", ccioBoardCount * 2, CcioMgr.InputsFallen());
+        snprintf(msg, MAX_MSG_LEN, "CCIO-8 Input Fall:   0x%0*llX", ccioBoardCount * 2,
+                 CcioMgr.InputsFallen());
         SerialPort.SendLine(msg);
 
         SerialPort.SendLine("---------------------");
@@ -161,14 +167,17 @@ void loop() {
         SerialPort.SendLine("Writing digital HIGH to each CCIO-8 connector...");
 
         for (uint8_t ccioPinIndex = 0; ccioPinIndex < ccioPinCount; ccioPinIndex++) {
-            CcioMgr.PinByIndex(static_cast<ClearCorePins>(CLEARCORE_PIN_CCIOA0 + ccioPinIndex))->State(true);
+            CcioMgr.PinByIndex(static_cast<ClearCorePins>(CLEARCORE_PIN_CCIOA0 +
+                               ccioPinIndex))->State(true);
             Delay_ms(500);
         }
 
         SerialPort.SendLine("Writing digital LOW to each CCIO-8 connector...");
 
-        for (int8_t ccioPinIndex = ccioPinCount - 1; ccioPinIndex >= 0; ccioPinIndex--) {
-            CcioMgr.PinByIndex(static_cast<ClearCorePins>(CLEARCORE_PIN_CCIOA0 + ccioPinIndex))->State(false);
+        for (int8_t ccioPinIndex = ccioPinCount - 1; ccioPinIndex >= 0;
+                ccioPinIndex--) {
+            CcioMgr.PinByIndex(static_cast<ClearCorePins>(CLEARCORE_PIN_CCIOA0 +
+                               ccioPinIndex))->State(false);
             Delay_ms(500);
         }
     }

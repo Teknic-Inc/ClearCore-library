@@ -27,20 +27,20 @@ namespace ClearCore {
 
 extern EthernetManager &EthernetMgr;
 
-EthernetUdp::EthernetUdp()
-    : m_udpData({}),
-      m_udpLocalPort(0),
-      m_outgoingPacket(nullptr),
-      m_incomingPacket(nullptr),
-      m_udpBytesAvailable(0),
-      m_udpRemoteIpReceived(),
-      m_udpRemotePortReceived(0),
-      m_udpRemoteIpDestination(),
-      m_udpRemotePortDestination(0),
-      m_initialized(false),
-      m_packetBegun(false),
-      m_packetReadyToSend(false),
-      m_packetParsed(false) {}
+EthernetUdp::EthernetUdp():
+    m_udpData({}),
+          m_udpLocalPort(0),
+          m_outgoingPacket(nullptr),
+          m_incomingPacket(nullptr),
+          m_udpBytesAvailable(0),
+          m_udpRemoteIpReceived(),
+          m_udpRemotePortReceived(0),
+          m_udpRemoteIpDestination(),
+          m_udpRemotePortDestination(0),
+          m_initialized(false),
+          m_packetBegun(false),
+          m_packetReadyToSend(false),
+m_packetParsed(false) { }
 
 bool EthernetUdp::Begin(uint16_t localPort) {
     if (m_initialized) {

@@ -12,7 +12,7 @@
  *
  * Requirements:
  * ** A CCIO-8 Expansion Board powered and connected to COM-0.
- * ** An digital input device such as a switch connected to the CCIO-8's 
+ * ** An digital input device such as a switch connected to the CCIO-8's
  *    connector 0.
  *
  * Links:

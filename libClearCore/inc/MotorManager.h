@@ -102,7 +102,7 @@ public:
 
         Sets the step rate for the MotorDriver connectors as a group.
         They cannot be individually set.
-        
+
         \note Setting a HIGH clock rate when using a ClearPath motor may cause
         errors. NORMAL clock rate is recommended for ClearPath motors.
 
