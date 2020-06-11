@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions>
+    <!-- It's a library, of course there will be "unused" functions -->
+    <suppress><id>unusedFunction</id></suppress>
+    
+    <!-- Don't show errors for cppcheck being dumb -->
+    <suppress><id>ConfigurationNotChecked</id></suppress>
+    
+    <!-- Don't complain about this -- sometimes the hardware requires this to signal certain events -->
+    <suppress><id>redundantAssignment</id></suppress>
+    <suppress><id>selfAssignment</id></suppress>
+    
+    <!-- Sometimes multiple inheritance IS preferred -->
+    <suppress><id>multipleInheritance</id></suppress>
+    
+    <!-- Arduino's codebase uses an insane amount of longs and ints, isn't worth it to go through and change them all. Comment these out to scan other projects -->
+    <suppress><id>usedLongKeyword</id></suppress>
+    <suppress><id>usedIntKeyword</id></suppress>
+</suppressions>

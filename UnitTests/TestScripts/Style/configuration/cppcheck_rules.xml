@@ -1,0 +1,176 @@
+<?xml version="1.0"?>
+<!-- all.rule
+     This file contains all of the Teknic Software Team's custom cppcheck
+     rules. The value enclosed in <pattern> tags is a regular expression
+     that matches an undesirable section of the code. cppcheck preprocesses
+     the code before running analysis on it, so there will be no comments,
+     and no preprocessor directives. In addition, all of the cppcheck input is 
+     in a standardized padded format. This file does NOT enforce any concrete
+     syntax formatting rules.
+
+     @author: Cody Burrows -->
+
+
+<!-- Avoid using multiple inheritance, because it makes the code more difficult 
+     to understand. -->
+<rule version="1">
+    <pattern>class [^:]+ : [^{]*,[^{]* {</pattern>
+    <message>
+        <id>multipleInheritance</id>
+        <severity>style</severity>
+        <summary>Multiple Inheritance. Single inheritance is preferred; consider revising. </summary>
+    </message>
+</rule>
+
+<!-- Avoid using private inheritance, because it makes the code more difficult
+     to understand -->
+<rule version="1">
+    <pattern>class [^:]+ : [^{]*(private|protected)[^{]* {</pattern>
+    <message>
+        <id>nonpublicInheritance</id>
+        <severity>style</severity>
+        <summary>Non-public inheritance. Consider including a base class as a member instead.</summary>
+    </message>
+</rule>
+
+<!-- Avoid overloading the && (boolean AND) operator to prevent
+     mass confusion. -->
+<rule version="1">
+    <pattern>\boperator&amp;&amp; \(</pattern>
+    <message>
+        <id>overloadBooleanAnd</id>
+        <severity>error</severity>
+        <summary>Do not overload the &amp;&amp; (boolean AND) operator.</summary>
+    </message>
+</rule>
+
+<!-- Avoid overloading the || (boolean OR) operator to prevent 
+     mass confusion. -->
+<rule version="1">
+    <pattern>\boperator\|\| \(</pattern>
+    <message>
+        <id>overloadBooleanOR</id>
+        <severity>error</severity>
+        <summary>Do not overload the || (boolean OR) operator.</summary>
+    </message>
+</rule>
+
+<!-- Avoid overloading the & (bitwise AND) operator to prevent
+     mass confusion. -->
+<rule version="1">
+    <pattern>\boperator&amp; \(</pattern>
+    <message>
+        <id>overloadBitwiseAnd</id>
+        <severity>error</severity>
+        <summary>Do not overload the &amp; (bitwise AND) operator.</summary>
+    </message>
+</rule>
+
+<!-- Don't make user-defined literals. -->
+<rule version="1">
+    <pattern>\boperator &quot;&quot; [^{]+ {</pattern>
+    <message>
+        <id>userDefinedLiteral</id>
+        <severity>error</severity>
+        <summary>Please do not introduce user-defined literals.</summary>
+    </message>
+</rule>
+
+<!-- Don't overload the comma operator because scary and bad things will
+     happen. -->
+<rule version="1">
+    <pattern>\boperator, \(</pattern>
+    <message>
+        <id>overloadComma</id>
+        <severity>error</severity>
+        <summary>Do not overload the , (comma) operator.</summary>
+    </message>
+</rule>
+
+<!-- Self-explanatory. -->
+<rule version="1">
+    <pattern>\bgoto\b</pattern>
+    <message>
+        <id>usedGoto</id>
+        <severity>error</severity>
+        <summary>Are you kidding me? Do not use goto.</summary>
+    </message>
+</rule>
+
+<!-- Don't use continue unless you're using it in an otherwise empty loop. -->
+<rule version="1">
+    <pattern>(while|for|do)[^{]+{[^{;]+; continue ; }</pattern>
+    <message>
+        <id>continueInNonemptyLoop</id>
+        <severity>style</severity>
+        <summary>Continue statement in non-empty loop. Please only use continue statements for empty loops.</summary>
+    </message>
+</rule>
+
+<!-- Prevent empty while loops that do nothing. For completeness, add a single
+     continue statement. -->
+<rule version="1">
+    <pattern>while \([^{}]+\) { }</pattern>
+    <message>
+        <id>emptyWhile</id>
+        <severity>style</severity>
+        <summary>While loop with empty body. Please add a single continue statement to it.</summary>
+    </message>
+</rule>
+
+<!-- Use stdint.h types to make the size of the data more clear. -->
+<rule version="1">
+    <pattern>\blong\b</pattern>
+    <message>
+        <id>usedLongKeyword</id>
+        <severity>portability</severity>
+        <summary>Used long keyword. Please use types defined in stdint.h such as int32_t, uint64_t, etc.</summary>
+    </message>
+</rule>
+<rule version="1">
+    <pattern>\bshort\b</pattern>
+    <message>
+        <id>usedShortKeyword</id>
+        <severity>portability</severity>
+        <summary>Used short keyword. Please use types defined in stdint.h such as int8_t, uint16_t, etc.</summary>
+    </message>
+</rule>
+<rule version="1">
+    <pattern>\bint\b</pattern>
+    <message>
+        <id>usedIntKeyword</id>
+        <severity>portability</severity>
+        <summary>Used int keyword. Please use types defined in stdint.h such as int8_t, uint16_t, etc.</summary>
+    </message>
+</rule>
+<rule version="1">
+    <pattern>\bsize_t\b</pattern>
+    <message>
+        <id>usedIntKeyword</id>
+        <severity>portability</severity>
+        <summary>Used size_t keyword. Please use types defined in stdint.h such as int8_t, uint16_t, etc.</summary>
+    </message>
+</rule>
+
+<!-- Don't use break unless you're using it to separate switch statements. -->
+<!-- Can create false positives if cppcheck discards some syntax during its preprocessing step -->
+<!-- <rule version="1">
+    <pattern>\b(?!switch\b)\b\w+ \([^{]+\) {[^{]* break [^{]*}</pattern>
+    <message>
+        <id>breakOutsideSwitch</id>
+        <severity>style</severity>
+        <summary>Break used in a context other than a switch statement. Please only use break in switch statements.</summary>
+    </message>
+</rule> -->
+
+<!-- Always include a default case in switch statements. -->
+<!-- Sometimes creates false positives if there are no statements in the default case 
+     due to the preprocessed nature of the data cppcheck looks at -->
+<!-- <rule version="1">
+    <pattern>\bswitch \( [^{ ]+ \) {(?:(?!\bdefault\b).)*?}</pattern>
+    <message>
+        <id>switchMissingDefault</id>
+        <severity>style</severity>
+        <summary>Switch missing default case. Please add one.</summary>
+    </message>
+</rule> -->
