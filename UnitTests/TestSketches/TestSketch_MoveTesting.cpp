@@ -124,10 +124,10 @@ void loop() {
     bool testAbsolute = true;
     int  absoluteTestsNum = 10;
     bool testRelative = true;
-    int  relRandTestsNum = 100;
+    int  relRandTestsNum = 20;
     bool testVelocity = true;
     int  velocitySimpleTestsNum = 10;
-    int  velocityInterruptTestsNum = 50;
+    int  velocityInterruptTestsNum = 20;
     bool testAbThenRel = true;
     int  absoluteThenRelTestsNum = 10;
     bool testRelThenAb = true;
@@ -135,7 +135,7 @@ void loop() {
     bool testRelThenVel = true;
     int  relThenVelTestsNum = 10;
     bool testVelThenRel = true;
-    int  velocityThenRelTestsNum = 25;
+    int  velocityThenRelTestsNum = 15;
     bool testVelThenAb = true;
     int  velocityThenAbTestsNum = 10;
 
