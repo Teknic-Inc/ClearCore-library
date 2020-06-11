@@ -417,12 +417,6 @@
     <Compile Include="hpl\usb\hpl_usb.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="inc\EncoderInput.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="src\EncoderInput.cpp">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="usb\class\cdc\device\cdcdf_acm.c">
       <SubType>compile</SubType>
     </Compile>

@@ -69,7 +69,7 @@ namespace ClearCore {
 /** The number of consecutive samples having the output asserted with the input
     deasserted before the output is flagged as being overloaded. **/
 #ifndef CCIO_OVERLOAD_TRIP_TICKS
-#define CCIO_OVERLOAD_TRIP_TICKS (1 * MS_TO_SAMPLES)
+#define CCIO_OVERLOAD_TRIP_TICKS ((uint8_t)(2.4 * MS_TO_SAMPLES))
 #endif
 /** The number of samples to force the output to be deasserted when an
     overload condition occurs on that output. **/

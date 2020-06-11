@@ -34,8 +34,8 @@
 #include "SysTiming.h"
 #include "SysUtils.h"
 
-#define OVERLOAD_TRIP_TICKS    (1 * MS_TO_SAMPLES)
-#define OVERLOAD_FOLDBACK_TICKS (2000 * MS_TO_SAMPLES)
+#define OVERLOAD_TRIP_TICKS ((uint8_t)(2.4 * MS_TO_SAMPLES))
+#define OVERLOAD_FOLDBACK_TICKS (100 * MS_TO_SAMPLES)
 
 namespace ClearCore {
 
