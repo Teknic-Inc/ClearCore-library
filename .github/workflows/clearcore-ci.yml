@@ -8,13 +8,14 @@ on:
 
 jobs:
   
-  build:
+  UnitTests:
 
     runs-on: [self-hosted, windows]
     
     defaults:
       run:
         shell: cmd
+        working-directory: UnitTests
 
     steps:
         
@@ -44,3 +45,50 @@ jobs:
         run: | 
             cd ClearCore_Arduino/
             Teknic\UnitTests\TestScripts\TestScript.py
+
+  StyleCheck:
+
+    runs-on: [self-hosted, windows]
+    
+    defaults:
+      run:
+        shell: cmd
+        working-directory: AStyle
+
+    steps:
+        
+      - name: Repository Setup
+        run: |
+            set gitbranch=${{github.ref}}
+            set gitbranch=%gitbranch:~11,100%
+            echo "TODO: Set fallbackBranch to develop"
+            set fallbackBranch=feature/UnitTests
+            echo "Working Branch: %gitbranch%"
+            echo "Fallback Branch: %fallbackBranch%"
+            rmdir /S /Q ClearCore_Arduino
+            git clone https://git-server.teknic.com/CustomerPackages/ClearCore_Arduino.git -b "%gitbranch%" --single-branch || (git clone https://git-server.teknic.com/CustomerPackages/ClearCore_Arduino.git -b "%fallbackBranch%" --single-branch)
+            cd ClearCore_Arduino/
+            echo "ClearCore_Arduino Branch:"
+            git branch
+            rmdir /S /Q Teknic
+            git clone https://github.com/Teknic-Inc/ClearCore-library.git -b "%gitbranch%" --single-branch Teknic || (git clone https://github.com/Teknic-Inc/ClearCore-library.git -b "%fallbackBranch%" --single-branch Teknic)
+            cd Teknic
+            echo "ClearCore Library Branch:"
+            git branch
+            cd ../
+            mkdir variants\clearcore\Third Party
+            git clone -b master https://git-server.teknic.com/CustomerPackages/same53.git "variants\clearcore\Third Party\same53"
+            
+      - name: Test Script
+        run: | 
+            cd ClearCore_Arduino\Teknic\
+            UnitTests\TestScripts\Style\tools\AStyle.exe --options=UnitTests\TestScripts\Style\configuration\astyle.cfg --dry-run "libClearCore\inc\*.h" "libClearCore\src\*.cpp" > AStyleOut.txt
+            type AStyleOut.txt
+            rem "Use Findstr to detech if a file was formatted"
+            rem "Search for the formatted text, if it exists, test failed"
+            rem "The problem is that Findstr exits 1 if text is not found, but this is our pass case"
+            rem "This gross logic Inverts the logic"
+            FINDSTR "Formatted" AStyleOut.txt || (set errorlevel=0 && ( echo "AStyle Did not find changes"))
+            FINDSTR "Formatted" AStyleOut.txt && (echo "AStyle Found Changes" && EXIT /B 1 )
+            
+            
