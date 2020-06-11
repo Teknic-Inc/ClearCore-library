@@ -45,7 +45,8 @@ namespace ClearCore {
 DmacDescriptor DmaManager::writeBackDescriptor[DMA_CHANNEL_COUNT]
 __attribute__((aligned(16)));
 /* Starting DMA descriptors */
-DmacDescriptor DmaManager::descriptorBase[DMA_CHANNEL_COUNT] __attribute__((aligned(16)));
+DmacDescriptor DmaManager::descriptorBase[DMA_CHANNEL_COUNT] __attribute__((
+            aligned(16)));
 #endif
 
 DmaManager &DmaMgr = DmaManager::Instance();

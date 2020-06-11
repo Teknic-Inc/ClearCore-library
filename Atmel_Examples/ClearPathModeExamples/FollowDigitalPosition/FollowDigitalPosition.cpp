@@ -142,7 +142,8 @@ void loop() {
  * commanded.
  */
 bool CommandPosition(int32_t commandedPosition) {
-    if (abs(commandedPosition) > abs(positionMaxPWM) || abs(commandedPosition) < abs(positionZeroPWM)) {
+    if (abs(commandedPosition) > abs(positionMaxPWM) ||
+            abs(commandedPosition) < abs(positionZeroPWM)) {
         SerialPort.SendLine("Move rejected, invalid position requested");
         return false;
     }

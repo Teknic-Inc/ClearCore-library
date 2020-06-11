@@ -30,10 +30,10 @@
 // Any commanded frequency above 5512 Hz will get clipped to 5512 Hz.
 // See the "pitches.h" file for the frequency definitions of these notes.
 const uint16_t melody[] = {NOTE_C4, NOTE_E4, NOTE_G4, NOTE_C5,
-                      NOTE_CS4, NOTE_FS4, NOTE_AS4, NOTE_CS5,
-                      NOTE_E4, NOTE_G4, NOTE_C5, NOTE_E5,
-                      NOTE_FS4, NOTE_AS4, NOTE_CS5, NOTE_FS5
-                     };
+                           NOTE_CS4, NOTE_FS4, NOTE_AS4, NOTE_CS5,
+                           NOTE_E4, NOTE_G4, NOTE_C5, NOTE_E5,
+                           NOTE_FS4, NOTE_AS4, NOTE_CS5, NOTE_FS5
+                          };
 const uint32_t noteCount = sizeof(melody) / sizeof(melody[0]);
 
 const uint32_t toneDuration = 200;              // in milliseconds

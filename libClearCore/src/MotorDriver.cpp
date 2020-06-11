@@ -145,16 +145,16 @@ void MotorDriver::Refresh() {
     uint8_t intFlagReg = tcCount->INTFLAG.reg;
 
     bool invert = (m_mode == CPM_MODE_STEP_AND_DIR) &&
-                   m_polarityInversions.bit.hlfbInverted;
+                  m_polarityInversions.bit.hlfbInverted;
 
     // Process the HLFB information
     switch (m_hlfbMode) {
-        HlfbStates readHlfbState;
+            HlfbStates readHlfbState;
         case HLFB_MODE_HAS_PWM:
         case HLFB_MODE_HAS_BIPOLAR_PWM:
             // Check for overflow or error conditions
-            if ((intFlagReg & TC_INTFLAG_OVF) || 
-                (intFlagReg & TC_INTFLAG_ERR)) {
+            if ((intFlagReg & TC_INTFLAG_OVF) ||
+                    (intFlagReg & TC_INTFLAG_ERR)) {
                 tcCount->INTFLAG.reg = TC_INTFLAG_OVF | TC_INTFLAG_MC0 |
                                        TC_INTFLAG_ERR | TC_INTFLAG_MC1;
                 // Saturating increment
@@ -211,9 +211,9 @@ void MotorDriver::Refresh() {
             else {
                 // check for an HLFB state change
                 readHlfbState = (DigitalIn::m_stateFiltered ^ invert) ?
-                HLFB_ASSERTED : HLFB_DEASSERTED;
+                                HLFB_ASSERTED : HLFB_DEASSERTED;
                 if (readHlfbState != m_hlfbState &&
-                m_hlfbStateChangeCounter++ < HLFB_CARRIER_LOSS_STATE_CHANGE_SAMPLES) {
+                        m_hlfbStateChangeCounter++ < HLFB_CARRIER_LOSS_STATE_CHANGE_SAMPLES) {
                     break;
                 }
                 else {
@@ -237,8 +237,8 @@ void MotorDriver::Refresh() {
     statusRegPending.bit.MoveDirection = StepGenerator::m_direction;
     statusRegPending.bit.StepsActive =
         (StepGenerator::m_moveState != StepGenerator::MOVE_STATES::MS_IDLE &&
-        StepGenerator::m_moveState != StepGenerator::MOVE_STATES::MS_END);
-    statusRegPending.bit.AtVelTarget = 
+         StepGenerator::m_moveState != StepGenerator::MOVE_STATES::MS_END);
+    statusRegPending.bit.AtVelTarget =
         (StepGenerator::m_moveState == StepGenerator::MOVE_STATES::MS_CRUISE);
 
     if (m_isEnabling) {

@@ -66,8 +66,10 @@ public:
     static DmaManager &Instance();
 private:
 
-    static DmacDescriptor writeBackDescriptor[DMA_CHANNEL_COUNT] __attribute__((aligned(16)));
-    static DmacDescriptor descriptorBase[DMA_CHANNEL_COUNT] __attribute__((aligned(16)));
+    static DmacDescriptor writeBackDescriptor[DMA_CHANNEL_COUNT] __attribute__((
+                aligned(16)));
+    static DmacDescriptor descriptorBase[DMA_CHANNEL_COUNT] __attribute__((aligned(
+                16)));
 
     /**
         \brief Constructor for DmaManager

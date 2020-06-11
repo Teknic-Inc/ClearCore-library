@@ -69,13 +69,13 @@ public:
 
     /**
         \brief Issues a positional move for the specified distance.
-        
+
         \note When making absolute moves, ClearCore tracks the current position
         based on the zero position at program-start. If there is a move in
         progress when a new Move is issued, the target position will be adjusted
         according to the moveTarget parameter, the new acceleration and velocity
-        limits will be applied, and the new move is merged seamlessly with the 
-        previous motion. If you want to make sure that the previous move fully 
+        limits will be applied, and the new move is merged seamlessly with the
+        previous motion. If you want to make sure that the previous move fully
         completes without being merged with a new command, wait for StepsComplete
         to return true.
 
@@ -85,8 +85,8 @@ public:
         \endcode
 
         \param[in] dist The distance of the move in step pulses
-        \param[in] moveTarget (optional) Specify the type of movement that 
-        should be done. Absolute or relative to the end position of the current 
+        \param[in] moveTarget (optional) Specify the type of movement that
+        should be done. Absolute or relative to the end position of the current
         move. Invalid will result in move relative to the end position.
         Default: MOVE_TARGET_REL_END_POSN
     **/
@@ -125,7 +125,7 @@ public:
         ConnectorM0.MoveStopAbrupt();
         \endcode
 
-        \param[in] velMax The new velocity limit. Passing 0 keeps the 
+        \param[in] velMax The new velocity limit. Passing 0 keeps the
         previous deceleration rate
     **/
     void MoveStopDecel(int32_t decelMax = 0);
@@ -169,7 +169,7 @@ public:
         \endcode
 
         \return Returns the momentary commanded position.
-        /note Velocity changes as the motor accelerates and decelerates, this 
+        /note Velocity changes as the motor accelerates and decelerates, this
         should not be used to track the motion of the motor
     **/
     int32_t VelocityRefCommanded();
@@ -203,7 +203,7 @@ public:
     void AccelMax(int32_t accelMax);
 
     /**
-        \brief Sets the maximum deceleration for E-stop Deceleration in 
+        \brief Sets the maximum deceleration for E-stop Deceleration in
         step pulses per second^2. This is only for MoveStopDecel.
 
         Value will be clipped if out of bounds
@@ -235,7 +235,7 @@ public:
     }
 
     /**
-        \brief Function to check if the commanded move is at the cruising 
+        \brief Function to check if the commanded move is at the cruising
         velocity - Acceleration portion of movement has finished.
 
         \code{.cpp}
@@ -321,13 +321,13 @@ private:
     void AltVelMax(int32_t velMax);
 
     /**
-        \brief Private helper function for Move functions to call that 
+        \brief Private helper function for Move functions to call that
         updates the internal vel/accel limits to those set by the user.
 
-        Used to latch limits so a move followed immediate by a limit change 
+        Used to latch limits so a move followed immediate by a limit change
         is not used until the next move
     **/
-    void UpdatePendingMoveLimits(){
+    void UpdatePendingMoveLimits() {
         m_velLimitQx = m_velLimitPendingQx;
         m_altVelLimitQx = m_altVelLimitPendingQx;
         m_accelLimitQx = m_accelLimitPendingQx;

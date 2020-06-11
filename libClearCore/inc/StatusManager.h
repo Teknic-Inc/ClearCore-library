@@ -449,13 +449,13 @@ public:
         \return SysConnectorState register whose asserted bits indicate which
         connectors have been overloaded since startup.
     **/
-    SysConnectorState IoOverloadSinceStartupAccum(SysConnectorState mask = 
-                                                    UINT32_MAX);
+    SysConnectorState IoOverloadSinceStartupAccum(SysConnectorState mask =
+                UINT32_MAX);
 
     /**
         Activate an application driven blink code.
 
-        This function allows the application code to display a blink code 
+        This function allows the application code to display a blink code
         in the #BLINK_GROUP_APPLICATION code group.
 
         \code{.cpp}

@@ -155,7 +155,8 @@ void SynchronizedMove(int32_t distance) {
 
     // Wait until both motors complete their moves.
     uint32_t lastStatusTime = Milliseconds();
-    while (!motor0.StepsComplete() || motor0.HlfbState() != MotorDriver::HLFB_ASSERTED ||
+    while (!motor0.StepsComplete() ||
+            motor0.HlfbState() != MotorDriver::HLFB_ASSERTED ||
             !motor1.StepsComplete() || motor1.HlfbState() != MotorDriver::HLFB_ASSERTED) {
         // Periodically print out why the application is waiting.
         if (Milliseconds() - lastStatusTime > 100) {

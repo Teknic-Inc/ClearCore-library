@@ -48,7 +48,7 @@ namespace ClearCore {
     \brief ClearCore Ethernet configuration manager
 
     This class manages setup and access to the Ethernet PHY chip and Ethernet
-	Media Access Controller (GMAC) peripheral.
+    Media Access Controller (GMAC) peripheral.
 
     For more detailed information on the ClearCore Ethernet system, check out
     the \ref EthernetMain informational page.
@@ -201,12 +201,12 @@ public:
         \brief Set the local IP address.
 
         \note The local IP must be provided when using a static local IP. In
-		this case, be sure to specify a valid IP address on the same network
-		as your router/switch. This is probably an address of the form
-		"192.168.x.y". For example, if your router's address is 192.168.0.1,
-		you should use an address of the form 192.168.0.y as long as there
-		isn't a device on the network already that was assigned the same IP
-		address.
+        this case, be sure to specify a valid IP address on the same network
+        as your router/switch. This is probably an address of the form
+        "192.168.x.y". For example, if your router's address is 192.168.0.1,
+        you should use an address of the form 192.168.0.y as long as there
+        isn't a device on the network already that was assigned the same IP
+        address.
         \note Doesn't have any effect when using DHCP.
     **/
     void LocalIp(IpAddress ipaddr);

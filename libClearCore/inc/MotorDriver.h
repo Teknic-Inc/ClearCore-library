@@ -443,9 +443,9 @@ public:
         de-asserting the enable signal for \a time_ms milliseconds.
 
         The pulse duration (\a time_ms) must be within the Trigger Pulse range
-        set in the MSP software. The default trigger pulse will not suffice if 
-        not changed within MSP. If the pulse duration is too short, the pulse 
-        will be ignored. If the pulse duration is too long, the motor will 
+        set in the MSP software. The default trigger pulse will not suffice if
+        not changed within MSP. If the pulse duration is too short, the pulse
+        will be ignored. If the pulse duration is too long, the motor will
         momentarily disable.
 
         This function can be used with the following ClearPath&trade; operating
@@ -455,7 +455,7 @@ public:
         - Multiple Sensor Positioning
 
         \code{.cpp}
-        // Send a single trigger pulse of 25ms on M-0's enable that blocks 
+        // Send a single trigger pulse of 25ms on M-0's enable that blocks
         // further code execution until the pulse is finished.
         ConnectorM0.EnableTriggerPulse(1, 25, true);
         \endcode

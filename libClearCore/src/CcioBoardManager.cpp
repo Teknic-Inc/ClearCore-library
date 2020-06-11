@@ -367,7 +367,7 @@ void CcioBoardManager::Refresh() {
     // corresponds to the first CCIO-8 in the chain
     uint64_t outputSwapped =
         ~((static_cast<uint64_t>(reverseBytes(
-            static_cast<uint32_t>(m_outputsWithThrottling))) << 32) |
+                                     static_cast<uint32_t>(m_outputsWithThrottling))) << 32) |
           reverseBytes(static_cast<uint32_t>(m_outputsWithThrottling >> 32)));
     m_writeBuf.buf64.outputsSwapped =
         outputSwapped >> ((MAX_CCIO_DEVICES - m_ccioCnt) * CCIO_PINS_PER_BOARD);
@@ -427,9 +427,9 @@ void CcioBoardManager::PinState(ClearCorePins pinNum, bool newState) {
     m_currentOutputs = modifyBit(m_currentOutputs, bitNum, newState);
 }
 
-void CcioBoardManager::OutputPulsesStart(ClearCorePins pinNum, uint32_t onTime, 
-                                         uint32_t offTime, uint16_t pulseCount,
-                                         bool blockUntilDone) {
+void CcioBoardManager::OutputPulsesStart(ClearCorePins pinNum, uint32_t onTime,
+        uint32_t offTime, uint16_t pulseCount,
+        bool blockUntilDone) {
     if (pinNum < CLEARCORE_PIN_CCIO_BASE || pinNum >= CLEARCORE_PIN_CCIO_MAX) {
         return;
     }

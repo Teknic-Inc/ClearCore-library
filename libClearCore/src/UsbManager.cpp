@@ -325,7 +325,7 @@ bool UsbManager::CBLineStateChanged(usb_cdc_control_signal_t state) {
 }
 
 bool UsbManager::PortIsOpen() {
-    return (bool)*this && m_portOpen;
+    return (bool) * this && m_portOpen;
 }
 
 void UsbManager::PortOpen() {

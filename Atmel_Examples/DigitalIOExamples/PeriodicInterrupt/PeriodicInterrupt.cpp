@@ -19,7 +19,8 @@ void ConfigurePeriodicInterrupt(uint32_t frequencyHz);
 
 /// Make an alias for the ISR handler so that the user code does not need
 /// to know which IRQ it is being fired from
-extern "C" void TCC2_0_Handler(void) __attribute__((alias("PeriodicInterrupt")));
+extern "C" void TCC2_0_Handler(void) __attribute__((
+            alias("PeriodicInterrupt")));
 
 // Periodic interrupt priority
 // 0 is highest priority, 7 is lowest priority

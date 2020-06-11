@@ -2,7 +2,7 @@
  * Title: SpiComPortInitialization
  *
  * Objective:
- *    This example demonstrates how to configure a COM port for use with an 
+ *    This example demonstrates how to configure a COM port for use with an
  *    SPI device.
  *
  * Description:

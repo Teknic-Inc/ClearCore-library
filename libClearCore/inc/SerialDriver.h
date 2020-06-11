@@ -46,11 +46,11 @@ namespace ClearCore {
 
     This class controls access to the COM-0 and COM-1 connectors.
 
-	For more detailed information on each configurable mode, see the
-	\ref SerialDriverMain informational page.
+    For more detailed information on each configurable mode, see the
+    \ref SerialDriverMain informational page.
 
     For more detailed information on the ClearCore Connector interface in
-	general, check out the \ref ConnectorMain informational page.
+    general, check out the \ref ConnectorMain informational page.
 **/
 class SerialDriver : public SerialBase, public Connector {
     friend class SysManager;
