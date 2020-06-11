@@ -44,9 +44,6 @@ void TEST_MOVE(int32_t dist, int32_t accLim, int32_t velLim) {
     if (dist) {
         CHECK_TRUE(ConnectorM0.Move(dist));
     }
-    else {
-        CHECK_FALSE(ConnectorM0.Move(dist));
-    }
     lastVel = TestIO::StepGenVel(ConnectorM0);
     LONGS_EQUAL(0, TestIO::StepGenPosn(ConnectorM0));
     LONGS_EQUAL(0, lastVel);
