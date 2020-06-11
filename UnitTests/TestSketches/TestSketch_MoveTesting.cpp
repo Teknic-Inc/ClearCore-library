@@ -46,7 +46,6 @@ void MoveDistance(int distance);
 void WaitForMotorStop();
 void WaitForMotorCruise();
 void AssertPosition(int32_t targetPos);
-void AssertMoveStatus(bool expected, bool actual);
 void AssertVelocity(int32_t targetVel);
 
 void setup() {
@@ -68,8 +67,8 @@ void setup() {
 
     // Sets up serial communication and waits up to 5 seconds for a port to open.
     //   Serial communication is not required for this example to run.
-      Serial.ttl(false);
-      Serial.begin(baudRate);
+    Serial.ttl(false);
+    Serial.begin(baudRate);
     uint32_t timeout = 5000;
     uint32_t startTime = millis();
     while (!  Serial && millis() - startTime < timeout) {
@@ -89,7 +88,7 @@ void setup() {
     
     if (motor.IsInHwFault()) {
         // Motor is in a fault state
-          Serial.println("Motor is in a fault state, test failure");
+        Serial.println("Motor is in a fault state, test failure");
         // test failed, block
         while(true) { continue; }
     }
@@ -98,18 +97,19 @@ void setup() {
       Serial.println( motor.StatusReg().reg);
 
     // Waits for HLFB to assert (waits for homing to complete if applicable)
-      Serial.println("Waiting for HLFB...");
+    Serial.println("Waiting for HLFB...");
     startTime = millis();
     timeout = 3600;
     while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {
         if ( millis() - startTime > timeout ){
-              Serial.println("Timeout waiting for HLFB, Test Setup Failure");
+            Serial.println("Timeout waiting for HLFB, Test Setup Failure");
+            Serial.println("Tests Finished with issues");
             // test failed, block
             while(true) { continue; }
         }
         continue;
     }
-      Serial.println("Motor Ready");
+    Serial.println("Motor Ready");
 }
 
 int testNum = 0;
@@ -117,8 +117,6 @@ void loop() {
     // Put your main code here, it will run repeatedly:
     int32_t targetPos = 0;
     int32_t oldTargetPos;
-    bool expectedMoveStatus = true;
-    bool actualMoveStatus;
 
     StepGenerator::MOVE_TARGET moveType;
 
@@ -177,51 +175,51 @@ void loop() {
         
 
         targetPos = 5000;
-        actualMoveStatus = motor.Move(targetPos, moveType);
+        motor.Move(targetPos, moveType);
         WaitForMotorStop();
-        AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+        
         AssertPosition(targetPos);
         delay(500);
 
         targetPos = 0;
-        actualMoveStatus = motor.Move(targetPos, moveType);
+        motor.Move(targetPos, moveType);
         WaitForMotorStop();
-        AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+        
         AssertPosition(targetPos);
         delay(500);
 
         targetPos = -10000;
-        actualMoveStatus = motor.Move(targetPos, moveType);
+        motor.Move(targetPos, moveType);
         WaitForMotorStop();
-        AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+        
         AssertPosition(targetPos);
         delay(500);
 
         targetPos = -2000;
-        actualMoveStatus = motor.Move(targetPos, moveType);
+        motor.Move(targetPos, moveType);
         WaitForMotorStop();
-        AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+        
         AssertPosition(targetPos);
         delay(500);
 
         targetPos = -2100;
-        actualMoveStatus = motor.Move(targetPos, moveType);
+        motor.Move(targetPos, moveType);
         WaitForMotorStop();
-        AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+        
         AssertPosition(targetPos);
         delay(500);
 
         targetPos = -2000;
-        actualMoveStatus = motor.Move(targetPos, moveType);
+        motor.Move(targetPos, moveType);
         WaitForMotorStop();
-        AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+        
         AssertPosition(targetPos);
         delay(500);
 
           Serial.println("  ... Interrupted Moves");
 
         targetPos = 0;
-        actualMoveStatus = motor.Move(targetPos, moveType);
+        motor.Move(targetPos, moveType);
         WaitForMotorStop();
 
         int32_t absoluteMove1;
@@ -250,34 +248,15 @@ void loop() {
               Serial.print("    Final Position: ");
               Serial.println(targetPos);
             
-            actualMoveStatus = motor.Move(absoluteMove1, moveType);
-            AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+            motor.Move(absoluteMove1, moveType);
+            
             delay(delayBetweenMoves);
-            actualMoveStatus = motor.Move(absoluteMove2, moveType);
-            AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+            motor.Move(absoluteMove2, moveType);
+            
             WaitForMotorStop();
             AssertPosition(targetPos);
             delay(100);
         }
-
-          Serial.println("  ... Testing Rejection of moves");
-        
-        // Recenter
-        targetPos = 0;
-        actualMoveStatus = motor.Move(targetPos, moveType);
-        WaitForMotorStop();
-        delay(500);
-
-        targetPos = 30000;
-        actualMoveStatus = motor.Move(targetPos, moveType);
-        AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
-        delay(500);
-        expectedMoveStatus = false;
-        actualMoveStatus = motor.Move(0, moveType);
-        WaitForMotorStop();
-        AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
-        AssertPosition(targetPos);
-        delay(500);
 
           Serial.println("Finished Testing Absolute Position Moves.");
         } else {
@@ -292,10 +271,9 @@ void loop() {
         moveType = StepGenerator::MOVE_TARGET_ABSOLUTE;
         
 
-        expectedMoveStatus = true;
         // Zero
         targetPos = 0;
-        actualMoveStatus = motor.Move(targetPos, moveType);
+        motor.Move(targetPos, moveType);
         WaitForMotorStop();
         delay(500);
 
@@ -303,42 +281,42 @@ void loop() {
         
 
         targetPos += relativeMove;
-        actualMoveStatus = motor.Move(relativeMove, moveType);
+        motor.Move(relativeMove, moveType);
         WaitForMotorStop();
-        AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+        
         AssertPosition(targetPos);
         delay(500);
 
         relativeMove = -2000;
         targetPos += relativeMove;
-        actualMoveStatus = motor.Move(relativeMove, moveType);
+        motor.Move(relativeMove, moveType);
         WaitForMotorStop();
-        AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+        
         AssertPosition(targetPos);
         delay(500);
 
         relativeMove = -10000;
         targetPos += relativeMove;
-        actualMoveStatus = motor.Move(relativeMove, moveType);
+        motor.Move(relativeMove, moveType);
         WaitForMotorStop();
-        AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+        
         AssertPosition(targetPos);
         delay(500);
 
 
         relativeMove = 7000;
         targetPos += relativeMove;
-        actualMoveStatus = motor.Move(relativeMove, moveType);
+        motor.Move(relativeMove, moveType);
         WaitForMotorStop();
-        AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+        
         AssertPosition(targetPos);
         delay(500);
 
         relativeMove = 38000;
         targetPos += relativeMove;
-        actualMoveStatus = motor.Move(relativeMove, moveType);
+        motor.Move(relativeMove, moveType);
         WaitForMotorStop();
-        AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+        
         AssertPosition(targetPos);
         delay(500);
 
@@ -353,11 +331,11 @@ void loop() {
         relativeMove = -7000;
         delayBetweenMoves = 500;
         targetPos += relativeMove + relativeMove2;
-        actualMoveStatus = motor.Move(relativeMove, moveType);
-        AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+        motor.Move(relativeMove, moveType);
+        
         delay(delayBetweenMoves);
-        actualMoveStatus = motor.Move(relativeMove2, moveType);
-        AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+        motor.Move(relativeMove2, moveType);
+        
         WaitForMotorStop();
         AssertPosition(targetPos);
         delay(500);
@@ -383,11 +361,11 @@ void loop() {
           Serial.print("    Final Position: ");
           Serial.println(targetPos);
                 
-        actualMoveStatus = motor.Move(relativeMove, moveType);
-        AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+        motor.Move(relativeMove, moveType);
+        
         delay(delayBetweenMoves);
-        actualMoveStatus = motor.Move(relativeMove2, moveType);
-        AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+        motor.Move(relativeMove2, moveType);
+        
         WaitForMotorStop();
         AssertPosition(targetPos);
         delay(100);
@@ -414,11 +392,11 @@ void loop() {
               Serial.print("    Final Position: ");
               Serial.println(targetPos);
             
-            actualMoveStatus = motor.Move(relativeMove, moveType);
-            AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+            motor.Move(relativeMove, moveType);
+            
             delay(delayBetweenMoves);
-            actualMoveStatus = motor.Move(relativeMove2, moveType);
-            AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+            motor.Move(relativeMove2, moveType);
+            
             WaitForMotorStop();
             AssertPosition(targetPos);
             delay(100);
@@ -526,12 +504,12 @@ void loop() {
               Serial.println(targetPos);
             
             moveType = StepGenerator::MOVE_TARGET_ABSOLUTE;
-            actualMoveStatus = motor.Move(absoluteMove, moveType);
-            AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+            motor.Move(absoluteMove, moveType);
+            
             delay(delayBetweenMoves);
             moveType = StepGenerator::MOVE_TARGET_REL_END_POSN;
-            actualMoveStatus = motor.Move(relativeMove, moveType);
-            AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+            motor.Move(relativeMove, moveType);
+            
             WaitForMotorStop();
             AssertPosition(targetPos);
             delay(100);
@@ -579,12 +557,12 @@ void loop() {
               Serial.println(targetPos);
             
             moveType = StepGenerator::MOVE_TARGET_REL_END_POSN;
-            actualMoveStatus = motor.Move(relativeMove, moveType);
-            AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+            motor.Move(relativeMove, moveType);
+            
             delay(delayBetweenMoves);
             moveType = StepGenerator::MOVE_TARGET_ABSOLUTE;
-            actualMoveStatus = motor.Move(absoluteMove, moveType);
-            AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+            motor.Move(absoluteMove, moveType);
+            
             WaitForMotorStop();
             AssertPosition(targetPos);
             delay(100);
@@ -628,8 +606,8 @@ void loop() {
               Serial.println(delayBetweenMoves);
                 
             moveType = StepGenerator::MOVE_TARGET_REL_END_POSN;
-            actualMoveStatus = motor.Move(relativeMove, moveType);
-            AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+            motor.Move(relativeMove, moveType);
+            
             delay(delayBetweenMoves);
             moveType = StepGenerator::MOVE_TARGET_ABSOLUTE;
 
@@ -691,8 +669,8 @@ void loop() {
 
             startPos = motor.PositionRefCommanded();
             targetPos = startPos + relativeMove;
-            actualMoveStatus = motor.Move(relativeMove, moveType);
-            AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+            motor.Move(relativeMove, moveType);
+            
 
               Serial.print("    Starting Position: ");
               Serial.println(startPos);
@@ -724,7 +702,6 @@ void loop() {
         // Re-zero
         moveType = StepGenerator::MOVE_TARGET_ABSOLUTE;
         
-        expectedMoveStatus = true;
         motor.Move(0, moveType);
         WaitForMotorStop();
         delay(500);
@@ -753,8 +730,8 @@ void loop() {
             delay(delayBetweenMoves);
 
             targetPos = absoluteMove;
-            actualMoveStatus = motor.Move(absoluteMove, moveType);
-            AssertMoveStatus(actualMoveStatus,expectedMoveStatus);
+            motor.Move(absoluteMove, moveType);
+            
             WaitForMotorStop();
             AssertPosition(targetPos);
             delay(100);
@@ -819,38 +796,23 @@ void AssertPosition(int32_t targetPos){
     testNum++;
 }
 
-
-void AssertMoveStatus(bool expected, bool actual){
-    if (expected != actual) {
-
-          Serial.println("Move Status Assert Failed");
-          Serial.print("    Expected Position: ");
-          Serial.println(expected);
-          Serial.print("    Actual Position:  ");
-          Serial.println(actual);
-
-        while (true){
-            delay(100);
-        }
-    }
-}
-
 void AssertVelocity(int32_t targetVel){
     int32_t measuredVel = motor.VelocityRefCommanded();
     if (measuredVel != targetVel) {
-          Serial.print("Motor Velocity Assert Failed. Test Num ");
-          Serial.println(testNum);
-          Serial.print("    Desired Velocity: ");
-          Serial.println(targetVel);
-          Serial.print("    Actual Velocity:  ");
-          Serial.println(measuredVel);
+        Serial.print("Motor Velocity Assert Failed. Test Num ");
+        Serial.println(testNum);
+        Serial.print("    Desired Velocity: ");
+        Serial.println(targetVel);
+        Serial.print("    Actual Velocity:  ");
+        Serial.println(measuredVel);
 
+        Serial.println("Tests Finished with Issues");
         while (true){
             delay(100);
         }
     }
-      Serial.print("  Veloctity Test Finished:");
-      Serial.println(testNum);
+    Serial.print("  Veloctity Test Finished:");
+    Serial.println(testNum);
     testNum++;
 }
 
