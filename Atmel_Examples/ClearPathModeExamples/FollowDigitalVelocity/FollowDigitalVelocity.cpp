@@ -11,7 +11,7 @@
  *    written to the USB serial port.
  *    This example does not use HLFB for motor feedback. It is possible your
  *    commanded velocity is not reached before a new velocity is commanded.
- *    The resolution for PWM outputs is 8-bit, meaning only 256 discrete speeds
+ *    The resolution for PWM outputs is 8-bit, meaning 256 discrete speeds
  *    can be commanded in each direction. The motor's actual commanded speed may
  *    differ from what you input below because of this.
  *    Consider using Manual Velocity Control mode if greater velocity command

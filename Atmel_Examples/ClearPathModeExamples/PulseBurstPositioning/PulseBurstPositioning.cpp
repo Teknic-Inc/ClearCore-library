@@ -75,10 +75,10 @@ void setup() {
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
                           Connector::CPM_MODE_STEP_AND_DIR);
 
-    // Sets the maximum velocity for each move.
+    // Sets the maximum velocity and acceleration for each command.
+    // The move profile in this mode is determined by ClearPath, so the two 
+    // lines below should be left as is. Set your desired speed and accel in MSP
     motor.VelMax(INT32_MAX);
-
-    // Set the maximum acceleration for each move.
     motor.AccelMax(INT32_MAX);
 
     // Sets up serial communication and waits up to 5 seconds for a port to open.

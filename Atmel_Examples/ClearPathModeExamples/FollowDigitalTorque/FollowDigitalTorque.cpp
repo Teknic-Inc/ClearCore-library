@@ -89,7 +89,7 @@ void setup() {
     motor.EnableRequest(true);
     SerialPort.SendLine("Motor Enabled");
 
-    // Waits for HLFB to assert (waits for homing to complete if applicable)
+    // Waits for HLFB to assert
     SerialPort.SendLine("Waiting for HLFB...");
     while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {
         continue;
@@ -161,7 +161,7 @@ bool CommandTorque(int8_t commandedTorque) {
     // Command the move
     motor.MotorInBDuty(dutyRequest);
 
-    // Waits for HLFB to assert (signaling the move has successfully completed)
+    // Waits for HLFB to assert (signaling a successful new torque output)
     SerialPort.SendLine("Moving... Waiting for HLFB");
     // Allow some time for HLFB to transition.
     Delay_ms(1);
