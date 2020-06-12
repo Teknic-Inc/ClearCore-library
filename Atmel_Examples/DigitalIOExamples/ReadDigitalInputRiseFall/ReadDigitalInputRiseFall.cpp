@@ -11,7 +11,7 @@
  *    to the USB serial port every 2 seconds.
  *
  * Requirements:
- * ** An input device, such as a switch or sensor, connected to IO-0.
+ * ** An input device, such as a switch or sensor, connected to DI-6.
  *
  * Links:
  * ** web link to doxygen (all Examples)
@@ -26,7 +26,7 @@
 
 // Specify which input connector to use.
 // ConnectorIO0 through ConnectorA12 all have digital input capability.
-#define InputConnector ConnectorIO0
+#define InputConnector ConnectorDI6
 
 // Declares two boolean variables used to hold information on whether the input
 // has risen or fallen
@@ -59,7 +59,7 @@ void loop() {
     risen = InputConnector.InputRisen();
     fallen = InputConnector.InputFallen();
 
-    SerialPort.Send("State: ");
+    SerialPort.Send("DI-6 Transitions: ");
 
     if (risen && fallen) {
         SerialPort.SendLine("RISEN and FALLEN");

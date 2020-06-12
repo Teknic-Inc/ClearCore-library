@@ -61,7 +61,7 @@ void loop() {
     int16_t state = CcioMgr.PinByIndex(CLEARCORE_PIN_CCIOA0)->State();
 
     // Display the state of the input connector.
-    SerialPort.Send("Input state: ");
+    SerialPort.Send("CCIOA0 Input state: ");
     if (state) {
         SerialPort.SendLine("ON");
     }
