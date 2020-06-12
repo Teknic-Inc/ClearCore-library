@@ -79,7 +79,7 @@ jobs:
             mkdir variants\clearcore\Third Party
             git clone -b master https://git-server.teknic.com/CustomerPackages/same53.git "variants\clearcore\Third Party\same53"
             
-      - name: Test Script
+      - name: Run AStyle
         run: | 
             cd ClearCore_Arduino\Teknic\
             AStyle.exe --options=UnitTests\TestScripts\Style\configuration\astyle.cfg --dry-run "libClearCore\inc\*.h" "libClearCore\src\*.cpp" > AStyleOut.txt
