@@ -15,6 +15,7 @@ namespace ClearCore {
     - \ref SerialDriverMain
     - \ref CCIOMain
     - \ref EthernetMain
+    - \ref SdkExamples
 
 # Connectors
     - 1x DigitalInOutAnalogOut
