@@ -64,13 +64,13 @@ namespace ClearCore {
     - \ref ArduinoRef
 
 # Hardware Reference
-    - Refer to the <a href="SystemDiagram.pdf">ClearCore Hardware Manual</a>.
+    - Refer to the <a href="www.teknic.com/files/downloads/clearcore_system_diagram.pdf">ClearCore Hardware Manual</a>.
         - Jump to:
-            - <a href="SystemDiagram.pdf#page=1">Overview</a>
-            - <a href="SystemDiagram.pdf#page=2">Connector Wiring</a>
-            - <a href="SystemDiagram.pdf#page=6">Installing Debugger and XBee Modules</a>
-            - <a href="SystemDiagram.pdf#page=7">Block Diagram: I/O and Communication</a>
-            - <a href="SystemDiagram.pdf#page=8">Block Diagram: Motor I/O and Configuration Shift Register</a>
+            - <a href="www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=1">Overview</a>
+            - <a href="www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=2">Connector Wiring</a>
+            - <a href="www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=6">Installing Debugger and XBee Modules</a>
+            - <a href="www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=7">Block Diagram: I/O and Communication</a>
+            - <a href="www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=8">Block Diagram: Motor I/O and Configuration Shift Register</a>
 
 **/
 //********************************************************************************************

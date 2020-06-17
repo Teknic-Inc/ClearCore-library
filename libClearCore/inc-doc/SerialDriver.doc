@@ -9,7 +9,7 @@ namespace ClearCore {
     connectors also have an auxiliary mode called CCIO. This mode is used to connect to the ClearCore I/O Expansion Board (CCIO-8) which provides eight additional digital I/O points.
     
 <h2> Wiring and Initialization </h2>
-    - See the <a href="SystemDiagram.pdf#page=4">ClearCore System Diagram</a> for details on wiring COM-0 or COM-1 to a UART device, SPI device, or RS-232 DCE/Modem or DTE/Host.
+    - See the <a href="www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=4">ClearCore System Diagram</a> for details on wiring COM-0 or COM-1 to a UART device, SPI device, or RS-232 DCE/Modem or DTE/Host.
     - Initialize the serial port into the correct mode by calling the \ref SerialDriver#Mode() function. See below for examples on setting specific modes.
     
 <h2> RS-232/TTL Modes </h2>
