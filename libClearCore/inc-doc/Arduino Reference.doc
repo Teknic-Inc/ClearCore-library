@@ -42,6 +42,12 @@ This section serves as a reference guide for the ClearCore Arduino wrapper funct
 </table>
 
 
+<h2> SDK Examples </h2>
+As part of the Arduino installation package a number of examples sketches are included. These sketches demonstrate how to utilize the various features of ClearCore using standard Arduino functions and classes. The examples may be found in the Arduino IDE under the Examples menu, as seen below:
+
+<img src="examples.png">
+
+
 <h2> Deviations from standard Arduino </h2>
     - The pin mode INPUT_PULLUP has no functional difference from INPUT. The two may be used interchangeably.
     - analogRead() has an extra optional parameter to specify the desired units of the 
