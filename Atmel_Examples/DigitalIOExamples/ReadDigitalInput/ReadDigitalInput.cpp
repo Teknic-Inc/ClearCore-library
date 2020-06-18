@@ -56,7 +56,7 @@ void loop() {
     state = inputPin.State();
 
     // Display the state of the input connector.
-    SerialPort.Send("Input state: ");
+    SerialPort.Send("DI-6 Input state: ");
     if (state) {
         SerialPort.SendLine("ON");
     }
