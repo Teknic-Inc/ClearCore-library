@@ -176,7 +176,7 @@ public:
             This connector has the following features:
             - Optional majority filtering
             - TTL or 24V input compatibility
-            
+
             Connectors of this type:
             - ConnectorDI6
             - ConnectorDI7
@@ -190,7 +190,7 @@ public:
             - Optional majority input filtering
             - TTL or 24V input compatibility
             - High power digital output
-            
+
             Connectors of this type:
             - ConnectorIO1
             - ConnectorIO2
@@ -208,7 +208,7 @@ public:
             - Optional majority input filtering
             - TTL or 24V input compatibility
             - 0-10V analog input measurements
-            
+
             Connectors of this type:
             - ConnectorA9
             - ConnectorA10
@@ -224,7 +224,7 @@ public:
             - TTL or 24V input compatibility
             - High power digital output
             - 0-20mA analog current output
-            
+
             Connectors of this type:
             - ConnectorIO0
         **/
@@ -237,7 +237,7 @@ public:
             - Drive a motor
             - Create tones to drive a speaker
             - Create bi-directional output via PWM
-            
+
             Connectors of this type:
             - ConnectorIO4
             - ConnectorIO5
@@ -254,7 +254,7 @@ public:
             - Step+Direction Move Generation
             - Control of the A and B inputs for use with the MC models.
             - Reading of the HLFB from ClearPath motors.
-            
+
             Connectors of this type:
             - ConnectorM0
             - ConnectorM1
@@ -269,7 +269,7 @@ public:
             - be used as asynchronous serial ports with selectable baud rate and
               data formats.
             - be used as SPI master ports.
-            
+
             Connectors of this type:
             - ConnectorCOM0
             - ConnectorCOM1
@@ -280,7 +280,7 @@ public:
 
             These connectors can:
             - be used as asynchronous serial ports.
-            
+
             Connectors of this type:
             - ConnectorUsb
         **/
@@ -389,7 +389,7 @@ public:
         on the specific connector. Access to this information would need
         to be provided by the implementation object.
 
-        For boolean items, this will return the values of C++ true and false. 
+        For boolean items, this will return the values of C++ true and false.
         For analog items, this could be the RAW or processed ADC value, etc.
 
         \code{.cpp}

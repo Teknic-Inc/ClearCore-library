@@ -31,7 +31,6 @@
 #include "EthernetManager.h"
 #include "InputManager.h"
 #include "LedDriver.h"
-#include "EncoderInput.h"
 #include "MotorDriver.h"
 #include "MotorManager.h"
 #include "SdCardDriver.h"
@@ -96,9 +95,6 @@ extern InputManager &InputMgr;
 
 /// Xbee wireless
 extern XBeeDriver XBee;
-
-/// Position Decoder
-extern EncoderInput &EncoderIn;
 
 /// Status manager
 extern StatusManager &StatusMgr;

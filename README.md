@@ -1,4 +1,4 @@
-# ClearCore-library
+# ClearCore-library 
 
 This repository contains the ClearCore Motion and I/O Library, providing a foundation to build ClearCore applications. Also included are Atmel Studio example programs that demonstrate various features of the ClearCore, and an Atmel Studio template project that can be used to start building your own application.
 

@@ -143,7 +143,7 @@ public:
         - 8-bit
         - 10-bit
         - 12-bit
-        
+
         \note The default resolution is 12-bit.
 
         \code{.cpp}

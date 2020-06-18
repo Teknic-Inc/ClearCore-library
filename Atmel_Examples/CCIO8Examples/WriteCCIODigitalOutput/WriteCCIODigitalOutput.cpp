@@ -17,10 +17,10 @@
  *      built-in I/O LEDs toggle with the connector state.
  *
  * Links:
- * ** web link to doxygen (all Examples)
- * ** web link to ClearCore Manual (all Examples)  <<FUTURE links to Getting started webpage/ ClearCore videos>>
+ * ** ClearCore Documentation: https://teknic-inc.github.io/ClearCore-library/
+ * ** ClearCore Manual: https://www.teknic.com/files/downloads/clearcore_user_manual.pdf
  *
- * Last Modified: 1/21/2020
+ * 
  * Copyright (c) 2020 Teknic Inc. This work is free to use, copy and distribute under the terms of
  * the standard MIT permissive software license which can be found at https://opensource.org/licenses/MIT
  */
@@ -49,7 +49,8 @@ void setup() {
     // "CLEARCORE_PIN_CCIOC7", and do the same for the for-loop in the loop()
     // function below.
     for (int16_t pin = CLEARCORE_PIN_CCIOA0; pin <= CLEARCORE_PIN_CCIOA7; pin++) {
-        CcioMgr.PinByIndex(static_cast<ClearCorePins>(pin))->Mode(Connector::OUTPUT_DIGITAL);
+        CcioMgr.PinByIndex(static_cast<ClearCorePins>(pin))->Mode(
+            Connector::OUTPUT_DIGITAL);
     }
 
     // The connectors are all set up; start the loop with turning them all on.

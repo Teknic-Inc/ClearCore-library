@@ -275,7 +275,9 @@ public:
         \endcode
 
         \param[in] useFlowControl The new flow control setting.
-        \note Flow control is off by default.
+        \note Flow control is off by default. Some XBee devices have flow
+        control enabled by default. If using an XBee device, the ClearCore flow
+        control setting should match the XBee device setting.
     **/
     void FlowControl(bool useFlowControl);
 

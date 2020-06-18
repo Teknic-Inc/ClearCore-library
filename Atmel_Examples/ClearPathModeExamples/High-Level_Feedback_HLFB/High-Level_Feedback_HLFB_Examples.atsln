@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Atmel Studio Solution File, Format Version 11.00
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "SpeedOutput", "SpeedOutput\SpeedOutput.cppproj", "{2B9BCDB3-E27A-481B-8C46-225B4B2FD14E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C373696C-5D45-4B91-AD62-A21552361596} = {C373696C-5D45-4B91-AD62-A21552361596}
+		{2530D5B1-8A40-4A55-95CA-2EC0B63E2088} = {2530D5B1-8A40-4A55-95CA-2EC0B63E2088}
+	EndProjectSection
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "AsgWithMeasuredTorque", "AsgWithMeasuredTorque\AsgWithMeasuredTorque.cppproj", "{67623477-9C59-4F5B-8468-4E0D0F0FB6CE}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "ClearCore", "..\..\..\libClearCore\ClearCore.cppproj", "{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "LwIP", "..\..\..\LwIP\LwIP.cppproj", "{C373696C-5D45-4B91-AD62-A21552361596}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Release|ARM = Release|ARM
+		Test|ARM = Test|ARM
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2B9BCDB3-E27A-481B-8C46-225B4B2FD14E}.Debug|ARM.ActiveCfg = Debug|ARM
+		{2B9BCDB3-E27A-481B-8C46-225B4B2FD14E}.Debug|ARM.Build.0 = Debug|ARM
+		{2B9BCDB3-E27A-481B-8C46-225B4B2FD14E}.Release|ARM.ActiveCfg = Release|ARM
+		{2B9BCDB3-E27A-481B-8C46-225B4B2FD14E}.Release|ARM.Build.0 = Release|ARM
+		{2B9BCDB3-E27A-481B-8C46-225B4B2FD14E}.Test|ARM.ActiveCfg = Release|ARM
+		{2B9BCDB3-E27A-481B-8C46-225B4B2FD14E}.Test|ARM.Build.0 = Release|ARM
+		{67623477-9C59-4F5B-8468-4E0D0F0FB6CE}.Debug|ARM.ActiveCfg = Debug|ARM
+		{67623477-9C59-4F5B-8468-4E0D0F0FB6CE}.Debug|ARM.Build.0 = Debug|ARM
+		{67623477-9C59-4F5B-8468-4E0D0F0FB6CE}.Release|ARM.ActiveCfg = Release|ARM
+		{67623477-9C59-4F5B-8468-4E0D0F0FB6CE}.Release|ARM.Build.0 = Release|ARM
+		{67623477-9C59-4F5B-8468-4E0D0F0FB6CE}.Test|ARM.ActiveCfg = Release|ARM
+		{67623477-9C59-4F5B-8468-4E0D0F0FB6CE}.Test|ARM.Build.0 = Release|ARM
+		{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}.Debug|ARM.ActiveCfg = Debug|ARM
+		{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}.Debug|ARM.Build.0 = Debug|ARM
+		{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}.Release|ARM.ActiveCfg = Release|ARM
+		{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}.Release|ARM.Build.0 = Release|ARM
+		{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}.Test|ARM.ActiveCfg = Release|ARM
+		{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}.Test|ARM.Build.0 = Release|ARM
+		{C373696C-5D45-4B91-AD62-A21552361596}.Debug|ARM.ActiveCfg = Debug|ARM
+		{C373696C-5D45-4B91-AD62-A21552361596}.Debug|ARM.Build.0 = Debug|ARM
+		{C373696C-5D45-4B91-AD62-A21552361596}.Release|ARM.ActiveCfg = Release|ARM
+		{C373696C-5D45-4B91-AD62-A21552361596}.Release|ARM.Build.0 = Release|ARM
+		{C373696C-5D45-4B91-AD62-A21552361596}.Test|ARM.ActiveCfg = Release|ARM
+		{C373696C-5D45-4B91-AD62-A21552361596}.Test|ARM.Build.0 = Release|ARM
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

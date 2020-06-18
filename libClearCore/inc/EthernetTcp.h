@@ -120,9 +120,9 @@ public:
 
         \return Returns the local port number.
     **/
-    volatile const TcpData* ConnectionState() {
-		return m_tcpData;
-	}
+    volatile const TcpData *ConnectionState() {
+        return m_tcpData;
+    }
 
 protected:
     // The TCP state.

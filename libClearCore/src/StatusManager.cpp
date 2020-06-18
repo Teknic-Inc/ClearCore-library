@@ -102,7 +102,8 @@ StatusManager::StatusRegister StatusManager::StatusAccum(StatusRegister mask) {
     return statusReg;
 }
 
-StatusManager::StatusRegister StatusManager::SinceStartupAccum(StatusRegister mask) {
+StatusManager::StatusRegister StatusManager::SinceStartupAccum(
+    StatusRegister mask) {
     StatusRegister statusReg;
     statusReg.reg = atomic_load_n(&m_statusRegSinceStartup.reg) & mask.reg;
     return statusReg;
@@ -127,7 +128,8 @@ SysConnectorState StatusManager::IoOverloadAccum(SysConnectorState mask) {
     return overloadReg;
 }
 
-SysConnectorState StatusManager::IoOverloadSinceStartupAccum(SysConnectorState mask) {
+SysConnectorState StatusManager::IoOverloadSinceStartupAccum(
+    SysConnectorState mask) {
     SysConnectorState overloadReg;
     overloadReg.reg = atomic_load_n(&m_overloadSinceStartup.reg) & mask.reg;
     return overloadReg;

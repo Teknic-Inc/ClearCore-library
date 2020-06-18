@@ -14,10 +14,10 @@
  * ** A speaker or other audio output device connected to IO-4
  *
  * Links:
- * ** web link to doxygen (all Examples)
- * ** web link to ClearCore Manual (all Examples)  <<FUTURE links to Getting started webpage/ ClearCore videos>>
+ * ** ClearCore Documentation: https://teknic-inc.github.io/ClearCore-library/
+ * ** ClearCore Manual: https://www.teknic.com/files/downloads/clearcore_user_manual.pdf
  *
- * Last Modified: 1/21/2020
+ * 
  * Copyright (c) 2020 Teknic Inc. This work is free to use, copy and distribute under the terms of
  * the standard MIT permissive software license which can be found at https://opensource.org/licenses/MIT
  */
@@ -30,10 +30,10 @@
 // Any commanded frequency above 5512 Hz will get clipped to 5512 Hz.
 // See the "pitches.h" file for the frequency definitions of these notes.
 const uint16_t melody[] = {NOTE_C4, NOTE_E4, NOTE_G4, NOTE_C5,
-                      NOTE_CS4, NOTE_FS4, NOTE_AS4, NOTE_CS5,
-                      NOTE_E4, NOTE_G4, NOTE_C5, NOTE_E5,
-                      NOTE_FS4, NOTE_AS4, NOTE_CS5, NOTE_FS5
-                     };
+                           NOTE_CS4, NOTE_FS4, NOTE_AS4, NOTE_CS5,
+                           NOTE_E4, NOTE_G4, NOTE_C5, NOTE_E5,
+                           NOTE_FS4, NOTE_AS4, NOTE_CS5, NOTE_FS5
+                          };
 const uint32_t noteCount = sizeof(melody) / sizeof(melody[0]);
 
 const uint32_t toneDuration = 200;              // in milliseconds

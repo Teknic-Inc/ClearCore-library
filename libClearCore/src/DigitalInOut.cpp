@@ -34,8 +34,8 @@
 #include "SysTiming.h"
 #include "SysUtils.h"
 
-#define OVERLOAD_TRIP_TICKS    (1 * MS_TO_SAMPLES)
-#define OVERLOAD_FOLDBACK_TICKS (2000 * MS_TO_SAMPLES)
+#define OVERLOAD_TRIP_TICKS ((uint8_t)(2.4 * MS_TO_SAMPLES))
+#define OVERLOAD_FOLDBACK_TICKS (100 * MS_TO_SAMPLES)
 
 namespace ClearCore {
 
@@ -344,7 +344,7 @@ bool DigitalInOut::PwmDuty(uint8_t newDuty) {
     // Wait for the TC CC value to be ready to be written
     SYNCBUSY_WAIT(&m_tc->COUNT8, TC_SYNCBUSY_CC_Msk);
     m_tc->COUNT8.CCBUF[m_tcPadNum].reg = (m_logicInversion) ? newDuty
-                                                            : 255 - newDuty;
+                                         : 255 - newDuty;
 
     ShiftReg.LedPwmValue(m_clearCorePin, newDuty);
     return true;

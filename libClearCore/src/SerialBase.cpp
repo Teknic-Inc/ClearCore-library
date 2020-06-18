@@ -174,8 +174,8 @@ bool SerialBase::RtsSsPinState(CtrlLineModes mode) {
         case LINE_ON:
             DATA_OUTPUT_STATE(m_rtsSsInfo->gpioPort,
                               1L << m_rtsSsInfo->gpioPin,
-                              mode == LINE_OFF); // ON is low voltage due to 
-                                                 // inversions
+                              mode == LINE_OFF); // ON is low voltage due to
+            // inversions
             PMUX_DISABLE(m_rtsSsInfo->gpioPort, m_rtsSsInfo->gpioPin);
             break;
         default:
@@ -937,7 +937,8 @@ void SerialBase::HandleOverflow() {
     }
 }
 
-SerialBase::SerialErrorStatusRegister SerialBase::ErrorStatusAccum(SerialErrorStatusRegister mask) {
+SerialBase::SerialErrorStatusRegister SerialBase::ErrorStatusAccum(
+    SerialErrorStatusRegister mask) {
     SerialErrorStatusRegister statusReg;
     statusReg.reg = atomic_fetch_and(&m_errorRegAccum.reg, ~mask.reg) & mask.reg;
     return statusReg;

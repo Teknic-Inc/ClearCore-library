@@ -2,7 +2,9 @@ namespace ClearCore {
 /**
 \page ArduinoRef ClearCore Arduino API Reference
 <h1> Overview </h1>
-**TODO: This section should talk about how the Arduino "wrapper" interacts with the OEM ClearCore library. This should be probably be written by SW member and then reviewed by a Sales member, after we have a concrete plan for how we want to market the Arduino wrapper.
+The ClearCore Arduino Wrapper Library, used in conjunction with the standard ClearCore Motion and I/O Library, allows for easy programming in the lightweight Arduino IDE. Using ClearCore with the Arduino IDE is suitable for all developers, from confident Arduino users to novice programmers or even experienced programmers who want to create a prototype as quickly as possible.
+
+This section serves as a reference guide for the ClearCore Arduino wrapper functions that can be used to control your ClearCore. Because this is a software wrapper, each of the functions within it interacts with the ClearCore Motion and I/O Library. As such, some of the functions you see here were modified from the original Arduino counterparts. Any differences from the standard Arduino functions are documented below as well.
 
 <table>
 <caption>ClearCore connector aliases</caption>
@@ -25,6 +27,27 @@ namespace ClearCore {
 <tr><td>#ConnectorCOM1 <td><center>Serial1</center>
 </table>
 
+<table>
+<caption>ClearCore motor input aliases</caption>
+<tr><th>Name<th>Arduino Alias
+<tr><td> <td><center>IO0</center>
+<tr><td>M-0 Input A <td><center>M0INA</center>
+<tr><td>M-0 Input B <td><center>M0INB</center>
+<tr><td>M-1 Input A <td><center>M1INA</center>
+<tr><td>M-1 Input B <td><center>M1INB</center>
+<tr><td>M-2 Input A <td><center>M2INA</center>
+<tr><td>M-2 Input B <td><center>M2INB</center>
+<tr><td>M-3 Input A <td><center>M3INA</center>
+<tr><td>M-3 Input B <td><center>M3INB</center>
+</table>
+
+
+<h2> SDK Examples </h2>
+As part of the Arduino installation package a number of examples sketches are included. These sketches demonstrate how to utilize the various features of ClearCore using standard Arduino functions and classes. The examples may be found in the Arduino IDE under the Examples menu, as seen below:
+
+<img src="examples.png">
+
+
 <h2> Deviations from standard Arduino </h2>
     - The pin mode INPUT_PULLUP has no functional difference from INPUT. The two may be used interchangeably.
     - analogRead() has an extra optional parameter to specify the desired units of the 
@@ -38,9 +61,12 @@ namespace ClearCore {
     - analogWriteResolution() is not a supported function. The analog write resolution 
     of the ClearCore is 12 bits and is not user-modifiable.
     - Tones are sine waves rather than half-duty square waves like most Arduinos.
-    - Arduino-style periodic interrupts using Timer0 and Timer1 are not supported.
+    - Arduino-style periodic interrupts using Timer0 and Timer1 are not supported. The AVR registers used to configure these Timers
+    do not exist in the ClearCore hardware. Refer to the PeriodicInterrupt example in the Atmel_Examples directory for an alternative
+    way to achieve the same functionality as Timer0 and Timer1.
     - The Serial keyword represents the USB serial port. Serial0 and Serial1 represent the COM-0 and COM-1 serial ports respectively.
-    - The Servo and Stepper libraries are not supported by ClearCore.
+    - The Servo and Stepper Arduino libraries are not supported by ClearCore. For motor control, defer to the
+    underlying ClearCore I/O and Motion Control library. (See the \ref MotorDriverMain documentation for more information.)
     - The pulseIn() and pulseInLong() functions do not require interrupts to be enabled.
     - There is no functional difference between pulseIn() and pulseInLong().
     
@@ -73,7 +99,7 @@ namespace ClearCore {
     - <a href="https://www.arduino.cc/reference/en/language/functions/digital-io/digitalread/" >Arduino.cc Reference</a>
     
 <h3> digitalWrite(pin, value) </h3>
-    - Valid pins: IO0, IO1, IO2, IO3, IO4, IO5
+    - Valid pins: IO0, IO1, IO2, IO3, IO4, IO5, M0INA, M0INB, M1INA, M1INB, M2INA, M2INB, M3INA, M3INB
     - Write a HIGH or a LOW value to a digital pin.
     - <a href="https://www.arduino.cc/reference/en/language/functions/digital-io/digitalwrite/" >Arduino.cc Reference</a>
     
@@ -205,7 +231,7 @@ ClearCore pins DI6 through A12 can be set up as digital interrupts.
     - <a href="https://www.arduino.cc/reference/en/language/functions/communication/serial/print/" >Arduino.cc Reference</a>
     
 <h3> println(val, format[optional]) </h3>
-    - Prints data to the serial port as human-readable ASCII text followed by a carriage return character (ASCII 13, or '\r') and a newline character (ASCII 10, or '\\n').\n This command takes the same formats as Serial.print().
+    - Prints data to the serial port as human-readable ASCII text followed by a carriage return character (ASCII 13, or '\\r') and a newline character (ASCII 10, or '\\n').\n This command takes the same formats as Serial.print().
     - <a href="https://www.arduino.cc/reference/en/language/functions/communication/serial/println/" >Arduino.cc Reference</a>
     
 <h3> read() </h3>

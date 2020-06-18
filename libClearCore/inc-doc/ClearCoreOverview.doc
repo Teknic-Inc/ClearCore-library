@@ -4,7 +4,9 @@ namespace ClearCore {
 
 \mainpage 
 # Introduction
-    ClearCore can do it all.
+    ClearCore is an industrial motion and I/O controller featuring flexible, software-configurable I/O with a rich C++ Motion and I/O library. This document serves as a reference guide for the library and the variety of functions used to interface with and control your ClearCore in a motion control application.
+    
+    For ClearCore hardware documentation, including device specifications and I/O wiring examples, see the <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf">ClearCore Hardware Manual</a>.
     
 # Informational Pages    - \ref ConnectorMain
     - \ref MotorDriverMain
@@ -13,6 +15,7 @@ namespace ClearCore {
     - \ref SerialDriverMain
     - \ref CCIOMain
     - \ref EthernetMain
+    - \ref SdkExamples
 
 # Connectors
     - 1x DigitalInOutAnalogOut
@@ -47,18 +50,27 @@ namespace ClearCore {
 # Status
     - \subpage StatusIndicators
         - \subpage BlinkCodes
+
+# Behavior on Powerup / Resetting
+    - When the ClearCore first powers up, the last-uploaded code will start
+    executing immediately. If no code has been uploaded yet, or if the chip
+    was erased, the ClearCore will start up in bootloader mode. See 
+    \ref InitializationBlinks and \ref BootloaderBlinks for more information.
+    - Pressing the reset button once will restart execution of user code. Quickly
+    double-pressing the reset button will reset the ClearCore into bootloader
+    mode.
     
 # Arduino Reference
     - \ref ArduinoRef
 
 # Hardware Reference
-    - Refer to the <a href="SystemDiagram.pdf">ClearCore System Diagram</a>.
+    - Refer to the <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf">ClearCore Hardware Manual</a>.
         - Jump to:
-            - <a href="SystemDiagram.pdf#page=1">Overview</a>
-            - <a href="SystemDiagram.pdf#page=2">Connector Wiring</a>
-            - <a href="SystemDiagram.pdf#page=6">Installing Debugger and XBee Modules</a>
-            - <a href="SystemDiagram.pdf#page=7">Block Diagram: I/O and Communication</a>
-            - <a href="SystemDiagram.pdf#page=8">Block Diagram: Motor I/O and Configuration Shift Register</a>
+            - <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=1">Overview</a>
+            - <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=2">Connector Wiring</a>
+            - <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=6">Installing Debugger and XBee Modules</a>
+            - <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=7">Block Diagram: I/O and Communication</a>
+            - <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=8">Block Diagram: Motor I/O and Configuration Shift Register</a>
 
 **/
 //********************************************************************************************
@@ -72,7 +84,8 @@ namespace ClearCore {
     - \subpage UnderGlowLed
         - \subpage BlinkCodes
     - \subpage EthernetLed
-    - \subpage XBeeLed
+    - XBee LED Indicator
+        - Refer to the Associate LED settings of your XBee device.
     - \subpage CcioLed
     - \subpage BootloaderBlinks
     - \subpage InitializationBlinks
@@ -99,7 +112,7 @@ namespace ClearCore {
 <h2> COM Port LED States </h2>
     - Off: The port has not been opened for data communications.
     - On: The port has been opened and is ready to transmit and receive data.
-    - Breathing: The port has been configured to communicate with one or more ClearCore I/O Expansion (CCIO-8) Boards and the link established between the ClearCore all CCIO-8 boards is healthy.
+    - Breathing: The port has been configured to communicate with one or more ClearCore I/O Expansion (CCIO-8) Boards and the link established between the ClearCore and the CCIO-8 boards is healthy.
     - Strobing: The port has been configured to communicate with one or more ClearCore I/O Expansion (CCIO-8) Boards and there is an overload condition on one of the CCIO-8 connectors.
 **/
 //********************************************************************************************
@@ -114,6 +127,17 @@ namespace ClearCore {
     - On: Processor has crashed. To recover, double-click the reset button to put the processor into bootloader mode, then upload safe code.
     - Error Code: A series of stobes and solid blinks indicate an error code that has occurred since the last time the processor was reset.
         - See \subpage BlinkCodes
+**/
+//********************************************************************************************
+/**
+\page EthernetLed Ethernet LED Indicator
+<h1> Ethernet LED Indicator </h1>
+    The LED within the Ethernet connector indicates the state of the link and network activity on the link.
+    
+<h2> Ethernet LED States </h2>
+    - Off: No link established (link down).
+    - On: Link established but no network activity detected (link up).
+    - Blinking: Network activity detected on the link.
 **/
 //********************************************************************************************
 /**
@@ -162,7 +186,7 @@ namespace ClearCore {
 
 <br>
 
-<u>Example</u>: 4 pulses means IO-3 was overloaded
+<h2>Example</h2>: 4 pulses means IO-3 was overloaded
 <img src="blink_code_timing_diagram_1_4.png">
 \see \ref OutputOverload
     
@@ -184,7 +208,7 @@ namespace ClearCore {
 
 <br>
     
-<u>Example</u>: 2 pulses indicate an SD card error
+<h2>Example</h2>: 2 pulses indicate an SD card error
 <img src="blink_code_timing_diagram_3_2.png">
 
 <hr>
@@ -212,20 +236,20 @@ This table is a quick way to tell which connectors support which functionalities
 
 <table>
 <caption>Connector functionality checklist</caption>
-<tr><td><th>Digital input<th>Analog input (0-20V)<th>Digital output<th>PWM output<th>H-Bridge digital output<th>Tone output<th>WAV file output<th>Analog output
-<tr><td>#ConnectorIO0 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><td><td><td><center>x</center>
-<tr><td>#ConnectorIO1 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><td><td><td>
-<tr><td>#ConnectorIO2 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><td><td><td>
-<tr><td>#ConnectorIO3 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><td><td><td>
-<tr><td>#ConnectorIO4 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td>
-<tr><td>#ConnectorIO5 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td>
-<tr><td>#ConnectorDI6 <td><center>x</center><td><td><td><td><td><td><td>
-<tr><td>#ConnectorDI7 <td><center>x</center><td><td><td><td><td><td><td>
-<tr><td>#ConnectorDI8 <td><center>x</center><td><td><td><td><td><td><td>
-<tr><td>#ConnectorA9 <td><center>x</center><td><center>x</center><td><td><td><td><td><td>
-<tr><td>#ConnectorA10 <td><center>x</center><td><center>x</center><td><td><td><td><td><td>
-<tr><td>#ConnectorA11 <td><center>x</center><td><center>x</center><td><td><td><td><td><td>
-<tr><td>#ConnectorA12 <td><center>x</center><td><center>x</center><td><td><td><td><td><td>
+<tr><td><th>Digital input<th>Analog input (0-10V)<th>Digital output<th>PWM output<th>H-Bridge digital output<th>Tone output<th>WAV file output<th>Bidirectional DC motor<th>Analog output (4-20mA and 0-20mA)
+<tr><td>#ConnectorIO0 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><td><td><td><td><center>x</center>
+<tr><td>#ConnectorIO1 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><td><td><td><td>
+<tr><td>#ConnectorIO2 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><td><td><td><td>
+<tr><td>#ConnectorIO3 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><td><td><td><td>
+<tr><td>#ConnectorIO4 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td>
+<tr><td>#ConnectorIO5 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td>
+<tr><td>#ConnectorDI6 <td><center>x</center><td><td><td><td><td><td><td><td>
+<tr><td>#ConnectorDI7 <td><center>x</center><td><td><td><td><td><td><td><td>
+<tr><td>#ConnectorDI8 <td><center>x</center><td><td><td><td><td><td><td><td>
+<tr><td>#ConnectorA9 <td><center>x</center><td><center>x</center><td><td><td><td><td><td><td>
+<tr><td>#ConnectorA10 <td><center>x</center><td><center>x</center><td><td><td><td><td><td><td>
+<tr><td>#ConnectorA11 <td><center>x</center><td><center>x</center><td><td><td><td><td><td><td>
+<tr><td>#ConnectorA12 <td><center>x</center><td><center>x</center><td><td><td><td><td><td><td>
 </table>
 **/
 //********************************************************************************************

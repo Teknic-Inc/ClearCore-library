@@ -13,14 +13,14 @@
  *
  * Requirements:
  * 1. A motor capable of step and direction must be connected to Connector M-0.
- * 2. The motor may optionally be connected to the MotorDriver's HLFB line if 
+ * 2. The motor may optionally be connected to the MotorDriver's HLFB line if
  *    the motor has a "servo on" type feedback feature.
  *
  * Links:
- * ** web link to doxygen (all Examples)
- * ** web link to ClearCore Manual (all Examples)  <<FUTURE links to Getting started webpage/ ClearCore videos>>
+ * ** ClearCore Documentation: https://teknic-inc.github.io/ClearCore-library/
+ * ** ClearCore Manual: https://www.teknic.com/files/downloads/clearcore_user_manual.pdf
  *
- * Last Modified: 1/21/2020
+ * 
  * Copyright (c) 2020 Teknic Inc. This work is free to use, copy and distribute under the terms of
  * the standard MIT permissive software license which can be found at https://opensource.org/licenses/MIT
  */
@@ -56,8 +56,8 @@ void setup() {
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
                           Connector::CPM_MODE_STEP_AND_DIR);
 
-    // These lines may be uncommented to invert the output signals of the 
-    // Enable, Direction, and HLFB lines. Some motors may have input polarities 
+    // These lines may be uncommented to invert the output signals of the
+    // Enable, Direction, and HLFB lines. Some motors may have input polarities
     // that are inverted from the ClearCore's polarity.
     //motor.PolarityInvertSDEnable(true);
     //motor.PolarityInvertSDDirection(true);
@@ -83,7 +83,7 @@ void setup() {
     // Enables the motor.
     motor.EnableRequest(true);
 
-    // Waits for HLFB to assert. Uncomment these lines if your motor has a 
+    // Waits for HLFB to assert. Uncomment these lines if your motor has a
     // "servo on" feature and it is wired to the HLFB line on the connector.
     //Serial.println("Waiting for HLFB...");
     //while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {

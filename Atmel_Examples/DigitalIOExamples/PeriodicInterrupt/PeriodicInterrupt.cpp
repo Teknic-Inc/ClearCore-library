@@ -2,6 +2,30 @@
  * PeriodicInterrupt
  * Configure a user-defined periodic interrupt.
  */
+ /*
+ * Title: PeriodicInterrupt
+ *
+ * Objective:
+ *    This example demonstrates how to generate a user defined periodic
+ * interrupt.
+ *
+ * Description:
+ *    This example configures a periodic interrupt handler that turns the
+ * user LED on and off during each call to the interrupt. Once configured,
+ * The interrupt will execute at the requested frequency without having to
+ * be called from the main program.
+ *
+ * Requirements:
+ * ** None
+ *
+ * Links:
+ * ** web link to doxygen (all Examples)
+ * ** web link to ClearCore Manual (all Examples)  <<FUTURE links to Getting started webpage/ ClearCore videos>>
+ *
+ * Last Modified: 6/11/2020
+ * Copyright (c) 2020 Teknic Inc. This work is free to use, copy and distribute under the terms of
+ * the standard MIT permissive software license which can be found at https://opensource.org/licenses/MIT
+ */
 
 #include "ClearCore.h"
 
@@ -19,7 +43,8 @@ void ConfigurePeriodicInterrupt(uint32_t frequencyHz);
 
 /// Make an alias for the ISR handler so that the user code does not need
 /// to know which IRQ it is being fired from
-extern "C" void TCC2_0_Handler(void) __attribute__((alias("PeriodicInterrupt")));
+extern "C" void TCC2_0_Handler(void) __attribute__((
+            alias("PeriodicInterrupt")));
 
 // Periodic interrupt priority
 // 0 is highest priority, 7 is lowest priority

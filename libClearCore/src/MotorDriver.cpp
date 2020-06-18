@@ -33,8 +33,9 @@
 #include "SysTiming.h"
 #include "SysUtils.h"
 
-#define HLFB_CARRIER_LOST_MS (2)
-#define HLFB_CARRIER_LOST_SAMPLES (MS_TO_SAMPLES * HLFB_CARRIER_LOST_MS)
+#define HLFB_CARRIER_LOSS_ERROR_LIMIT (0)
+#define HLFB_CARRIER_LOSS_STATE_CHANGE_MS (25)
+#define HLFB_CARRIER_LOSS_STATE_CHANGE_SAMPLES (MS_TO_SAMPLES * HLFB_CARRIER_LOSS_STATE_CHANGE_MS)
 
 namespace ClearCore {
 
@@ -94,6 +95,7 @@ MotorDriver::MotorDriver(ShiftRegister::Masks enableMask,
       m_hlfbDuty(HLFB_DUTY_UNKNOWN),
       m_hlfbState(HLFB_UNKNOWN),
       m_hlfbPwmReadingPending(false),
+      m_hlfbStateChangeCounter(0),
       m_polarityInversions(0),
       m_enableTriggerActive(false),
       m_enableTriggerPulseStartMs(0),
@@ -143,21 +145,22 @@ void MotorDriver::Refresh() {
     uint8_t intFlagReg = tcCount->INTFLAG.reg;
 
     bool invert = (m_mode == CPM_MODE_STEP_AND_DIR) &&
-                   m_polarityInversions.bit.hlfbInverted;
+                  m_polarityInversions.bit.hlfbInverted;
 
     // Process the HLFB information
     switch (m_hlfbMode) {
+            HlfbStates readHlfbState;
         case HLFB_MODE_HAS_PWM:
         case HLFB_MODE_HAS_BIPOLAR_PWM:
             // Check for overflow or error conditions
-            if ((intFlagReg & TC_INTFLAG_OVF) || 
-                (intFlagReg & TC_INTFLAG_ERR)) {
+            if ((intFlagReg & TC_INTFLAG_OVF) ||
+                    (intFlagReg & TC_INTFLAG_ERR)) {
                 tcCount->INTFLAG.reg = TC_INTFLAG_OVF | TC_INTFLAG_MC0 |
                                        TC_INTFLAG_ERR | TC_INTFLAG_MC1;
                 // Saturating increment
                 m_hlfbNoPwmSampleCount = __QADD16(m_hlfbNoPwmSampleCount, 1U);
                 m_hlfbCarrierLost =
-                    m_hlfbNoPwmSampleCount > HLFB_CARRIER_LOST_SAMPLES;
+                    m_hlfbNoPwmSampleCount > HLFB_CARRIER_LOSS_ERROR_LIMIT;
             }
             // Did we capture a period?
             else if (intFlagReg & TC_INTFLAG_MC0) {
@@ -205,6 +208,19 @@ void MotorDriver::Refresh() {
             if (!m_hlfbCarrierLost) {
                 break;
             }
+            else {
+                // check for an HLFB state change
+                readHlfbState = (DigitalIn::m_stateFiltered ^ invert) ?
+                                HLFB_ASSERTED : HLFB_DEASSERTED;
+                if (readHlfbState != m_hlfbState &&
+                        m_hlfbStateChangeCounter++ < HLFB_CARRIER_LOSS_STATE_CHANGE_SAMPLES) {
+                    break;
+                }
+                else {
+                    m_hlfbStateChangeCounter = 0;
+                }
+            }
+
         // Fall through to process as a static signal if the carrier is lost
         case HLFB_MODE_STATIC:
         default:
@@ -221,8 +237,8 @@ void MotorDriver::Refresh() {
     statusRegPending.bit.MoveDirection = StepGenerator::m_direction;
     statusRegPending.bit.StepsActive =
         (StepGenerator::m_moveState != StepGenerator::MOVE_STATES::MS_IDLE &&
-        StepGenerator::m_moveState != StepGenerator::MOVE_STATES::MS_END);
-    statusRegPending.bit.AtVelTarget = 
+         StepGenerator::m_moveState != StepGenerator::MOVE_STATES::MS_END);
+    statusRegPending.bit.AtVelTarget =
         (StepGenerator::m_moveState == StepGenerator::MOVE_STATES::MS_CRUISE);
 
     if (m_isEnabling) {
@@ -266,12 +282,11 @@ void MotorDriver::Refresh() {
 
     // Calculate the next S&D output step count
     if (Connector::m_mode == Connector::CPM_MODE_STEP_AND_DIR) {
-        // Queue up the steps calculated in the previous sample by
-        // writing the B duty value
-        UpdateBDuty();
         // Calculate the number of steps to send in the next sample time
         StepGenerator::StepsCalculated();
         m_bDutyCnt = StepGenerator::m_stepsPrevious;
+        // Queue up the steps by writing the B duty value
+        UpdateBDuty();
     }
 }
 
