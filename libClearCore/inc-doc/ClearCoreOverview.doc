@@ -6,7 +6,7 @@ namespace ClearCore {
 # Introduction
     ClearCore is an industrial motion and I/O controller featuring flexible, software-configurable I/O with a rich C++ Motion and I/O library. This document serves as a reference guide for the library and the variety of functions used to interface with and control your ClearCore in a motion control application.
     
-    For ClearCore hardware documentation, including device specifications and I/O wiring examples, see the <a href="SystemDiagram.pdf">ClearCore Hardware Manual</a>.
+    For ClearCore hardware documentation, including device specifications and I/O wiring examples, see the <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf">ClearCore Hardware Manual</a>.
     
 # Informational Pages    - \ref ConnectorMain
     - \ref MotorDriverMain
@@ -64,13 +64,13 @@ namespace ClearCore {
     - \ref ArduinoRef
 
 # Hardware Reference
-    - Refer to the <a href="www.teknic.com/files/downloads/clearcore_system_diagram.pdf">ClearCore Hardware Manual</a>.
+    - Refer to the <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf">ClearCore Hardware Manual</a>.
         - Jump to:
-            - <a href="www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=1">Overview</a>
-            - <a href="www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=2">Connector Wiring</a>
-            - <a href="www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=6">Installing Debugger and XBee Modules</a>
-            - <a href="www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=7">Block Diagram: I/O and Communication</a>
-            - <a href="www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=8">Block Diagram: Motor I/O and Configuration Shift Register</a>
+            - <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=1">Overview</a>
+            - <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=2">Connector Wiring</a>
+            - <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=6">Installing Debugger and XBee Modules</a>
+            - <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=7">Block Diagram: I/O and Communication</a>
+            - <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=8">Block Diagram: Motor I/O and Configuration Shift Register</a>
 
 **/
 //********************************************************************************************
@@ -112,7 +112,7 @@ namespace ClearCore {
 <h2> COM Port LED States </h2>
     - Off: The port has not been opened for data communications.
     - On: The port has been opened and is ready to transmit and receive data.
-    - Breathing: The port has been configured to communicate with one or more ClearCore I/O Expansion (CCIO-8) Boards and the link established between the ClearCore all CCIO-8 boards is healthy.
+    - Breathing: The port has been configured to communicate with one or more ClearCore I/O Expansion (CCIO-8) Boards and the link established between the ClearCore and the CCIO-8 boards is healthy.
     - Strobing: The port has been configured to communicate with one or more ClearCore I/O Expansion (CCIO-8) Boards and there is an overload condition on one of the CCIO-8 connectors.
 **/
 //********************************************************************************************
@@ -186,7 +186,7 @@ namespace ClearCore {
 
 <br>
 
-<u>Example</u>: 4 pulses means IO-3 was overloaded
+<h2>Example</h2>: 4 pulses means IO-3 was overloaded
 <img src="blink_code_timing_diagram_1_4.png">
 \see \ref OutputOverload
     
@@ -208,7 +208,7 @@ namespace ClearCore {
 
 <br>
     
-<u>Example</u>: 2 pulses indicate an SD card error
+<h2>Example</h2>: 2 pulses indicate an SD card error
 <img src="blink_code_timing_diagram_3_2.png">
 
 <hr>
