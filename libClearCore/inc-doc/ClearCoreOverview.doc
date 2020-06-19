@@ -186,7 +186,8 @@ namespace ClearCore {
 
 <br>
 
-<h2>Example</h2>: 4 pulses means IO-3 was overloaded
+<h2>Example</h2>
+4 pulses means IO-3 was overloaded
 <img src="blink_code_timing_diagram_1_4.png">
 \see \ref OutputOverload
     
@@ -208,7 +209,8 @@ namespace ClearCore {
 
 <br>
     
-<h2>Example</h2>: 2 pulses indicate an SD card error
+<h2>Example</h2>
+2 pulses indicate an SD card error
 <img src="blink_code_timing_diagram_3_2.png">
 
 <hr>
