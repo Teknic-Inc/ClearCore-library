@@ -10,9 +10,9 @@ From the Atmel Studio Tools menu, open the Device Pack Manager. Ensure the follo
 * SAME53_DFP version 1.1.118
 * CMSIS version 4.5.0
 
-#### Installation Procedure
+#### Installers and Resources
 
-https://www.teknic.com/files/downloads/manual_install_instructions_atmel.pdf
+https://www.teknic.com/downloads/
 
 ### libClearCore
 
