@@ -85,7 +85,7 @@ void setup() {
 
     // Waits for HLFB to assert. Uncomment these lines if your motor has a
     // "servo on" feature and it is wired to the HLFB line on the connector.
-    //Serial.println("Waiting for HLFB...");
+    //SerialPort.SendLine("Waiting for HLFB...");
     //while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {
     //    continue;
     //}
