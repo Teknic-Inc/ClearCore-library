@@ -42,6 +42,12 @@ This section serves as a reference guide for the ClearCore Arduino wrapper funct
 </table>
 
 
+<h2> SDK Examples </h2>
+As part of the Arduino installation package a number of examples sketches are included. These sketches demonstrate how to utilize the various features of ClearCore using standard Arduino functions and classes. The examples may be found in the Arduino IDE under the Examples menu, as seen below:
+
+<img src="examples.png">
+
+
 <h2> Deviations from standard Arduino </h2>
     - The pin mode INPUT_PULLUP has no functional difference from INPUT. The two may be used interchangeably.
     - analogRead() has an extra optional parameter to specify the desired units of the 
@@ -225,7 +231,7 @@ ClearCore pins DI6 through A12 can be set up as digital interrupts.
     - <a href="https://www.arduino.cc/reference/en/language/functions/communication/serial/print/" >Arduino.cc Reference</a>
     
 <h3> println(val, format[optional]) </h3>
-    - Prints data to the serial port as human-readable ASCII text followed by a carriage return character (ASCII 13, or '\r') and a newline character (ASCII 10, or '\\n').\n This command takes the same formats as Serial.print().
+    - Prints data to the serial port as human-readable ASCII text followed by a carriage return character (ASCII 13, or '\\r') and a newline character (ASCII 10, or '\\n').\n This command takes the same formats as Serial.print().
     - <a href="https://www.arduino.cc/reference/en/language/functions/communication/serial/println/" >Arduino.cc Reference</a>
     
 <h3> read() </h3>

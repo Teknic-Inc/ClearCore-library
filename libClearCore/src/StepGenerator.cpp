@@ -250,31 +250,7 @@ void StepGenerator::StepsCalculated() {
                 // Otherwise return to start to begin the new move in the opposite
                 // direction of the first move.
                 if (m_moveDirChange) {
-                    // When a direction change occurs, the goal is to slow down
-                    // as quickly as possible (accel limit). During this slow
-                    // down period, we are moving in the direction that we were
-                    // previously and steps are accumulating in that direction.
-                    // In order to still meet the position target, we need to
-                    // add these (wrong direction) steps to the  user entered
-                    // commanded steps.
-
-                    // We need to flop directions, so do so.
-                    m_direction = !m_direction;
-                    // We went past where the command was issued, we have to
-                    // now go the original distance plus how far we went slowing
-                    if (m_moveOvershoot) {
-                        m_stepsCommanded = m_stepsSent - m_stepsCommanded;
-                    }
-                    else {
-                        m_stepsCommanded += m_stepsSent;
-                    }
-
-                    // Zero previous move
-                    m_stepsSent = 0;
-                    m_posnCurrentQx = m_posnCurrentQx & ~(UINT64_MAX << FRACT_BITS);
-
-                    m_moveState = MS_START;
-                    m_moveDirChange = false;
+                    m_moveState = MS_CHANGE_DIR;
                 }
                 else {
                     // Calculate the decel point
@@ -285,6 +261,32 @@ void StepGenerator::StepsCalculated() {
                     m_moveState = MS_CRUISE;
                 }
             }
+            break;
+        case MS_CHANGE_DIR:
+            // When a direction change occurs, the goal is to slow down
+            // as quickly as possible (accel limit). During this slow
+            // down period, we are moving in the direction that we were
+            // previously and steps are accumulating in that direction.
+            // In order to still meet the position target, we need to
+            // add these (wrong direction) steps to the  user entered
+            // commanded steps.
+
+            // We are stopped and need to flop directions, so do so.
+            m_direction = !m_direction;
+            // We went past where the command was issued, we have to
+            // now go the original distance plus how far we went slowing
+            if (m_moveOvershoot) {
+                m_stepsCommanded = m_stepsSent - m_stepsCommanded;
+            }
+            else {
+                m_stepsCommanded += m_stepsSent;
+            }
+            // Zero previous move
+            m_stepsSent = 0;
+            m_posnCurrentQx = m_posnCurrentQx & ~(UINT64_MAX << FRACT_BITS);
+
+            m_moveState = MS_START;
+            m_moveDirChange = false;
             break;
 
         case MS_END: // Clean up after the move completes
@@ -429,7 +431,7 @@ bool StepGenerator::Move(int32_t dist, MOVE_TARGET moveTarget) {
     // x = -(Vo)^2/2a
     // a is negative since we want to slow down, cancels negative on top
     int32_t distToStop = (static_cast<int64_t>(m_velCurrentQx) * m_velCurrentQx /
-                          m_accelLimitQx) >> (FRACT_BITS + 1);
+                          m_accelLimitPendingQx) >> (FRACT_BITS + 1);
     // The distance to stop is how many steps it will take to slow to 0 velocity
     // If the number of commanded steps is less than that, we cannot stop in
     // time and must overshoot and come back. This only applies if the commanded

@@ -2,6 +2,30 @@
  * PeriodicInterrupt
  * Configure a user-defined periodic interrupt.
  */
+ /*
+ * Title: PeriodicInterrupt
+ *
+ * Objective:
+ *    This example demonstrates how to generate a user defined periodic
+ * interrupt.
+ *
+ * Description:
+ *    This example configures a periodic interrupt handler that turns the
+ * user LED on and off during each call to the interrupt. Once configured,
+ * The interrupt will execute at the requested frequency without having to
+ * be called from the main program.
+ *
+ * Requirements:
+ * ** None
+ *
+ * Links:
+ * ** web link to doxygen (all Examples)
+ * ** web link to ClearCore Manual (all Examples)  <<FUTURE links to Getting started webpage/ ClearCore videos>>
+ *
+ * Last Modified: 6/11/2020
+ * Copyright (c) 2020 Teknic Inc. This work is free to use, copy and distribute under the terms of
+ * the standard MIT permissive software license which can be found at https://opensource.org/licenses/MIT
+ */
 
 #include "ClearCore.h"
 

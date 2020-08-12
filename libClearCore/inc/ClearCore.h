@@ -19,6 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+ 
+#ifndef __CLEARCORE_H__
+#define __CLEARCORE_H__
 
 // Header files from the ClearCore hardware that define connectors available
 #include "AdcManager.h"
@@ -110,3 +113,5 @@ extern SysManager SysMgr;
 }
 
 using namespace ClearCore;
+
+#endif // __CLEARCORE_H__

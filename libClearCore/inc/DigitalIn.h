@@ -83,29 +83,53 @@ public:
 #endif
 
     /**
-        \brief Set the connector's digital filter length. The default is 3
+        \enum FilterUnits
+        \brief Units for the digital filter length.
+
+        \note One sample time is 200 microseconds, so 1 ms = 5 sample times.
+    **/
+    typedef enum {
+        /** Milliseconds. **/
+        FILTER_UNIT_MS,
+        /** Sample times. **/
+        FILTER_UNIT_SAMPLES,
+    } FilterUnits;
+
+    /**
+        \brief Set the connector's digital transition filter length.
+        The default digital filter length for digital input connectors is 3
         samples.
 
-        This will set the length, in samples, of the connector's filter.
-        Restarts any filtering in progress.
+        This will set the length, in samples (default) or milliseconds, of the
+        connector's transition filter and restarts any filtering in progress.
 
         \code{.cpp}
-        // Sets DI-6's filter to 10 samples (2ms)
-        ConnectorDI6.FilterLength(10);
+        // Sets DI-6's filter to 20 samples (4ms)
+        ConnectorDI6.FilterLength(20);
+        \endcode
+
+        \code{.cpp}
+        // Sets DI-6's filter to 10ms (50 samples)
+        ConnectorDI6.FilterLength(10, DigitalIn::FILTER_UNIT_MS);
         \endcode
 
         \note One sample time is 200 microseconds.
 
-        \param[in] samples The number of samples to filter.
+        \param[in] length The length of the filter.
+        \param[in] units The units of the specified filter length: samples
+        (default) or milliseconds.
     **/
-    void FilterLength(uint16_t samples) {
+    void FilterLength(uint16_t length,
+                      FilterUnits units = FILTER_UNIT_SAMPLES) {
+        // 1 ms = 1000 us = 5 * (200 us) = 5 sample times
+        uint16_t samples = (units == FILTER_UNIT_MS) ? 5 * length : length;
         m_filterLength = samples;
         m_filterTicksLeft = samples;
     }
 
     /**
-        \brief Get the connector's digital filter length. The default is 3
-        samples.
+        \brief Get the connector's digital filter length in samples. The default
+        is 3 samples.
 
         This will get the length, in samples, of the connector's filter.
 
@@ -117,7 +141,7 @@ public:
 
         \note One sample time is 200 microseconds.
 
-        \return The number of samples to filter.
+        \return The length of the digital input filter in samples.
     **/
     uint16_t FilterLength() {
         return m_filterLength;
@@ -349,16 +373,16 @@ protected:
 
     uint32_t *m_changeRegPtr;
     uint32_t *m_inRegPtr;
+    uint32_t *m_inputRegRTPtr;
 
     // Boolean state holders
     bool m_stateFiltered;
 
-    uint32_t *m_inputRegRTPtr;
-
     // Stability filter
     uint16_t m_filterLength;
-    // Set to filter len on input change
+    // Set to filter length on input state change
     uint16_t m_filterTicksLeft;
+
     /**
         Construct, wire in pads and LED shift register object.
     **/

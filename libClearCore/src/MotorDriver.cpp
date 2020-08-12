@@ -282,12 +282,11 @@ void MotorDriver::Refresh() {
 
     // Calculate the next S&D output step count
     if (Connector::m_mode == Connector::CPM_MODE_STEP_AND_DIR) {
-        // Queue up the steps calculated in the previous sample by
-        // writing the B duty value
-        UpdateBDuty();
         // Calculate the number of steps to send in the next sample time
         StepGenerator::StepsCalculated();
         m_bDutyCnt = StepGenerator::m_stepsPrevious;
+        // Queue up the steps by writing the B duty value
+        UpdateBDuty();
     }
 }
 

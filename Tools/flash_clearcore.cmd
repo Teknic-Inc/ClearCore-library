@@ -95,7 +95,7 @@ set comPort=
 rem ----------------------------------------------------------------------------
 rem Enumerate the COM ports and grab the one with the VID/PID for a ClearCore bootloader.
 rem ----------------------------------------------------------------------------
-for /f "usebackq" %%B in (`wmic path Win32_SerialPort Where %isBootPort% Get DeviceID 2^> nul ^| FIND "COM"`) do set comPort=%%B
+for /f "usebackq" %%B in (`wmic path Win32_SerialPort Where %isBootPort% Get DeviceID 2^> nul ^| FINDSTR "COM"`) do set comPort=%%B
 
 if not defined comPort (
     if %comPortFindAttempt% equ 0 (
@@ -131,7 +131,7 @@ set comPort=
 rem ----------------------------------------------------------------------------
 rem Enumerate the COM ports and grab the one with the VID/PID for a ClearCore device.
 rem ----------------------------------------------------------------------------
-for /f "usebackq" %%B in (`wmic path Win32_SerialPort Where %isComPort% Get DeviceID 2^> nul ^| FIND "COM"`) do set comPort=%%B
+for /f "usebackq" %%B in (`wmic path Win32_SerialPort Where %isComPort% Get DeviceID 2^> nul ^| FINDSTR "COM"`) do set comPort=%%B
 
 if not defined comPort (
     echo Got error code: %errorlevel%
@@ -189,7 +189,7 @@ if %errorlevel% equ 0 (
 
 :boot_port_removal
 set testPort=
-for /f "usebackq" %%B in (`wmic path Win32_SerialPort Where "DeviceID LIKE '%comPort%'" Get DeviceID 2^> nul ^| FIND "COM"`) do set testPort=%%B
+for /f "usebackq" %%B in (`wmic path Win32_SerialPort Where "DeviceID LIKE '%comPort%'" Get DeviceID 2^> nul ^| FINDSTR "COM"`) do set testPort=%%B
 
 if defined testPort (
     set /a portRemovalAttempt = %portRemovalAttempt%+1

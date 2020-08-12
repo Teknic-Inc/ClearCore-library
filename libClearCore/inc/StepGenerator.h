@@ -260,6 +260,7 @@ protected:
         MS_DECEL,
         MS_DECEL_VEL,
         MS_END,
+        MS_CHANGE_DIR,
     } MOVE_STATES;
 
     uint32_t m_stepsPrevious;

@@ -13,10 +13,10 @@
  * ** A digital input device, such as a switch or sensor, connected to DI-6
  *
  * Links:
- * ** web link to doxygen (all Examples)
- * ** web link to ClearCore Manual (all Examples)  <<FUTURE links to Getting started webpage/ ClearCore videos>>
+ * ** ClearCore Documentation: https://teknic-inc.github.io/ClearCore-library/
+ * ** ClearCore Manual: https://www.teknic.com/files/downloads/clearcore_user_manual.pdf
  *
- * Last Modified: 1/21/2020
+ * 
  * Copyright (c) 2020 Teknic Inc. This work is free to use, copy and distribute under the terms of
  * the standard MIT permissive software license which can be found at https://opensource.org/licenses/MIT
  */
@@ -56,7 +56,7 @@ void loop() {
     state = inputPin.State();
 
     // Display the state of the input connector.
-    SerialPort.Send("Input state: ");
+    SerialPort.Send("DI-6 Input state: ");
     if (state) {
         SerialPort.SendLine("ON");
     }

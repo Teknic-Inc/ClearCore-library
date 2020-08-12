@@ -11,13 +11,13 @@
  *    to the USB serial port every 2 seconds.
  *
  * Requirements:
- * ** An input device, such as a switch or sensor, connected to IO-0.
+ * ** An input device, such as a switch or sensor, connected to DI-6.
  *
  * Links:
- * ** web link to doxygen (all Examples)
- * ** web link to ClearCore Manual (all Examples)  <<FUTURE links to Getting started webpage/ ClearCore videos>>
+ * ** ClearCore Documentation: https://teknic-inc.github.io/ClearCore-library/
+ * ** ClearCore Manual: https://www.teknic.com/files/downloads/clearcore_user_manual.pdf
  *
- * Last Modified: 1/21/2020
+ * 
  * Copyright (c) 2020 Teknic Inc. This work is free to use, copy and distribute under the terms of
  * the standard MIT permissive software license which can be found at https://opensource.org/licenses/MIT
  */
@@ -26,7 +26,7 @@
 
 // Specify which input connector to use.
 // ConnectorIO0 through ConnectorA12 all have digital input capability.
-#define InputConnector ConnectorIO0
+#define InputConnector ConnectorDI6
 
 // Declares two boolean variables used to hold information on whether the input
 // has risen or fallen
@@ -59,7 +59,7 @@ void loop() {
     risen = InputConnector.InputRisen();
     fallen = InputConnector.InputFallen();
 
-    SerialPort.Send("State: ");
+    SerialPort.Send("DI-6 Transitions: ");
 
     if (risen && fallen) {
         SerialPort.SendLine("RISEN and FALLEN");
