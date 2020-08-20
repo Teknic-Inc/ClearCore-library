@@ -65,7 +65,7 @@ public:
     typedef enum {
         MOVE_TARGET_ABSOLUTE,
         MOVE_TARGET_REL_END_POSN,
-    } MOVE_TARGET;
+    } MoveTarget;
 
     /**
         \brief Issues a positional move for the specified distance.
@@ -90,7 +90,7 @@ public:
         move. Invalid will result in move relative to the end position.
         Default: MOVE_TARGET_REL_END_POSN
     **/
-    bool Move(int32_t dist, MOVE_TARGET moveTarget = MOVE_TARGET_REL_END_POSN);
+    virtual bool Move(int32_t dist, MoveTarget moveTarget = MOVE_TARGET_REL_END_POSN);
 
     /**
         \brief Issues a velocity move at the specified velocity.
@@ -105,7 +105,7 @@ public:
 
         \param[in] velocity The velocity of the move in step pulses/second.
     **/
-    bool MoveVelocity(int32_t velocity);
+    virtual bool MoveVelocity(int32_t velocity);
 
     /**
         Interrupts the current move; the motor may stop abruptly.
@@ -168,7 +168,7 @@ public:
         }
         \endcode
 
-        \return Returns the momentary commanded position.
+        \return Returns the momentary commanded velocity.
         /note Velocity changes as the motor accelerates and decelerates, this
         should not be used to track the motion of the motor
     **/
@@ -267,6 +267,8 @@ protected:
     uint32_t m_stepsPerSampleMax;
     MOVE_STATES m_moveState;
     bool m_direction;
+    // True if the last move commanded was a positional move (latched)
+    bool m_lastMoveWasPositional;
 
     volatile const bool &Direction() {
         return m_direction;

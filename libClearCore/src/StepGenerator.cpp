@@ -320,6 +320,7 @@ StepGenerator::StepGenerator()
       m_stepsPerSampleMax(0),
       m_moveState(MS_IDLE),
       m_direction(false),
+      m_lastMoveWasPositional(true),
       m_posnAbsolute(0),
       m_stepsCommanded(0),
       m_stepsSent(0),
@@ -368,8 +369,7 @@ void StepGenerator::MoveStopAbrupt() {
 
     The function will return true if the move was accepted.
 */
-bool StepGenerator::Move(int32_t dist, MOVE_TARGET moveTarget) {
-
+bool StepGenerator::Move(int32_t dist, MoveTarget moveTarget) {
     // Make relative moves be based off of current position during a velocity
     // move
     if (m_velocityMove) {

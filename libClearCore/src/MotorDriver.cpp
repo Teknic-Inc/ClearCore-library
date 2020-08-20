@@ -290,6 +290,30 @@ void MotorDriver::Refresh() {
     }
 }
 
+bool MotorDriver::ValidateMove() {
+    return EnableRequest() && !m_statusRegMotor.bit.MotorInFault;
+}
+
+bool MotorDriver::Move(int32_t dist, MoveTarget moveTarget) {
+    if (!ValidateMove()) {
+        return false;
+    }
+
+    m_lastMoveWasPositional = true;
+    return StepGenerator::Move(dist, moveTarget);
+}
+
+bool MotorDriver::MoveVelocity(int32_t velocity) {
+    if (!ValidateMove()) {
+        if (m_statusRegMotor.bit.StepsActive) {
+            MoveStopDecel();
+        }
+        return false;
+    }
+    m_lastMoveWasPositional = false;
+    return StepGenerator::MoveVelocity(velocity);
+}
+
 MotorDriver::StatusRegMotor MotorDriver::StatusRegRisen() {
     return StatusRegMotor(atomic_exchange_n(&m_statusRegMotorRisen.reg, 0));
 }

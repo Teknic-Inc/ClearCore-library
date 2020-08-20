@@ -286,6 +286,25 @@ public:
     };
 
     /**
+        Verify that the motor is in a good state before sending a move command.
+
+        \return True if the motor is ready for a move command; false if there
+        is a configuration setting or error that would (or should) prevent motion.
+    **/
+    bool ValidateMove();
+
+    /**
+        \copydoc StepGenerator::Move()
+    **/
+    virtual bool Move(int32_t dist,
+                      MoveTarget moveTarget = MOVE_TARGET_REL_END_POSN) override;
+
+    /**
+        \copydoc StepGenerator::MoveVelocity()
+    **/
+    virtual bool MoveVelocity(int32_t velocity) override;
+
+    /**
         \brief Sets the filter length in samples. The default is 3 samples.
 
         Restarts any in progress filtering.
