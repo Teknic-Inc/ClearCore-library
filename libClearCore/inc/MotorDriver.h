@@ -239,7 +239,7 @@ public:
     /**
         \union StatusRegMotor
 
-        \brief Register access for informations about the motor's operating
+        \brief Register access for information about the motor's operating
         status.
     **/
     union StatusRegMotor {
@@ -247,28 +247,52 @@ public:
             Broad access to the whole register
         **/
         uint32_t reg;
+
         /**
             Field access to the motor status register
         **/
         struct {
             /**
-                TRUE if the motor has an active Enable Request
+                TRUE if the commanded position equals the target position and
+                the HLFB is asserted
             **/
-            uint32_t Enabled : 1;
+            uint32_t AtTargetPosition : 1;
+            /**
+                TRUE if the commanded velocity is nonzero
+            **/
+            uint32_t StepsActive : 1;
+            /**
+                TRUE if the commanded velocity equals the target velocity
+            **/
+            uint32_t AtTargetVelocity : 1;
             /**
                 Direction of the most recent move
-                TRUE if moving in the positive direction
+                TRUE if the last motion was in the positive direction
                 Latches until start of new move
             **/
             uint32_t MoveDirection : 1;
             /**
-                TRUE if the motor is moving
+                TRUE if the HLFB is deasserted AND the enable output is asserted
+                When set, any currently executing motion will get canceled
             **/
-            uint32_t StepsActive : 1;
+            uint32_t MotorInFault : 1;
             /**
-                TRUE if the motor is at the target velocity
+                TRUE if the motor's enable output is asserted AND the HLFB
+                is NOT deasserted.
             **/
-            uint32_t AtVelTarget : 1;
+            uint32_t Enabled : 1;
+            /**
+                TRUE if the last commanded move was a positional move.
+            **/
+            uint32_t PositionalMove : 1;
+            /**
+                Reflects the state of the HLFB.
+            **/
+            uint32_t HlfbState : 2;
+            /**
+                Alerts Present.
+            **/
+            uint32_t AlertsPresent : 1;
             /**
                 Motor ready state
             **/
@@ -846,6 +870,7 @@ protected:
     StatusRegMotor m_statusRegMotor;
     StatusRegMotor m_statusRegMotorRisen;
     StatusRegMotor m_statusRegMotorFallen;
+    StatusRegMotor m_statusRegMotorLast;
 
     /**
         Initialize hardware and/or internal state.

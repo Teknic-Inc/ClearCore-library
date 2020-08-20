@@ -107,6 +107,7 @@ MotorDriver::MotorDriver(ShiftRegister::Masks enableMask,
       m_statusRegMotor(0),
       m_statusRegMotorRisen(0),
       m_statusRegMotorFallen(0),
+      m_statusRegMotorLast(0),
       m_initialized(false),
       m_isEnabling(false),
       m_isEnabled(false),
@@ -240,15 +241,22 @@ void MotorDriver::Refresh() {
     }
 
     // Update the Motor Status Register
-    StatusRegMotor statusRegLast = m_statusRegMotor;
     StatusRegMotor statusRegPending = m_statusRegMotor;
+
     statusRegPending.bit.Triggering = m_enableTriggerActive;
     statusRegPending.bit.MoveDirection = StepGenerator::m_direction;
     statusRegPending.bit.StepsActive =
-        (StepGenerator::m_moveState != StepGenerator::MOVE_STATES::MS_IDLE &&
-         StepGenerator::m_moveState != StepGenerator::MOVE_STATES::MS_END);
-    statusRegPending.bit.AtVelTarget =
-        (StepGenerator::m_moveState == StepGenerator::MOVE_STATES::MS_CRUISE);
+        (StepGenerator::m_moveState != StepGenerator::MS_IDLE &&
+         StepGenerator::m_moveState != StepGenerator::MS_END);
+    statusRegPending.bit.AtTargetPosition = m_isEnabled &&
+        m_lastMoveWasPositional && !statusRegPending.bit.StepsActive &&
+        m_hlfbState == HLFB_ASSERTED;
+    statusRegPending.bit.AtTargetVelocity = m_isEnabled &&
+        (StepGenerator::m_moveState == StepGenerator::MS_CRUISE ||
+         (!statusRegPending.bit.StepsActive && !m_lastMoveWasPositional)) &&
+        m_hlfbState != HLFB_DEASSERTED;
+    statusRegPending.bit.PositionalMove = m_lastMoveWasPositional;
+    statusRegPending.bit.HlfbState = m_hlfbState;
 
     if (m_isEnabling) {
         if (m_enableCounter > 0) {
@@ -268,26 +276,30 @@ void MotorDriver::Refresh() {
         statusRegPending.bit.ReadyState = MotorReadyStates::MOTOR_ENABLING;
     }
     else {
-        if ((m_hlfbMode == HLFB_MODE_STATIC &&
-                m_hlfbState == MotorDriver::HlfbStates::HLFB_DEASSERTED) ||
-                statusRegPending.bit.StepsActive) {
-            statusRegPending.bit.ReadyState = MotorReadyStates::MOTOR_MOVING;
+        if (m_hlfbMode != HLFB_MODE_STATIC &&
+            m_hlfbState == MotorDriver::HLFB_DEASSERTED) {
+            statusRegPending.bit.ReadyState = MOTOR_FAULTED;
+            statusRegPending.bit.MotorInFault = 1;
         }
-        else if (m_hlfbMode != HLFB_MODE_STATIC &&
-                 m_hlfbState == MotorDriver::HlfbStates::HLFB_DEASSERTED) {
-            statusRegPending.bit.ReadyState = MotorReadyStates::MOTOR_FAULTED;
+        else if ((m_hlfbMode == HLFB_MODE_STATIC &&
+                  m_hlfbState == MotorDriver::HLFB_DEASSERTED) ||
+                 statusRegPending.bit.StepsActive) {
+            statusRegPending.bit.ReadyState = MOTOR_MOVING;
         }
         else {
-            statusRegPending.bit.ReadyState = MotorReadyStates::MOTOR_READY;
+            statusRegPending.bit.ReadyState = MOTOR_READY;
+            statusRegPending.bit.MotorInFault = 0;
         }
     }
 
     m_statusRegMotor = statusRegPending;
 
-    m_statusRegMotorRisen.reg = (~statusRegLast.reg & statusRegPending.reg) |
-                                m_statusRegMotorRisen.reg;
-    m_statusRegMotorFallen.reg = (statusRegLast.reg & ~statusRegPending.reg) |
-                                 m_statusRegMotorFallen.reg;
+    atomic_or_fetch(&m_statusRegMotorRisen.reg,
+                    ~m_statusRegMotorLast.reg & statusRegPending.reg);
+    atomic_or_fetch(&m_statusRegMotorFallen.reg,
+                    m_statusRegMotorLast.reg & ~statusRegPending.reg);
+
+    m_statusRegMotorLast.reg = m_statusRegMotor.reg;
 
     // Calculate the next S&D output step count
     if (Connector::m_mode == Connector::CPM_MODE_STEP_AND_DIR) {
