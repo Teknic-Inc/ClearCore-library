@@ -261,11 +261,11 @@ protected:
         MS_DECEL_VEL,
         MS_END,
         MS_CHANGE_DIR,
-    } MOVE_STATES;
+    } MoveStates;
 
     uint32_t m_stepsPrevious;
     uint32_t m_stepsPerSampleMax;
-    MOVE_STATES m_moveState;
+    MoveStates m_moveState;
     bool m_direction;
     // True if the last move commanded was a positional move (latched)
     bool m_lastMoveWasPositional;
@@ -274,7 +274,7 @@ protected:
         return m_direction;
     }
 
-    volatile const MOVE_STATES &MoveStateGet() {
+    volatile const MoveStates &MoveStateGet() {
         return m_moveState;
     }
 
