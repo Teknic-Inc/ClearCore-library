@@ -799,6 +799,10 @@ protected:
     volatile uint32_t *m_aTccBuffer;
     uint32_t m_bDataMask;
     volatile uint32_t *m_bTccBuffer;
+    uint32_t m_aTccSyncMask;
+    volatile uint32_t *m_aTccSyncReg;
+    uint32_t m_bTccSyncMask;
+    volatile uint32_t *m_bTccSyncReg;
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // HLFB State

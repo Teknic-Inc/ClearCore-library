@@ -114,12 +114,18 @@ MotorDriver::MotorDriver(ShiftRegister::Masks enableMask,
       m_enableCounter(0) {
 
     m_interruptAvail = true;
-    m_aTccBuffer =
-        &(tcc_modules[m_aInfo->tccNum])->CCBUF[m_aInfo->tccPadNum %
-                TccCcNum(m_aInfo->tccNum)].reg;
-    m_bTccBuffer =
-        &(tcc_modules[m_bInfo->tccNum])->CCBUF[m_bInfo->tccPadNum %
-                TccCcNum(m_bInfo->tccNum)].reg;
+
+    Tcc *theTcc = (tcc_modules[m_aInfo->tccNum]);
+    uint8_t ccIndex = m_aInfo->tccPadNum % TccCcNum(m_aInfo->tccNum);
+    m_aTccBuffer = &theTcc->CCBUF[ccIndex].reg;
+    m_aTccSyncMask = TCC_SYNCBUSY_CC(1UL << ccIndex);
+    m_aTccSyncReg = &theTcc->SYNCBUSY.reg;
+
+    theTcc = (tcc_modules[m_bInfo->tccNum]);
+    ccIndex = m_bInfo->tccPadNum % TccCcNum(m_bInfo->tccNum);
+    m_bTccBuffer = &theTcc->CCBUF[ccIndex].reg;
+    m_bTccSyncMask = TCC_SYNCBUSY_CC(1UL << ccIndex);
+    m_bTccSyncReg = &theTcc->SYNCBUSY.reg;
 
     for (uint8_t i = 0; i < CPM_HLFB_CAP_HISTORY; i++) {
         m_hlfbWidth[i] = 0;
@@ -601,28 +607,14 @@ bool MotorDriver::Mode(ConnectorModes newMode) {
         return true;
     }
 
-    uint8_t ccIndex;
-    uint32_t syncBusyMask;
-    Tcc *theTcc;
-
     switch (newMode) {
         case CPM_MODE_A_PWM_B_PWM:
             // Stop any active S&D command
             MoveStopAbrupt();
-            // Determine which TCC->CC value maps to InputA
-            ccIndex = m_aInfo->tccPadNum % TccCcNum(m_aInfo->tccNum);
-            syncBusyMask = TCC_SYNCBUSY_CC(1UL << ccIndex);
-            theTcc = (tcc_modules[m_aInfo->tccNum]);
             // Block the interrupt and make sure that the PWM values are cleared
             __disable_irq();
-            SYNCBUSY_WAIT(theTcc, syncBusyMask);
             m_aDutyCnt = 0;
             UpdateADuty();
-            // Determine which TCC->CC value maps to InputB
-            ccIndex = m_bInfo->tccPadNum % TccCcNum(m_bInfo->tccNum);
-            syncBusyMask = TCC_SYNCBUSY_CC(1UL << ccIndex);
-            theTcc = (tcc_modules[m_bInfo->tccNum]);
-            SYNCBUSY_WAIT(theTcc, syncBusyMask);
             m_bDutyCnt = 0;
             UpdateBDuty();
             // Enable peripheral on port/pin A and B to use PWM on both
@@ -635,14 +627,9 @@ bool MotorDriver::Mode(ConnectorModes newMode) {
         case CPM_MODE_STEP_AND_DIR:
             // Stop any active S&D command
             MoveStopAbrupt();
-            // Determine which TCC->CC value maps to InputB
-            ccIndex = m_bInfo->tccPadNum % TccCcNum(m_bInfo->tccNum);
-            syncBusyMask = TCC_SYNCBUSY_CC(1UL << ccIndex);
-            theTcc = (tcc_modules[m_bInfo->tccNum]);
             // Block the interrupt and make sure that the PWM/step value is
             // cleared
             __disable_irq();
-            SYNCBUSY_WAIT(theTcc, syncBusyMask);
             m_bDutyCnt = 0;
             UpdateBDuty();
             // Enable peripheral on port/pin B to use PWM on B only
@@ -667,10 +654,22 @@ bool MotorDriver::Mode(ConnectorModes newMode) {
 }
 
 void MotorDriver::UpdateADuty() {
+    if (*m_aTccBuffer == m_aDutyCnt) {
+        return;
+    }
+    while (*m_aTccSyncReg & m_aTccSyncMask) {
+        continue;
+    }
     *m_aTccBuffer = m_aDutyCnt;
 }
 
 void MotorDriver::UpdateBDuty() {
+    if (*m_bTccBuffer == m_bDutyCnt) {
+        return;
+    }
+    while (*m_bTccSyncReg & m_bTccSyncMask) {
+        continue;
+    }
     *m_bTccBuffer = m_bDutyCnt;
 }
 
