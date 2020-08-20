@@ -441,7 +441,7 @@ bool StepGenerator::Move(int32_t dist, MOVE_TARGET moveTarget) {
     // Determine if there is a direction change. If the movement has stopped
     // (vel == 0), then a direction change can safely happen. Otherwise, compare
     // current and previous direction to see if a change happened. A direction
-    // change is also required if we go past out target and overshoot.
+    // change is also required if we go past our target and overshoot.
     m_moveDirChange = m_velCurrentQx && ((newDir != lastDir) || m_moveOvershoot);
 
     // If there was a direction change, we need to keep going in the same
@@ -470,7 +470,9 @@ bool StepGenerator::MoveVelocity(int32_t velocity) {
 
     // If there was a direction change, we need to keep going in the same
     // direction to safely come to a stop, then move the other way.
-    m_direction = m_moveDirChange ? lastDir : newDir;
+    if (velocity && !m_moveDirChange) {
+        m_direction = newDir;
+    }
 
     m_velocityMove = true;
 
