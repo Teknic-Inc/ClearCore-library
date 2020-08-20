@@ -36,6 +36,10 @@
 #include "StepGenerator.h"
 #include "SysUtils.h"
 
+#define HLFB_CARRIER_LOSS_ERROR_LIMIT (0)
+#define HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ (25)
+#define HLFB_CARRIER_LOSS_STATE_CHANGE_MS_482_HZ (4)
+
 namespace ClearCore {
 
 /** The amount of HLFB captures to hold onto.
@@ -196,6 +200,11 @@ public:
         **/
         HLFB_MODE_HAS_BIPOLAR_PWM
     } HlfbModes;
+
+    typedef enum {
+        HLFB_CARRIER_45_HZ,
+        HLFB_CARRIER_482_HZ
+    } HlfbCarrierFrequency;
 
     /**
         \enum MotorReadyStates
@@ -624,6 +633,27 @@ public:
         return DigitalIn::InputFallen();
     }
 
+    bool HlfbCarrier(HlfbCarrierFrequency freq) {
+        switch (freq) {
+            case HLFB_CARRIER_45_HZ:
+                m_hlfbCarrierLossStateChange_ms =
+                    HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ;
+                break;
+            case HLFB_CARRIER_482_HZ:
+                m_hlfbCarrierLossStateChange_ms =
+                    HLFB_CARRIER_LOSS_STATE_CHANGE_MS_482_HZ;
+                break;
+            default:
+                return false;
+        }
+        m_hlfbCarrierFrequency = freq;
+        return true;
+    }
+
+    HlfbCarrierFrequency HlfbCarrier() {
+        return m_hlfbCarrierFrequency;
+    }
+
     /**
         \brief Check whether the connector is in a hardware fault state.
 
@@ -784,6 +814,10 @@ protected:
     uint16_t m_hlfbPeriod[CPM_HLFB_CAP_HISTORY];
     // HLFB measurement count, used to show lack of PWM
     uint16_t m_hlfbNoPwmSampleCount;
+    HlfbCarrierFrequency m_hlfbCarrierFrequency;
+    uint32_t m_hlfbCarrierLossStateChange_ms;
+    // The last board time (in milliseconds) when PWM carrier was detected
+    uint32_t m_hlfbLastCarrierDetectTime;
     // HLFB last duty cycle
     float m_hlfbDuty;
     // HLFB state return

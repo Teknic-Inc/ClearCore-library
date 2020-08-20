@@ -33,10 +33,6 @@
 #include "SysTiming.h"
 #include "SysUtils.h"
 
-#define HLFB_CARRIER_LOSS_ERROR_LIMIT (0)
-#define HLFB_CARRIER_LOSS_STATE_CHANGE_MS (25)
-#define HLFB_CARRIER_LOSS_STATE_CHANGE_SAMPLES (MS_TO_SAMPLES * HLFB_CARRIER_LOSS_STATE_CHANGE_MS)
-
 namespace ClearCore {
 
 extern SysTiming &TimingMgr;
@@ -92,6 +88,9 @@ MotorDriver::MotorDriver(ShiftRegister::Masks enableMask,
       m_hlfbEvt(hlfbEvt),
       m_hlfbMode(HLFB_MODE_STATIC),
       m_hlfbNoPwmSampleCount(2),
+      m_hlfbCarrierFrequency(HLFB_CARRIER_45_HZ),
+      m_hlfbCarrierLossStateChange_ms(HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ),
+      m_hlfbLastCarrierDetectTime(UINT32_MAX),
       m_hlfbDuty(HLFB_DUTY_UNKNOWN),
       m_hlfbState(HLFB_UNKNOWN),
       m_hlfbPwmReadingPending(false),
@@ -149,12 +148,13 @@ void MotorDriver::Refresh() {
 
     // Process the HLFB information
     switch (m_hlfbMode) {
-            HlfbStates readHlfbState;
+        HlfbStates readHlfbState;
         case HLFB_MODE_HAS_PWM:
         case HLFB_MODE_HAS_BIPOLAR_PWM:
             // Check for overflow or error conditions
-            if ((intFlagReg & TC_INTFLAG_OVF) ||
-                    (intFlagReg & TC_INTFLAG_ERR)) {
+            if ((intFlagReg & (TC_INTFLAG_OVF | TC_INTFLAG_ERR)) ||
+                (Milliseconds() - m_hlfbLastCarrierDetectTime
+                    >= m_hlfbCarrierLossStateChange_ms)) {
                 tcCount->INTFLAG.reg = TC_INTFLAG_OVF | TC_INTFLAG_MC0 |
                                        TC_INTFLAG_ERR | TC_INTFLAG_MC1;
                 // Saturating increment
@@ -163,7 +163,9 @@ void MotorDriver::Refresh() {
                     m_hlfbNoPwmSampleCount > HLFB_CARRIER_LOSS_ERROR_LIMIT;
             }
             // Did we capture a period?
-            else if (intFlagReg & TC_INTFLAG_MC0) {
+            if (intFlagReg & TC_INTFLAG_MC0) {
+                m_hlfbLastCarrierDetectTime = Milliseconds();
+
                 if (m_hlfbNoPwmSampleCount) {
                     // When coming out of overflow/error conditions do not use
                     // the next measurement because the pulse may be clipped
@@ -172,7 +174,6 @@ void MotorDriver::Refresh() {
                     m_hlfbNoPwmSampleCount = 0;
                 }
                 else if (intFlagReg & TC_INTFLAG_MC1) {
-
                     // Save history and use only the (n-1)st item to return as the
                     // last PWM captured might be clipped in a move done case.
                     m_hlfbWidth[0] = m_hlfbWidth[CPM_HLFB_CAP_HISTORY - 1];
@@ -213,7 +214,8 @@ void MotorDriver::Refresh() {
                 readHlfbState = (DigitalIn::m_stateFiltered ^ invert) ?
                                 HLFB_ASSERTED : HLFB_DEASSERTED;
                 if (readHlfbState != m_hlfbState &&
-                        m_hlfbStateChangeCounter++ < HLFB_CARRIER_LOSS_STATE_CHANGE_SAMPLES) {
+                    m_hlfbStateChangeCounter++ < 
+                        (MS_TO_SAMPLES * m_hlfbCarrierLossStateChange_ms)) {
                     break;
                 }
                 else {
