@@ -321,6 +321,7 @@ bool MotorDriver::Move(int32_t dist, MoveTarget moveTarget) {
     }
 
     m_lastMoveWasPositional = true;
+    m_statusRegMotor.bit.StepsActive = 1;
     return StepGenerator::Move(dist, moveTarget);
 }
 
@@ -332,6 +333,7 @@ bool MotorDriver::MoveVelocity(int32_t velocity) {
         return false;
     }
     m_lastMoveWasPositional = false;
+    m_statusRegMotor.bit.StepsActive = 1;
     return StepGenerator::MoveVelocity(velocity);
 }
 
