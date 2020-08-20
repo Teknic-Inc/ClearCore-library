@@ -96,6 +96,7 @@ MotorDriver::MotorDriver(ShiftRegister::Masks enableMask,
       m_hlfbPwmReadingPending(false),
       m_hlfbStateChangeCounter(0),
       m_polarityInversions(0),
+      m_enableRequestedState(false),
       m_enableTriggerActive(false),
       m_enableTriggerPulseStartMs(0),
       m_enableTriggerPulseCount(0),
@@ -103,7 +104,6 @@ MotorDriver::MotorDriver(ShiftRegister::Masks enableMask,
       m_aDutyCnt(0),
       m_bDutyCnt(0),
       m_inFault(false),
-      m_enableRequestedState(false),
       m_statusRegMotor(0),
       m_statusRegMotorRisen(0),
       m_statusRegMotorFallen(0),
@@ -111,7 +111,8 @@ MotorDriver::MotorDriver(ShiftRegister::Masks enableMask,
       m_isEnabling(false),
       m_isEnabled(false),
       m_hlfbCarrierLost(false),
-      m_enableCounter(0) {
+      m_enableCounter(0),
+      m_shiftRegEnableReq(false) {
 
     m_interruptAvail = true;
 
@@ -387,7 +388,7 @@ bool MotorDriver::MotorInBDuty(uint8_t duty) {
 void MotorDriver::EnableTriggerPulse(uint16_t pulseCount, uint32_t time_ms,
                                      bool blockUntilDone) {
     // If not enabled, just return without doing anything.
-    if (!EnableRequest()) {
+    if (!EnableRequest() || m_inFault) {
         return;
     }
 
@@ -413,14 +414,19 @@ void MotorDriver::EnableTriggerPulse(uint16_t pulseCount, uint32_t time_ms,
 
 void MotorDriver::EnableRequest(bool value) {
     bool wasDisabled = !(m_isEnabled || m_isEnabling);
+    bool wasPulsing = m_enableTriggerActive;
+
+    if (value != m_enableRequestedState || m_inFault) {
+        m_enableTriggerActive = false;
+        m_enableTriggerPulseCount = 0;
+    }
+
     m_enableRequestedState = value;
     // Make sure to disable if we're in a fault state.
     // Otherwise, faithfully handle the request.
     value = !m_inFault && value;
 
     __disable_irq();
-    m_enableTriggerActive = false;
-    m_enableTriggerPulseCount = 0;
 
     if (wasDisabled && value) {
         // If we're enabling, set the enable delay.
@@ -443,8 +449,11 @@ void MotorDriver::EnableRequest(bool value) {
         }
     }
 
-    // Update the shift register.
-    ShiftReg.ShifterState(value, m_enableMask);
+    if (value != m_shiftRegEnableReq || (wasPulsing && !m_enableTriggerActive)) {
+        // Update the shift register.
+        ShiftReg.ShifterState(value, m_enableMask);
+    }
+    m_shiftRegEnableReq = value;
 }
 
 void MotorDriver::ToggleEnable() {

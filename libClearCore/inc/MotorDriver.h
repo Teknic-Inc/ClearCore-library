@@ -832,6 +832,7 @@ protected:
     // Inversion mask of actual enable, direction, and HLFB state
     PolarityInversionsSD m_polarityInversions;
 
+    bool m_enableRequestedState;
     bool m_enableTriggerActive;
     uint32_t m_enableTriggerPulseStartMs;
     uint16_t m_enableTriggerPulseCount;
@@ -841,8 +842,6 @@ protected:
     uint16_t m_bDutyCnt;
 
     bool m_inFault;
-
-    bool m_enableRequestedState;
 
     StatusRegMotor m_statusRegMotor;
     StatusRegMotor m_statusRegMotorRisen;
@@ -868,6 +867,7 @@ private:
     bool m_isEnabled;
     bool m_hlfbCarrierLost;
     int32_t m_enableCounter;
+    bool m_shiftRegEnableReq;
 
     /**
         Construct, wire in pads and LED Shift register object
