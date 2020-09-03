@@ -66,7 +66,7 @@ const uint8_t line4[21] = "98765432109876543210";
 void SetBrightness(uint8_t level);
 void SetCursor(uint8_t row, uint8_t column);
 
-void setup() {
+int main() {
     // Configure the COM port for our SPI device then open the port.
     SpiPort.Mode(Connector::SPI);
     SpiPort.Speed(baudRate);
@@ -97,10 +97,6 @@ void setup() {
 
     // Close the port.
     SpiPort.SpiSsMode(SerialDriver::LINE_OFF);
-}
-
-void loop() {
-    // This example doesn't have any ongoing tasks to perform.
 }
 
 /*------------------------------------------------------------------------------

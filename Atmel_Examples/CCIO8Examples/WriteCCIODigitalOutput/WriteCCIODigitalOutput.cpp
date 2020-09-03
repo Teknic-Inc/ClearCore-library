@@ -34,7 +34,7 @@
 // The state to be written to each output connector.
 bool outputState;
 
-void setup() {
+int main() {
     // Set up the CCIO-8 COM port.
     CcioPort.Mode(Connector::CCIO);
     CcioPort.PortOpen();
@@ -55,17 +55,17 @@ void setup() {
 
     // The connectors are all set up; start the loop with turning them all on.
     outputState = true;
-}
 
-void loop() {
-    // Send the current state to each of the outputs.
-    for (int16_t pin = CLEARCORE_PIN_CCIOA0; pin <= CLEARCORE_PIN_CCIOA7; pin++) {
-        CcioMgr.PinByIndex(static_cast<ClearCorePins>(pin))->State(outputState);
+    while (true) {
+        // Send the current state to each of the outputs.
+        for (int16_t pin = CLEARCORE_PIN_CCIOA0; pin <= CLEARCORE_PIN_CCIOA7; pin++) {
+            CcioMgr.PinByIndex(static_cast<ClearCorePins>(pin))->State(outputState);
+        }
+
+        // Toggle the state to be written next time.
+        outputState = !outputState;
+
+        // Wait 1 second.
+        Delay_ms(1000);
     }
-
-    // Toggle the state to be written next time.
-    outputState = !outputState;
-
-    // Wait 1 second.
-    Delay_ms(1000);
 }

@@ -52,7 +52,7 @@ EthernetUdp Udp;
 // Set this false if not using DHCP to configure the local IP address.
 bool usingDhcp = true;
 
-void setup() {
+int main() {
     // Set up serial communication at a baud rate of 9600 bps then wait up to
     // 5 seconds for a port to open.
     // Serial communication is not required for this example to run, however the
@@ -98,46 +98,45 @@ void setup() {
 
     // Begin listening on the local port for UDP datagrams
     Udp.Begin(localPort);
-}
 
-// This loop will wait to receive a packet from a remote source, then reply back
-// with a packet containing a "Hello, world!" message.
-void loop() {
-    // Look for a received packet.
-    uint16_t packetSize = Udp.PacketParse();
+    // This loop will wait to receive a packet from a remote source, then reply
+    // back with a packet containing a "Hello, world!" message.
+    while (true) {
+        // Look for a received packet.
+        uint16_t packetSize = Udp.PacketParse();
 
-    if (packetSize > 0) {
-        ConnectorUsb.Send("Received packet of size ");
-        ConnectorUsb.Send(packetSize);
-        ConnectorUsb.SendLine(" bytes.");
+        if (packetSize > 0) {
+            ConnectorUsb.Send("Received packet of size ");
+            ConnectorUsb.Send(packetSize);
+            ConnectorUsb.SendLine(" bytes.");
 
-        ConnectorUsb.Send("Remote IP: ");
-        ConnectorUsb.SendLine(Udp.RemoteIp().StringValue());
+            ConnectorUsb.Send("Remote IP: ");
+            ConnectorUsb.SendLine(Udp.RemoteIp().StringValue());
 
-        ConnectorUsb.Send("Remote port: ");
-        ConnectorUsb.SendLine(Udp.RemotePort());
+            ConnectorUsb.Send("Remote port: ");
+            ConnectorUsb.SendLine(Udp.RemotePort());
 
-        // Read the packet.
-        int32_t bytesRead = Udp.PacketRead(packetReceived, MAX_PACKET_LENGTH);
-        ConnectorUsb.Send("Number of bytes read from packet: ");
-        ConnectorUsb.SendLine(bytesRead);
+            // Read the packet.
+            int32_t bytesRead = Udp.PacketRead(packetReceived, MAX_PACKET_LENGTH);
+            ConnectorUsb.Send("Number of bytes read from packet: ");
+            ConnectorUsb.SendLine(bytesRead);
 
-        ConnectorUsb.Send("Packet contents: ");
-        ConnectorUsb.SendLine((char *)packetReceived);
-        ConnectorUsb.SendLine();
+            ConnectorUsb.Send("Packet contents: ");
+            ConnectorUsb.SendLine((char *)packetReceived);
+            ConnectorUsb.SendLine();
 
-        // Send a "Hello, world!" reply packet back to the sender.
-        Udp.Connect(Udp.RemoteIp(), Udp.RemotePort());
-        Udp.PacketWrite("Hello, world!");
-        Udp.PacketSend();
+            // Send a "Hello, world!" reply packet back to the sender.
+            Udp.Connect(Udp.RemoteIp(), Udp.RemotePort());
+            Udp.PacketWrite("Hello, world!");
+            Udp.PacketSend();
+        }
+
+        Delay_ms(10);
     }
-
-    Delay_ms(10);
 }
 
 
 /*
-
   // ---------------------------------
   // Partner ClearCore Example Sketch
   // ---------------------------------
@@ -166,7 +165,7 @@ EthernetUdp Udp;
 // Set this false if not using DHCP to configure the local IP address.
 bool usingDhcp = true;
 
-void setup() {
+int main() {
     // Set up serial communication at a baud rate of 9600 bps then wait up to
     // 5 seconds for a port to open.
     // Serial communication is not required for this example to run, however the
@@ -206,21 +205,21 @@ void setup() {
 
     // Begin listening on the local port for UDP datagrams
     Udp.Begin(localPort);
-}
 
-// This loop will send a packet to the remote IP and port specified every
-// 10 seconds.
-void loop() {
-    // Wait for 10 seconds.
-    if (Milliseconds() - lastSendTime > sendingInterval) {
-        Udp.Connect(remoteIp, remotePort);
-        Udp.PacketWrite("Hello ClearCore.");
-        Udp.PacketSend();
-        lastSendTime = Milliseconds();
+    // This loop will send a packet to the remote IP and port specified every
+    // 10 seconds.
+    while (true) {
+        // Wait for 10 seconds.
+        if (Milliseconds() - lastSendTime > sendingInterval) {
+            Udp.Connect(remoteIp, remotePort);
+            Udp.PacketWrite("Hello ClearCore.");
+            Udp.PacketSend();
+            lastSendTime = Milliseconds();
+        }
+
+        // Keep the connection alive.
+        EthernetMgr.Refresh();
     }
-
-    // Keep the connection alive.
-    EthernetMgr.Refresh();
 }
 
 */

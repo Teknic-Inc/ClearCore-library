@@ -44,7 +44,7 @@
 //   ConnectorUsb, ConnectorCOM0, or ConnectorCOM1
 #define SerialPort ConnectorUsb
 
-void setup() {
+int main() {
     // Initialize the serial port for printing analog voltage readings and wait
     // up to 5 seconds for a port to open. Serial communication is not required
     // for this example to run, however without it only the coarse LED meter
@@ -79,59 +79,59 @@ void setup() {
 
     // Set the resolution of the ADC.
     AdcMgr.AdcResolution(adcResolution);
-}
 
-void loop() {
-    // Read the analog input (A-9 through A-12 may be configured as analog
-    // inputs).
-    int16_t adcResult = ConnectorA12.State();
-    // Convert the reading to a voltage.
-    double inputVoltage = 10.0 * adcResult / ((1 << adcResolution) - 1);
+    while (true) {
+        // Read the analog input (A-9 through A-12 may be configured as analog
+        // inputs).
+        int16_t adcResult = ConnectorA12.State();
+        // Convert the reading to a voltage.
+        double inputVoltage = 10.0 * adcResult / ((1 << adcResolution) - 1);
 
-    // Display the voltage reading to the serial port.
-    SerialPort.Send("A-12 input voltage: ");
-    SerialPort.Send(inputVoltage);
-    SerialPort.SendLine("V.");
+        // Display the voltage reading to the serial port.
+        SerialPort.Send("A-12 input voltage: ");
+        SerialPort.Send(inputVoltage);
+        SerialPort.SendLine("V.");
 
-    // Write the voltage reading to the voltage meter display pins
-    // (IO-0 through IO-5).
-    if (inputVoltage > 0.1) {
-        ConnectorIO0.State(true);
-    }
-    else {
-        ConnectorIO0.State(false);
-    }
-    if (inputVoltage > 2.0) {
-        ConnectorIO1.State(true);
-    }
-    else {
-        ConnectorIO1.State(false);
-    }
-    if (inputVoltage > 4.0) {
-        ConnectorIO2.State(true);
-    }
-    else {
-        ConnectorIO2.State(false);
-    }
-    if (inputVoltage > 6.0) {
-        ConnectorIO3.State(true);
-    }
-    else {
-        ConnectorIO3.State(false);
-    }
-    if (inputVoltage > 8.0) {
-        ConnectorIO4.State(true);
-    }
-    else {
-        ConnectorIO4.State(false);
-    }
-    if (inputVoltage >= 9.9) {
-        ConnectorIO5.State(true);
-    }
-    else {
-        ConnectorIO5.State(false);
-    }
+        // Write the voltage reading to the voltage meter display pins
+        // (IO-0 through IO-5).
+        if (inputVoltage > 0.1) {
+            ConnectorIO0.State(true);
+        }
+        else {
+            ConnectorIO0.State(false);
+        }
+        if (inputVoltage > 2.0) {
+            ConnectorIO1.State(true);
+        }
+        else {
+            ConnectorIO1.State(false);
+        }
+        if (inputVoltage > 4.0) {
+            ConnectorIO2.State(true);
+        }
+        else {
+            ConnectorIO2.State(false);
+        }
+        if (inputVoltage > 6.0) {
+            ConnectorIO3.State(true);
+        }
+        else {
+            ConnectorIO3.State(false);
+        }
+        if (inputVoltage > 8.0) {
+            ConnectorIO4.State(true);
+        }
+        else {
+            ConnectorIO4.State(false);
+        }
+        if (inputVoltage >= 9.9) {
+            ConnectorIO5.State(true);
+        }
+        else {
+            ConnectorIO5.State(false);
+        }
 
-    // Wait a second before the next reading.
-    Delay_ms(1000);
+        // Wait a second before the next reading.
+        Delay_ms(1000);
+    }
 }

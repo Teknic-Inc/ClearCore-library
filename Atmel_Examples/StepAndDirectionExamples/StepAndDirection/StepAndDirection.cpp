@@ -46,9 +46,7 @@ int32_t accelerationLimit = 100000; // pulses per sec^2
 // of the example.
 void MoveDistance(int32_t distance);
 
-void setup() {
-    // Put your setup code here, it will only run once:
-
+int main() {
     // Sets the input clocking rate.
     MotorMgr.MotorInputClocking(MotorManager::CLOCK_RATE_NORMAL);
 
@@ -90,26 +88,24 @@ void setup() {
     //    continue;
     //}
     SerialPort.SendLine("Motor Ready");
-}
 
-void loop() {
-    // Put your main code here, it will run repeatedly:
-
-    // Move 6400 counts (positive direction), then wait 2000ms
-    MoveDistance(6400);
-    Delay_ms(2000);
-    // Move 19200 counts farther positive, then wait 2000ms
-    MoveDistance(19200);
-    Delay_ms(2000);
-    // Move back 12800 counts (negative direction), then wait 2000ms
-    MoveDistance(-12800);
-    Delay_ms(2000);
-    // Move back 6400 counts (negative direction), then wait 2000ms
-    MoveDistance(-6400);
-    Delay_ms(2000);
-    // Move back to the start (negative 6400 pulses), then wait 2000ms
-    MoveDistance(-6400);
-    Delay_ms(2000);
+    while (true) {
+        // Move 6400 counts (positive direction), then wait 2000ms
+        MoveDistance(6400);
+        Delay_ms(2000);
+        // Move 19200 counts farther positive, then wait 2000ms
+        MoveDistance(19200);
+        Delay_ms(2000);
+        // Move back 12800 counts (negative direction), then wait 2000ms
+        MoveDistance(-12800);
+        Delay_ms(2000);
+        // Move back 6400 counts (negative direction), then wait 2000ms
+        MoveDistance(-6400);
+        Delay_ms(2000);
+        // Move back to the start (negative 6400 pulses), then wait 2000ms
+        MoveDistance(-6400);
+        Delay_ms(2000);
+    }
 }
 
 /*------------------------------------------------------------------------------

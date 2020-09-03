@@ -249,10 +249,6 @@
     <PostBuildEvent>"$(SolutionDir)\..\..\..\Tools\uf2-builder\Release\uf2-builder.exe" "$(OutputDirectory)\$(OutputFileName).bin" "$(OutputDirectory)\$(OutputFileName).uf2"</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Device_Startup\main.cpp">
-      <SubType>compile</SubType>
-      <Link>Device_Startup\main.cpp</Link>
-    </Compile>
     <Compile Include="..\Device_Startup\startup_same53.c">
       <SubType>compile</SubType>
       <Link>Device_Startup\startup_same53.c</Link>

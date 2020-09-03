@@ -19,8 +19,8 @@
  * ** None
  *
  * Links:
- * ** web link to doxygen (all Examples)
- * ** web link to ClearCore Manual (all Examples)  <<FUTURE links to Getting started webpage/ ClearCore videos>>
+ * ** ClearCore Documentation: https://teknic-inc.github.io/ClearCore-library/
+ * ** ClearCore Manual: https://www.teknic.com/files/downloads/clearcore_user_manual.pdf
  *
  * Last Modified: 6/11/2020
  * Copyright (c) 2020 Teknic Inc. This work is free to use, copy and distribute under the terms of
@@ -72,14 +72,9 @@ extern "C" void PeriodicInterrupt(void) {
     ACK_PERIODIC_INTERRUPT;
 }
 
-void setup() {
+int main() {
     ConfigurePeriodicInterrupt(interruptFreqHz);
 }
-
-void loop() {
-
-}
-
 
 void ConfigurePeriodicInterrupt(uint32_t frequencyHz) {
     // Enable the TCC2 peripheral.

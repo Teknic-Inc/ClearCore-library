@@ -73,7 +73,7 @@ double maxSpeed = 510;
 // the sketch.
 bool CommandVelocity(int32_t commandedVelocity);
 
-void setup() {
+int main() {
     // Sets all motor connectors to the correct mode for Follow Digital
     // Velocity, Unipolar PWM mode.
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
@@ -96,31 +96,30 @@ void setup() {
 
     // Waits for 5 seconds to allow the motor to come up to speed
     SerialPort.SendLine("Waiting for motor to reach speed...");
-	startTime = Milliseconds();
-	while (Milliseconds() - startTime < timeout) {
-		continue;
-	}
+    startTime = Milliseconds();
+    while (Milliseconds() - startTime < timeout) {
+        continue;
+    }
     SerialPort.SendLine("Motor Ready");
-}
 
+    while (true) {
+        // Move at +100 RPM (CCW).
+        CommandVelocity(100);    // See below for the detailed function definition.
+        // Wait 5000ms.
+        Delay_ms(5000);
 
-void loop() {
-    // Move at +100 RPM (CCW).
-    CommandVelocity(100);    // See below for the detailed function definition.
-    // Wait 5000ms.
-    Delay_ms(5000);
+        CommandVelocity(300); // Move at +300 RPM (CCW).
+        Delay_ms(5000);
 
-    CommandVelocity(300); // Move at +300 RPM (CCW).
-    Delay_ms(5000);
+        CommandVelocity(-500); // Move at -500 RPM (CW).
+        Delay_ms(5000);
 
-    CommandVelocity(-500); // Move at -500 RPM (CW).
-    Delay_ms(5000);
+        CommandVelocity(-300); // Move at -300 RPM (CW).
+        Delay_ms(5000);
 
-    CommandVelocity(-300); // Move at -300 RPM (CW).
-    Delay_ms(5000);
-
-    CommandVelocity(100); // Move at +100 RPM (CCW).
-    Delay_ms(5000);
+        CommandVelocity(100); // Move at +100 RPM (CCW).
+        Delay_ms(5000);
+    }
 }
 
 /*------------------------------------------------------------------------------

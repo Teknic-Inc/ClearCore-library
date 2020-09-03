@@ -40,7 +40,7 @@
 // Container for the byte to be read-in
 int16_t input;
 
-void setup() {
+int main() {
     // Set up serial communication to print out the serial input.
     SerialPort.Mode(Connector::USB_CDC);
     SerialPort.Speed(baudRateSerialPort);
@@ -61,22 +61,22 @@ void setup() {
     while (!InputPort) {
         continue;
     }
-}
 
-void loop() {
-    // Read the input.
-    input = InputPort.CharGet();
+    while (true) {
+        // Read the input.
+        input = InputPort.CharGet();
 
-    // If there was a valid byte read-in, print it.
-    if (input != -1) {
-        // Display the input character received.
-        SerialPort.Send("Received: ");
-        SerialPort.SendLine((char)input);
+        // If there was a valid byte read-in, print it.
+        if (input != -1) {
+            // Display the input character received.
+            SerialPort.Send("Received: ");
+            SerialPort.SendLine((char)input);
+        }
+        else {
+            SerialPort.SendLine("No data received...");
+        }
+
+        // Wait a second then repeat...
+        Delay_ms(1000);
     }
-    else {
-        SerialPort.SendLine("No data received...");
-    }
-
-    // Wait a second then repeat...
-    Delay_ms(1000);
 }

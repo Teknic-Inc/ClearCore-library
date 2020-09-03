@@ -68,7 +68,7 @@
 void HomingSensorCallback();
 bool MoveToPosition(uint8_t positionNum);
 
-void setup() {
+int main() {
     // This section attaches the interrupt callback to the homing sensor pin,
     // set to trigger on any change of sensor state.
     HomingSensor.Mode(Connector::INPUT_DIGITAL);
@@ -104,15 +104,15 @@ void setup() {
         continue;
     }
     SerialPort.SendLine("Motor Ready");
-}
 
-void loop() {
-    // Move to Position 1 defined in MSP.
-    MoveToPosition(1);    // See below for the detailed function definition.
-    // Wait 1000ms.
-    Delay_ms(1000);
-    MoveToPosition(2);
-    Delay_ms(1000);
+    while (true) {
+        // Move to Position 1 defined in MSP.
+        MoveToPosition(1);    // See below for the detailed function definition.
+        // Wait 1000ms.
+        Delay_ms(1000);
+        MoveToPosition(2);
+        Delay_ms(1000);
+    }
 }
 
 /*------------------------------------------------------------------------------

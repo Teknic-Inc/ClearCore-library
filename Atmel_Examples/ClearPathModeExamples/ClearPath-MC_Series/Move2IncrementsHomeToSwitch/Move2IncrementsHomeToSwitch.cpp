@@ -67,8 +67,8 @@
 
 // Increments defined below must be set identically to the position increments
 // set in MSP
-#define POSITION_INCREMENT_1 100  // Input A "off" setup selection, 100 counts (CCW)
-#define POSITION_INCREMENT_2 -100 // Input A "on" setup selection, -100 counts (CW)
+#define POSITION_INCREMENT_1 10000  // Input A "off" setup selection, 10000 counts (CCW)
+#define POSITION_INCREMENT_2 -10000 // Input A "on" setup selection, -10000 counts (CW)
 
 // Specify the home sensor connector
 #define HomingSensor ConnectorDI6
@@ -85,7 +85,7 @@
 void HomingSensorCallback();
 bool MoveIncrements(uint32_t numberOfIncrements, int32_t positionIncrement);
 
-void setup() {
+int main() {
     // Sets all motor connectors to the correct mode for Incremental Distance
     // mode.
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
@@ -124,33 +124,31 @@ void setup() {
         continue;
     }
     SerialPort.SendLine("Motor Ready");
+
+    while (true) {
+        // Move a distance equal to 1 * POSITION_INCREMENT_1 = 100 counts.
+        // See below for the detailed function definition.
+        MoveIncrements(1, POSITION_INCREMENT_1);
+        // Stay settled for 1 second before moving again.
+        Delay_ms(1000);
+
+        // Move a distance equal to 1 * POSITION_INCREMENT_2 = -100 counts.
+        MoveIncrements(1, POSITION_INCREMENT_2);
+        Delay_ms(1000);
+
+        // Note: If another incremental move is triggered in the same direction as
+        // an active move before deceleration begins, then the moves will be
+        // seamlessly combined into one continuous move
+
+        // Move a distance equal to 4 * POSITION_INCREMENT_1 = 400 counts.
+        MoveIncrements(4, POSITION_INCREMENT_1);
+        Delay_ms(1000);
+
+        // Move a distance equal to 4 * POSITION_INCREMENT_2 = -400 counts.
+        MoveIncrements(4, POSITION_INCREMENT_2);
+        Delay_ms(1000);
+    }
 }
-
-
-void loop() {
-    // Move a distance equal to 1 * POSITION_INCREMENT_1 = 100 counts.
-    // See below for the detailed function definition.
-    MoveIncrements(1, POSITION_INCREMENT_1);
-    // Stay settled for 1 second before moving again.
-    Delay_ms(1000);
-
-    // Move a distance equal to 1 * POSITION_INCREMENT_2 = -100 counts.
-    MoveIncrements(1, POSITION_INCREMENT_2);
-    Delay_ms(1000);
-
-    // Note: If another incremental move is triggered in the same direction as
-    // an active move before deceleration begins, then the moves will be
-    // seamlessly combined into one continuous move
-
-    // Move a distance equal to 4 * POSITION_INCREMENT_1 = 400 counts.
-    MoveIncrements(4, POSITION_INCREMENT_1);
-    Delay_ms(1000);
-
-    // Move a distance equal to 4 * POSITION_INCREMENT_2 = -400 counts.
-    MoveIncrements(4, POSITION_INCREMENT_2);
-    Delay_ms(1000);
-}
-
 
 /*------------------------------------------------------------------------------
  * MoveIncrements

@@ -48,7 +48,7 @@
 // Specify which serial to use: ConnectorUsb, ConnectorCOM0, or ConnectorCOM1.
 #define SerialPort ConnectorUsb
 
-void setup() {
+int main() {
     // Put the motor connector into the correct HLFB mode to read the Speed
     // Output PWM signal and convert it to percent of Max Speed.
     motor.HlfbMode(MotorDriver::HLFB_MODE_HAS_PWM);
@@ -63,37 +63,37 @@ void setup() {
     while (!SerialPort && Milliseconds() - startTime < timeout) {
         continue;
     }
-}
 
-void loop() {
-    // Use the MSP application to enable and move the motor. The duty cycle of
-    // the HFLB output will be refreshed and displayed every 0.5 seconds.
+    while (true) {
+        // Use the MSP application to enable and move the motor. The duty cycle of
+        // the HFLB output will be refreshed and displayed every 0.5 seconds.
 
-    // Check the state of the HLFB.
-    MotorDriver::HlfbStates hlfbState = motor.HlfbState();
+        // Check the state of the HLFB.
+        MotorDriver::HlfbStates hlfbState = motor.HlfbState();
 
-    // Print the HLFB state.
-    if (hlfbState == MotorDriver::HLFB_HAS_MEASUREMENT) {
-        // Get the measured speed as a percent of Max Speed.
-        float hlfbPercent = motor.HlfbPercent();
+        // Print the HLFB state.
+        if (hlfbState == MotorDriver::HLFB_HAS_MEASUREMENT) {
+            // Get the measured speed as a percent of Max Speed.
+            float hlfbPercent = motor.HlfbPercent();
 
-        SerialPort.Send("Speed output: ");
+            SerialPort.Send("Speed output: ");
 
-        if (hlfbPercent == MotorDriver::HLFB_DUTY_UNKNOWN) {
-            SerialPort.SendLine("UNKNOWN");
+            if (hlfbPercent == MotorDriver::HLFB_DUTY_UNKNOWN) {
+                SerialPort.SendLine("UNKNOWN");
+            }
+            else {
+                char hlfbPercentStr[10];
+                // Convert the floating point duty cycle into a string representation.
+                snprintf(hlfbPercentStr, sizeof(hlfbPercentStr), "%.0f%%", hlfbPercent);
+                SerialPort.Send(hlfbPercentStr);
+                SerialPort.SendLine(" of maximum speed");
+            }
         }
-        else {
-            char hlfbPercentStr[10];
-            // Convert the floating point duty cycle into a string representation.
-            snprintf(hlfbPercentStr, sizeof(hlfbPercentStr), "%.0f%%", hlfbPercent);
-            SerialPort.Send(hlfbPercentStr);
-            SerialPort.SendLine(" of maximum speed");
+        else if (hlfbState == MotorDriver::HLFB_DEASSERTED) {
+            SerialPort.SendLine("Disabled or Shutdown");
         }
-    }
-    else if (hlfbState == MotorDriver::HLFB_DEASSERTED) {
-        SerialPort.SendLine("Disabled or Shutdown");
-    }
 
-    // Wait 0.5 secs before reading the HLFB again.
-    Delay_ms(500);
+        // Wait 0.5 secs before reading the HLFB again.
+        Delay_ms(500);
+    }
 }

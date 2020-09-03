@@ -69,7 +69,7 @@ double maxTorque = 100;
 // The definition/implementation of this function is at the bottom of the sketch.
 bool CommandTorque(int8_t commandedTorque);
 
-void setup() {
+int main() {
     // Sets all motor connectors to the correct mode for Follow Digital
     // Torque mode.
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
@@ -96,26 +96,25 @@ void setup() {
         continue;
     }
     SerialPort.SendLine("Motor Ready");
-}
 
+    while (true) {
+        // Output 15% of the motor's peak torque in the positive (CCW) direction.
+        CommandTorque(15);    // See below for the detailed function definition.
+        // Wait 2000ms.
+        Delay_ms(2000);
 
-void loop() {
-    // Output 15% of the motor's peak torque in the positive (CCW) direction.
-    CommandTorque(15);    // See below for the detailed function definition.
-    // Wait 2000ms.
-    Delay_ms(2000);
+        CommandTorque(-75); // Output 75% peak torque in the negative (CW) direction.
+        Delay_ms(2000);
 
-    CommandTorque(-75); // Output 75% peak torque in the negative (CW) direction.
-    Delay_ms(2000);
+        CommandTorque(5); // Output 5% peak torque in the positive (CCW) direction.
+        Delay_ms(2000);
 
-    CommandTorque(5); // Output 5% peak torque in the positive (CCW) direction.
-    Delay_ms(2000);
+        CommandTorque(-35); // Output 35% peak torque in the negative (CW) direction.
+        Delay_ms(2000);
 
-    CommandTorque(-35); // Output 35% peak torque in the negative (CW) direction.
-    Delay_ms(2000);
-
-    CommandTorque(10); // Output 10% peak torque in the positive (CCW) direction.
-    Delay_ms(2000);
+        CommandTorque(10); // Output 10% peak torque in the positive (CCW) direction.
+        Delay_ms(2000);
+    }
 }
 
 /*------------------------------------------------------------------------------

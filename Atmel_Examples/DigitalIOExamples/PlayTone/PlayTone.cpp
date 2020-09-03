@@ -42,25 +42,25 @@ const int16_t toneAmplitude = INT16_MAX / 100;  // max volume is INT16_MAX
 // Tone output is supported on connectors IO-4 and IO-5 only.
 #define tonePin ConnectorIO4
 
-void setup() {
+int main() {
     // Set the tone connector into output mode.
     tonePin.Mode(Connector::OUTPUT_TONE);
 
     // Set the volume of the tone connector to the value specified
     // by toneAmplitude.
     tonePin.ToneAmplitude(toneAmplitude);
-}
 
-void loop() {
-    // Play the melody in order with equal note durations.
-    for (uint8_t note = 0; note < noteCount; note++) {
-        tonePin.ToneContinuous(melody[note]);
-        Delay_ms(toneDuration);
+    while (true) {
+        // Play the melody in order with equal note durations.
+        for (uint8_t note = 0; note < noteCount; note++) {
+            tonePin.ToneContinuous(melody[note]);
+            Delay_ms(toneDuration);
+        }
+
+        // Stop the tone generation.
+        tonePin.ToneStop();
+
+        // Wait a second, then repeat...
+        Delay_ms(1000);
     }
-
-    // Stop the tone generation.
-    tonePin.ToneStop();
-
-    // Wait a second, then repeat...
-    Delay_ms(1000);
 }

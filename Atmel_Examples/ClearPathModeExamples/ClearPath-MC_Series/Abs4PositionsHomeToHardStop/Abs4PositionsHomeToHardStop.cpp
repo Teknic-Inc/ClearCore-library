@@ -66,7 +66,7 @@
 // the sketch.
 bool MoveToPosition(uint8_t positionNum);
 
-void setup() {
+int main() {
     // Sets all motor connectors to the correct mode for Absolute Position mode
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
                           Connector::CPM_MODE_A_DIRECT_B_DIRECT);
@@ -97,29 +97,28 @@ void setup() {
         continue;
     }
     SerialPort.SendLine("Motor Ready");
-}
 
+    while (true) {
+        // Move to Position 1 defined in MSP.
+        MoveToPosition(1);    // See below for the detailed function definition.
+        // Wait 1000ms.
+        Delay_ms(1000);
+        MoveToPosition(2);
+        Delay_ms(1000);
+        MoveToPosition(3);
+        Delay_ms(1000);
+        MoveToPosition(4);
+        Delay_ms(1000);
 
-void loop() {
-    // Move to Position 1 defined in MSP.
-    MoveToPosition(1);    // See below for the detailed function definition.
-    // Wait 1000ms.
-    Delay_ms(1000);
-    MoveToPosition(2);
-    Delay_ms(1000);
-    MoveToPosition(3);
-    Delay_ms(1000);
-    MoveToPosition(4);
-    Delay_ms(1000);
-
-    // Alternatively, if you'd like to control the ClearPath servo's inputs
-    // externally using ClearCore inputs, consider doing something like this:
-    /*
-    // Sets ClearPath's InA to DI6's state
-     motor.MotorInAState(ConnectorDI6.State());
-     // Sets ClearPath's InB to DI7's state
-     motor.MotorInBState(ConnectorDI7.State());
-    */
+        // Alternatively, if you'd like to control the ClearPath servo's inputs
+        // externally using ClearCore inputs, consider doing something like this:
+        /*
+        // Sets ClearPath's InA to DI6's state
+         motor.MotorInAState(ConnectorDI6.State());
+         // Sets ClearPath's InB to DI7's state
+         motor.MotorInBState(ConnectorDI7.State());
+        */
+    }
 }
 
 /*------------------------------------------------------------------------------

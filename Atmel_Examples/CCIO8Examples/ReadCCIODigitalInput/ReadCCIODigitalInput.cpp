@@ -36,7 +36,7 @@
 // Select the baud rate to match the target serial device.
 #define baudRate 9600
 
-void setup() {
+int main() {
     // Set up serial communication to display CCIO-8 state.
     SerialPort.Mode(Connector::USB_CDC);
     SerialPort.Speed(baudRate);
@@ -54,21 +54,21 @@ void setup() {
     // Make sure the input connector is in input mode (the default for all
     // CCIO-8 pins).
     CcioMgr.PinByIndex(CLEARCORE_PIN_CCIOA0)->Mode(Connector::INPUT_DIGITAL);
-}
 
-void loop() {
-    // Read the state of the input connector
-    int16_t state = CcioMgr.PinByIndex(CLEARCORE_PIN_CCIOA0)->State();
+    while (true) {
+        // Read the state of the input connector
+        int16_t state = CcioMgr.PinByIndex(CLEARCORE_PIN_CCIOA0)->State();
 
-    // Display the state of the input connector.
-    SerialPort.Send("CCIOA0 Input state: ");
-    if (state) {
-        SerialPort.SendLine("ON");
+        // Display the state of the input connector.
+        SerialPort.Send("CCIOA0 Input state: ");
+        if (state) {
+            SerialPort.SendLine("ON");
+        }
+        else {
+            SerialPort.SendLine("OFF");
+        }
+
+        // Wait a second then repeat...
+        Delay_ms(1000);
     }
-    else {
-        SerialPort.SendLine("OFF");
-    }
-
-    // Wait a second then repeat...
-    Delay_ms(1000);
 }

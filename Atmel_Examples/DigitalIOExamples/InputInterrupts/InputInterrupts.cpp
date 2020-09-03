@@ -51,7 +51,7 @@
 // is defined below
 void MyCallback();
 
-void setup() {
+int main() {
     // Set up the interrupt connector in digital input mode.
     interruptConnector.Mode(Connector::INPUT_DIGITAL);
 
@@ -70,28 +70,28 @@ void setup() {
     while (!SerialPort && Milliseconds() - startTime < timeout) {
         continue;
     }
-}
 
-void loop() {
-    // Enable digital interrupts.
-    interruptConnector.InterruptEnable(true);
+    while (true) {
+        // Enable digital interrupts.
+        interruptConnector.InterruptEnable(true);
 
-    SerialPort.SendLine("Interrupts are turned on.");
+        SerialPort.SendLine("Interrupts are turned on.");
 
-    // Test that the ISR is triggered when the state of the interrupt connector
-    // transitions from true to false by toggling your switch.
+        // Test that the ISR is triggered when the state of the interrupt connector
+        // transitions from true to false by toggling your switch.
 
-    // Wait while the interrupt is triggered.
-    Delay_ms(5000);
+        // Wait while the interrupt is triggered.
+        Delay_ms(5000);
 
-    // Disable digital interrupts.
-    interruptConnector.InterruptEnable(false);
+        // Disable digital interrupts.
+        interruptConnector.InterruptEnable(false);
 
-    SerialPort.SendLine("Interrupts are turned off.");
+        SerialPort.SendLine("Interrupts are turned off.");
 
-    // Test that the ISR does not get triggered when the state of the interrupt
-    // connector transitions from true to false by toggling your switch.
-    Delay_ms(5000);
+        // Test that the ISR does not get triggered when the state of the interrupt
+        // connector transitions from true to false by toggling your switch.
+        Delay_ms(5000);
+    }
 }
 
 // The function to be triggered on an interrupt.

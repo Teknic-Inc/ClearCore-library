@@ -17,8 +17,8 @@
  *    with the first.  
  *
  * Links:
- * ** web link to doxygen (all Examples)
- * ** web link to ClearCore Manual (all Examples)  <<FUTURE links to Getting started webpage/ ClearCore videos>>
+ * ** ClearCore Documentation: https://teknic-inc.github.io/ClearCore-library/
+ * ** ClearCore Manual: https://www.teknic.com/files/downloads/clearcore_user_manual.pdf
  *
  * Last Modified: 1/21/2020
  * Copyright (c) 2020 Teknic Inc. This work is free to use, copy and distribute under the terms of
@@ -34,7 +34,7 @@
 // Select the baud rate to match the target device.
 #define serialBaudRate 9600
 
-void setup() {
+int main() {
     // Put your setup code here, it will run once:
 
     // Set up serial communication to print.
@@ -56,14 +56,12 @@ void setup() {
 
     // Send a message to the XBee.
     XBee.Send("Hello XBee");
-}
 
-void loop() {
-    // Put your main code here, it will run repeatedly:
-
-    // As long as there are characters to be read-in, print the character at the
-    // top of the receive buffer.
-    if (XBee.AvailableForRead()) {
-        SerialPort.SendLine(XBee.CharGet());
+    while (true) {
+        // As long as there are characters to be read-in, print the character at the
+        // top of the receive buffer.
+        if (XBee.AvailableForRead()) {
+            SerialPort.SendLine(XBee.CharGet());
+        }
     }
 }

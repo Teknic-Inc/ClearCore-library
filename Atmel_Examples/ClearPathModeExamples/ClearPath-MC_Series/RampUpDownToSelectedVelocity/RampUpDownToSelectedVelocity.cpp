@@ -61,7 +61,7 @@
 // of the sketch.
 bool RampToVelocitySelection(uint8_t velocityIndex);
 
-void setup() {
+int main() {
     // Sets all motor connectors to the correct mode for Ramp Up/Down to
     // Selected Velocity mode.
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
@@ -93,32 +93,31 @@ void setup() {
         continue;
     }
     SerialPort.SendLine("Motor Ready");
-}
 
+    while (true) {
+        // Move to Position 1 defined in MSP (Inputs A off, B off).
+        // See below for the detailed function definition.
+        RampToVelocitySelection(1);
 
-void loop() {
-    // Move to Position 1 defined in MSP (Inputs A off, B off).
-    // See below for the detailed function definition.
-    RampToVelocitySelection(1);
+        // Wait 1000ms.
+        Delay_ms(1000);
+        RampToVelocitySelection(2); // Inputs A on, B off
+        Delay_ms(1000);
+        RampToVelocitySelection(3); // Inputs A off, B on
+        Delay_ms(1000);
+        RampToVelocitySelection(4); // Inputs A on, B on
+        Delay_ms(1000);
 
-    // Wait 1000ms.
-    Delay_ms(1000);
-    RampToVelocitySelection(2); // Inputs A on, B off
-    Delay_ms(1000);
-    RampToVelocitySelection(3); // Inputs A off, B on
-    Delay_ms(1000);
-    RampToVelocitySelection(4); // Inputs A on, B on
-    Delay_ms(1000);
+        // Alternatively, if you'd like to control the ClearPath motor's inputs
+        // directly using ClearCore inputs consider doing something like this:
+        /*
+        // Sets ClearPath's InA to DI6's state
+        motor.MotorInAState(ConnectorDI6.State());
 
-    // Alternatively, if you'd like to control the ClearPath motor's inputs
-    // directly using ClearCore inputs consider doing something like this:
-    /*
-    // Sets ClearPath's InA to DI6's state
-    motor.MotorInAState(ConnectorDI6.State());
-
-    // Sets ClearPath's InB to DI7's state
-    motor.MotorInBState(ConnectorDI7.State());
-    */
+        // Sets ClearPath's InB to DI7's state
+        motor.MotorInBState(ConnectorDI7.State());
+        */
+    }
 }
 
 /*------------------------------------------------------------------------------

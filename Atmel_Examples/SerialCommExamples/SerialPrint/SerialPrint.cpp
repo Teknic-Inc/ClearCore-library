@@ -29,7 +29,7 @@
 // Select the baud rate to match the target device.
 #define baudRate 9600
 
-void setup() {
+int main() {
     // Set up serial communication to print.
     SerialPort.Mode(Connector::USB_CDC);
     SerialPort.Speed(baudRate);
@@ -40,8 +40,4 @@ void setup() {
 
     // The port is open and ready to talk.
     SerialPort.SendLine("Hello World!");
-}
-
-void loop() {
-    // This example doesn't have any ongoing tasks to perform.
 }

@@ -43,7 +43,7 @@ const uint8_t line4[21] = "98765432109876543210";
 void SetBrightness(uint8_t level);
 void SetCursor(uint8_t row, uint8_t column);
 
-void setup() {
+int main() {
     SerialPort.Mode(Connector::TTL);
     SerialPort.Speed(baudRate);
     SerialPort.PortOpen();
@@ -65,10 +65,6 @@ void setup() {
     SerialPort.Send((char *)line3);
     SerialPort.Send((char *)line2);
     SerialPort.Send((char *)line4);
-}
-
-void loop() {
-    // This example doesn't have any ongoing tasks to perform.
 }
 
 /*------------------------------------------------------------------------------

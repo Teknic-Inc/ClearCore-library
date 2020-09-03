@@ -53,7 +53,7 @@
 // Define which COM serial port connector to use: ConnectorCOM0 or ConnectorCOM1
 #define SpiPort ConnectorCOM0
 
-void setup() {
+int main() {
     // Configure the COM port for our SPI device then open the port.
     SpiPort.Mode(Connector::SPI);
     SpiPort.Speed(baudRate);
@@ -69,8 +69,4 @@ void setup() {
     SpiPort.SpiTransferData(0x63);
     // Close the port.
     SpiPort.SpiSsMode(SerialDriver::LINE_OFF);
-}
-
-void loop() {
-    // This example doesn't have any ongoing tasks to perform.
 }

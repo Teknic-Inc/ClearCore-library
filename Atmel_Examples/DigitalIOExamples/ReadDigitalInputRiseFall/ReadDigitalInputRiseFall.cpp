@@ -38,7 +38,7 @@ bool risen, fallen;
 // Specify which serial to use: ConnectorUsb, ConnectorCOM0, or ConnectorCOM1.
 #define SerialPort ConnectorUsb
 
-void setup() {
+int main() {
     // Set up serial communication at a baud rate of 9600 bps then wait up to
     // 5 seconds for a port to open.
     // Serial communication is not required for this example to run, however the
@@ -51,29 +51,29 @@ void setup() {
     while (!SerialPort && Milliseconds() - startTime < timeout) {
         continue;
     }
-}
 
-void loop() {
-    // Check whether the digital input has risen, fallen, or is unchanged
-    // since the last time we checked.
-    risen = InputConnector.InputRisen();
-    fallen = InputConnector.InputFallen();
+    while (true) {
+        // Check whether the digital input has risen, fallen, or is unchanged
+        // since the last time we checked.
+        risen = InputConnector.InputRisen();
+        fallen = InputConnector.InputFallen();
 
-    SerialPort.Send("DI-6 Transitions: ");
+        SerialPort.Send("DI-6 Transitions: ");
 
-    if (risen && fallen) {
-        SerialPort.SendLine("RISEN and FALLEN");
-    }
-    else if (risen) {
-        SerialPort.SendLine("RISEN");
-    }
-    else if (fallen) {
-        SerialPort.SendLine("FALLEN");
-    }
-    else {
-        SerialPort.SendLine("NO CHANGE");
-    }
+        if (risen && fallen) {
+            SerialPort.SendLine("RISEN and FALLEN");
+        }
+        else if (risen) {
+            SerialPort.SendLine("RISEN");
+        }
+        else if (fallen) {
+            SerialPort.SendLine("FALLEN");
+        }
+        else {
+            SerialPort.SendLine("NO CHANGE");
+        }
 
-    // Wait a couple seconds then repeat...
-    Delay_ms(2000);
+        // Wait a couple seconds then repeat...
+        Delay_ms(2000);
+    }
 }

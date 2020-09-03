@@ -29,25 +29,25 @@
 //       output using an H-Bridge. See the WriteHBridgeOutput example.
 #define outputPin ConnectorIO1
 
-void setup() {
+int main() {
     // Set up the output pin for PWM output mode.
     outputPin.Mode(Connector::OUTPUT_PWM);
-}
 
-void loop() {
-    // Write some digital PWM signals to the output connector.
-    // Valid values range from 0 (0% duty cycle / always off)
-    // to 255 (100% duty cycle / always on).
+    while (true) {
+        // Write some digital PWM signals to the output connector.
+        // Valid values range from 0 (0% duty cycle / always off)
+        // to 255 (100% duty cycle / always on).
 
-    // Output a low duty cycle for 1 second.
-    outputPin.PwmDuty(10);
-    Delay_ms(1000);
+        // Output a low duty cycle for 1 second.
+        outputPin.PwmDuty(10);
+        Delay_ms(1000);
 
-    // Output a medium duty cycle for 1 second.
-    outputPin.PwmDuty(120);
-    Delay_ms(1000);
+        // Output a medium duty cycle for 1 second.
+        outputPin.PwmDuty(120);
+        Delay_ms(1000);
 
-    // Output a high duty cycle for 1 second.
-    outputPin.PwmDuty(230);
-    Delay_ms(1000);
+        // Output a high duty cycle for 1 second.
+        outputPin.PwmDuty(230);
+        Delay_ms(1000);
+    }
 }

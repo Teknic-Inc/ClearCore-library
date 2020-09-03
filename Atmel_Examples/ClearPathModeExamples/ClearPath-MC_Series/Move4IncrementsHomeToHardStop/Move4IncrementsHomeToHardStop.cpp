@@ -79,7 +79,7 @@
 // the sketch.
 bool MoveIncrements(uint32_t NumberOfIncrements, int32_t PositionIncrement);
 
-void setup() {
+int main() {
     // Sets all motor connectors to the correct mode for Incremental Distance
     // mode.
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
@@ -112,33 +112,31 @@ void setup() {
         continue;
     }
     SerialPort.SendLine("Motor Ready");
+
+    while (true) {
+        // Move a distance equal to 1 * POSITION_INCREMENT_1 = 750 counts
+        MoveIncrements(1, POSITION_INCREMENT_1);    // See below for the detailed
+                                                    // function definition
+        // Stay settled for 1 second before moving again.
+        Delay_ms(1000);
+
+        // Move a distance equal to 1 * POSITION_INCREMENT_2 = -750 counts
+        MoveIncrements(1, POSITION_INCREMENT_2);
+        Delay_ms(1000);
+
+        // Note: If another incremental move is triggered in the same direction as
+        // an active move before deceleration begins, then the moves will be
+        // seamlessly combined into one continuous move.
+
+        // Move a distance equal to 2 * POSITION_INCREMENT_3 = 3332 counts
+        MoveIncrements(2, POSITION_INCREMENT_3);
+        Delay_ms(1000);
+
+        // Move a distance equal to 2 * POSITION_INCREMENT_4 = -3332 counts
+        MoveIncrements(2, POSITION_INCREMENT_4);
+        Delay_ms(1000);
+    }
 }
-
-
-void loop() {
-    // Move a distance equal to 1 * POSITION_INCREMENT_1 = 750 counts
-    MoveIncrements(1, POSITION_INCREMENT_1);    // See below for the detailed
-                                                // function definition
-    // Stay settled for 1 second before moving again.
-    Delay_ms(1000);
-
-    // Move a distance equal to 1 * POSITION_INCREMENT_2 = -750 counts
-    MoveIncrements(1, POSITION_INCREMENT_2);
-    Delay_ms(1000);
-
-    // Note: If another incremental move is triggered in the same direction as
-    // an active move before deceleration begins, then the moves will be
-    // seamlessly combined into one continuous move.
-
-    // Move a distance equal to 2 * POSITION_INCREMENT_3 = 3332 counts
-    MoveIncrements(2, POSITION_INCREMENT_3);
-    Delay_ms(1000);
-
-    // Move a distance equal to 2 * POSITION_INCREMENT_4 = -3332 counts
-    MoveIncrements(2, POSITION_INCREMENT_4);
-    Delay_ms(1000);
-}
-
 
 /*------------------------------------------------------------------------------
  * MoveIncrements

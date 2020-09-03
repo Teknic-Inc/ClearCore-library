@@ -75,7 +75,7 @@ double velocityResolution = 2.0;
 // the sketch.
 bool MoveAtVelocity(double velocity);
 
-void setup() {
+int main() {
     // Set all motor connectors to the correct mode for Manual Velocity
     // mode.
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
@@ -107,29 +107,29 @@ void setup() {
         continue;
     }
     SerialPort.SendLine("Motor Ready");
-}
 
-void loop() {
-    // Spin at 500 RPM in the CCW direction.
-    MoveAtVelocity(500);    // See below for the detailed function definition.
-    // Hold the velocity for 5 seconds before issuing a new command.
-    Delay_ms(5000);
+    while (true) {
+        // Spin at 500 RPM in the CCW direction.
+        MoveAtVelocity(500);    // See below for the detailed function definition.
+        // Hold the velocity for 5 seconds before issuing a new command.
+        Delay_ms(5000);
 
-    // Spin at 100 RPM in the CW direction.
-    MoveAtVelocity(-100);
-    Delay_ms(5000);
+        // Spin at 100 RPM in the CW direction.
+        MoveAtVelocity(-100);
+        Delay_ms(5000);
 
-    // Spin at 750 RPM in the CW direction.
-    MoveAtVelocity(-750);
-    Delay_ms(5000);
+        // Spin at 750 RPM in the CW direction.
+        MoveAtVelocity(-750);
+        Delay_ms(5000);
 
-    // Spin at 1000 RPM in the CCW direction.
-    MoveAtVelocity(1000);
-    Delay_ms(5000);
+        // Spin at 1000 RPM in the CCW direction.
+        MoveAtVelocity(1000);
+        Delay_ms(5000);
 
-    // Command 0 RPM, the motor shaft is stationary.
-    MoveAtVelocity(0);
-    Delay_ms(5000);
+        // Command 0 RPM, the motor shaft is stationary.
+        MoveAtVelocity(0);
+        Delay_ms(5000);
+    }
 }
 
 /*------------------------------------------------------------------------------

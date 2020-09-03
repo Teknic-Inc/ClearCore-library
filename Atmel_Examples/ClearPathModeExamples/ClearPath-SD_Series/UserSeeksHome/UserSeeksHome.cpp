@@ -65,7 +65,7 @@
 // ConnectorCOM1
 #define SerialPort ConnectorUsb
 
-void setup() {
+int main() {
     // Sets the input clocking rate. This normal rate is ideal for ClearPath
     // step and direction applications.
     MotorMgr.MotorInputClocking(MotorManager::CLOCK_RATE_NORMAL);
@@ -127,8 +127,4 @@ void setup() {
     // Zero the motor's reference position after homing to allow for accurate
     // absolute position moves
     motor.PositionRefSet(0);
-}
-
-void loop() {
-    // This example doesn't have any ongoing tasks to perform.
 }

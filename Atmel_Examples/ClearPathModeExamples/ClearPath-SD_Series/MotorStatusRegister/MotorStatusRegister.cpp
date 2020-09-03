@@ -45,7 +45,7 @@ char *readyStateStr;
 // Declare our helper function so that it may be used before it is defined.
 char *ReadyStateString(MotorDriver::MotorReadyStates readyState);
 
-void setup() {
+int main() {
     // Set up serial communication at a baud rate of 9600 bps then wait up to
     // 5 seconds for a port to open.
     // Serial communication is not required for this example to run, however the
@@ -58,59 +58,59 @@ void setup() {
     while (!SerialPort && Milliseconds() - startTime < timeout) {
         continue;
     }
-}
 
-void loop() {
-    // Get a copy of the motor status register for each motor connector.
-    for (uint8_t i = 0; i < motorConnectorCount; i++) {
-        MotorDriver *motor = motorConnectors[i];
-        volatile const MotorDriver::StatusRegMotor &statusReg = motor->StatusReg();
+    while (true) {
+        // Get a copy of the motor status register for each motor connector.
+        for (uint8_t i = 0; i < motorConnectorCount; i++) {
+            MotorDriver *motor = motorConnectors[i];
+            volatile const MotorDriver::StatusRegMotor &statusReg = motor->StatusReg();
 
-        SerialPort.Send("Motor Status Register for ");
-        SerialPort.Send(motorConnectorNames[i]);
-        SerialPort.SendLine(":");
+            SerialPort.Send("Motor Status Register for ");
+            SerialPort.Send(motorConnectorNames[i]);
+            SerialPort.SendLine(":");
 
-        SerialPort.Send("Enabled:\t\t");
-        if (statusReg.bit.Enabled) {
-            SerialPort.SendLine('1');
-        }
-        else {
-            SerialPort.SendLine('0');
+            SerialPort.Send("Enabled:\t\t");
+            if (statusReg.bit.Enabled) {
+                SerialPort.SendLine('1');
+            }
+            else {
+                SerialPort.SendLine('0');
+            }
+
+            SerialPort.Send("Move direction:\t\t");
+            if (statusReg.bit.MoveDirection) {
+                SerialPort.SendLine('+');
+            }
+            else {
+                SerialPort.SendLine('-');
+            }
+
+            SerialPort.Send("Steps active:\t\t");
+            if (statusReg.bit.StepsActive) {
+                SerialPort.SendLine('1');
+            }
+            else {
+                SerialPort.SendLine('0');
+            }
+
+            SerialPort.Send("At velocity target:\t");
+            if (statusReg.bit.AtTargetVelocity) {
+                SerialPort.SendLine('1');
+            }
+            else {
+                SerialPort.SendLine('0');
+            }
+
+            SerialPort.Send("Ready state:\t\t");
+            readyStateStr = ReadyStateString(statusReg.bit.ReadyState);
+            SerialPort.SendLine(readyStateStr);
+
+            SerialPort.SendLine("--------------------------------");
         }
 
-        SerialPort.Send("Move direction:\t\t");
-        if (statusReg.bit.MoveDirection) {
-            SerialPort.SendLine('+');
-        }
-        else {
-            SerialPort.SendLine('-');
-        }
-
-        SerialPort.Send("Steps active:\t\t");
-        if (statusReg.bit.StepsActive) {
-            SerialPort.SendLine('1');
-        }
-        else {
-            SerialPort.SendLine('0');
-        }
-
-        SerialPort.Send("At velocity target:\t");
-        if (statusReg.bit.AtVelTarget) {
-            SerialPort.SendLine('1');
-        }
-        else {
-            SerialPort.SendLine('0');
-        }
-
-        SerialPort.Send("Ready state:\t\t");
-        readyStateStr = ReadyStateString(statusReg.bit.ReadyState);
-        SerialPort.SendLine(readyStateStr);
-
-        SerialPort.SendLine("--------------------------------");
+        // Wait a few seconds then repeat...
+        Delay_ms(5000);
     }
-
-    // Wait a few seconds then repeat...
-    Delay_ms(5000);
 }
 
 /*------------------------------------------------------------------------------

@@ -66,7 +66,7 @@
 // of the example.
 void MoveDistance(int32_t pulseNum);
 
-void setup() {
+int main() {
     // To command for Pulse Burst Positioning, use the step and direction
     // interface with the acceleration and velocity limits set to their
     // maximum values. The ClearPath will then take the pulses and enforce
@@ -77,8 +77,8 @@ void setup() {
                           Connector::CPM_MODE_STEP_AND_DIR);
 
     // Sets the maximum velocity and acceleration for each command.
-	// The move profile in this mode is determined by ClearPath, so the two
-	// lines below should be left as is. Set your desired speed and accel in MSP
+    // The move profile in this mode is determined by ClearPath, so the two
+    // lines below should be left as is. Set your desired speed and accel in MSP
     motor.VelMax(INT32_MAX);
     motor.AccelMax(INT32_MAX);
 
@@ -104,29 +104,29 @@ void setup() {
         continue;
     }
     SerialPort.SendLine("Motor Ready");
-}
 
-void loop() {
-    // Move 6400 counts (positive direction) then wait 1000ms
-    MoveDistance(6400);
-    Delay_ms(1000);
-    // Move 19200 counts farther positive, then wait 1000ms
-    MoveDistance(19200);
-    Delay_ms(1000);
+    while (true) {
+        // Move 6400 counts (positive direction) then wait 1000ms
+        MoveDistance(6400);
+        Delay_ms(1000);
+        // Move 19200 counts farther positive, then wait 1000ms
+        MoveDistance(19200);
+        Delay_ms(1000);
 
-    // Generates a trigger pulse on the enable line so the next move uses the
-    // Alt Speed Limit.
-    motor.EnableTriggerPulse(1, TRIGGER_PULSE_TIME, true);
+        // Generates a trigger pulse on the enable line so the next move uses the
+        // Alt Speed Limit.
+        motor.EnableTriggerPulse(1, TRIGGER_PULSE_TIME, true);
 
-    // Move back 12800 counts (negative direction), then wait 1000ms
-    MoveDistance(-12800);
-    Delay_ms(1000);
-    // Move back 6400 counts (negative direction), then wait 1000ms
-    MoveDistance(-6400);
-    Delay_ms(1000);
-    // Move back to the start (negative 6400 pulses), then wait 1000ms
-    MoveDistance(-6400);
-    Delay_ms(1000);
+        // Move back 12800 counts (negative direction), then wait 1000ms
+        MoveDistance(-12800);
+        Delay_ms(1000);
+        // Move back 6400 counts (negative direction), then wait 1000ms
+        MoveDistance(-6400);
+        Delay_ms(1000);
+        // Move back to the start (negative 6400 pulses), then wait 1000ms
+        MoveDistance(-6400);
+        Delay_ms(1000);
+    }
 }
 
 /*------------------------------------------------------------------------------

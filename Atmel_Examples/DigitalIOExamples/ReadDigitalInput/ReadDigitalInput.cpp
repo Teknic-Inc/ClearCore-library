@@ -36,7 +36,7 @@ int16_t state;
 // Specify which serial to use: ConnectorUsb, ConnectorCOM0, or ConnectorCOM1.
 #define SerialPort ConnectorUsb
 
-void setup() {
+int main() {
     // Set up serial communication at a baud rate of 9600 bps then wait up to
     // 5 seconds for a port to open.
     // Serial communication is not required for this example to run, however the
@@ -49,21 +49,21 @@ void setup() {
     while (!SerialPort && Milliseconds() - startTime < timeout) {
         continue;
     }
-}
 
-void loop() {
-    // Read the state of the input connector.
-    state = inputPin.State();
+    while (true) {
+        // Read the state of the input connector.
+        state = inputPin.State();
 
-    // Display the state of the input connector.
-    SerialPort.Send("DI-6 Input state: ");
-    if (state) {
-        SerialPort.SendLine("ON");
+        // Display the state of the input connector.
+        SerialPort.Send("DI-6 Input state: ");
+        if (state) {
+            SerialPort.SendLine("ON");
+        }
+        else {
+            SerialPort.SendLine("OFF");
+        }
+
+        // Wait a second then repeat...
+        Delay_ms(1000);
     }
-    else {
-        SerialPort.SendLine("OFF");
-    }
-
-    // Wait a second then repeat...
-    Delay_ms(1000);
 }

@@ -60,7 +60,7 @@
 // the sketch.
 bool MoveToPosition(uint8_t positionNum);
 
-void setup() {
+int main() {
     // Sets all motor connectors to the correct mode for Absolute Position mode
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
                           Connector::CPM_MODE_A_DIRECT_B_DIRECT);
@@ -91,47 +91,46 @@ void setup() {
         continue;
     }
     SerialPort.SendLine("Motor Ready");
-}
 
+    while (true) {
+        // Move to Position 1 defined in MSP.
+        MoveToPosition(1);    // See below for the detailed function definition.
+        // Wait 1000ms.
+        Delay_ms(1000);
+        MoveToPosition(2);
+        Delay_ms(1000);
+        MoveToPosition(3);
+        Delay_ms(1000);
+        MoveToPosition(4);
+        Delay_ms(1000);
 
-void loop() {
-    // Move to Position 1 defined in MSP.
-    MoveToPosition(1);    // See below for the detailed function definition.
-    // Wait 1000ms.
-    Delay_ms(1000);
-    MoveToPosition(2);
-    Delay_ms(1000);
-    MoveToPosition(3);
-    Delay_ms(1000);
-    MoveToPosition(4);
-    Delay_ms(1000);
+        MoveToPosition(5);
+        Delay_ms(1000);
+        MoveToPosition(6);
+        Delay_ms(1000);
+        MoveToPosition(7);
+        Delay_ms(1000);
+        MoveToPosition(8);
+        Delay_ms(1000);
 
-    MoveToPosition(5);
-    Delay_ms(1000);
-    MoveToPosition(6);
-    Delay_ms(1000);
-    MoveToPosition(7);
-    Delay_ms(1000);
-    MoveToPosition(8);
-    Delay_ms(1000);
+        MoveToPosition(9);
+        Delay_ms(1000);
+        MoveToPosition(10);
+        Delay_ms(1000);
+        MoveToPosition(11);
+        Delay_ms(1000);
+        MoveToPosition(12);
+        Delay_ms(1000);
 
-    MoveToPosition(9);
-    Delay_ms(1000);
-    MoveToPosition(10);
-    Delay_ms(1000);
-    MoveToPosition(11);
-    Delay_ms(1000);
-    MoveToPosition(12);
-    Delay_ms(1000);
-
-    MoveToPosition(13);
-    Delay_ms(1000);
-    MoveToPosition(14);
-    Delay_ms(1000);
-    MoveToPosition(15);
-    Delay_ms(1000);
-    MoveToPosition(16);
-    Delay_ms(1000);
+        MoveToPosition(13);
+        Delay_ms(1000);
+        MoveToPosition(14);
+        Delay_ms(1000);
+        MoveToPosition(15);
+        Delay_ms(1000);
+        MoveToPosition(16);
+        Delay_ms(1000);
+    }
 }
 
 /*------------------------------------------------------------------------------

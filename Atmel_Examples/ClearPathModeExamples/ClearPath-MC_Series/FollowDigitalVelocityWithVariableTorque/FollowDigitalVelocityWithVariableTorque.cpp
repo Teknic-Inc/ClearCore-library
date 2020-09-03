@@ -79,7 +79,7 @@ double pwmDeadBand = 2.0;
 bool CommandVelocity(int32_t commandedVelocity);
 bool LimitTorque(double limit);
 
-void setup() {
+int main() {
     // Sets all motor connectors to the correct mode for Follow Digital
     // Velocity, Bipolar PWM mode.
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
@@ -104,33 +104,32 @@ void setup() {
     SerialPort.SendLine("Waiting for motor to reach speed...");
     startTime = Milliseconds();
     while (Milliseconds() - startTime < timeout) {
-	    continue;
+        continue;
     }
     SerialPort.SendLine("Motor Ready");
-}
 
+    while (true) {
+        // Move at +100 RPM (CCW).
+        CommandVelocity(100);    // See below for the detailed function definition.
+        // Wait 5000ms
+        Delay_ms(5000);
 
-void loop() {
-    // Move at +100 RPM (CCW).
-    CommandVelocity(100);    // See below for the detailed function definition.
-    // Wait 5000ms
-    Delay_ms(5000);
+        CommandVelocity(300);    // Move at +300 RPM (CCW).
+        Delay_ms(5000);
 
-    CommandVelocity(300);    // Move at +300 RPM (CCW).
-    Delay_ms(5000);
+        // Limit the torque to 70%.
+        LimitTorque(70);         // See below for the detailed function definition.
+        CommandVelocity(-200);   // Move at -200 RPM (CW).
+        Delay_ms(5000);
 
-    // Limit the torque to 70%.
-    LimitTorque(70);         // See below for the detailed function definition.
-    CommandVelocity(-200);   // Move at -200 RPM (CW).
-    Delay_ms(5000);
+        LimitTorque(15);         // Limit the torque to 15%.
+        CommandVelocity(-300);   // Move at -300 RPM (CW).
+        Delay_ms(5000);
 
-    LimitTorque(15);         // Limit the torque to 15%.
-    CommandVelocity(-300);   // Move at -300 RPM (CW).
-    Delay_ms(5000);
-
-    LimitTorque(100);        // Increase torque limit to 100%.
-    CommandVelocity(100);    // Move at +100 RPM (CCW).
-    Delay_ms(5000);
+        LimitTorque(100);        // Increase torque limit to 100%.
+        CommandVelocity(100);    // Move at +100 RPM (CCW).
+        Delay_ms(5000);
+    }
 }
 
 /*------------------------------------------------------------------------------
@@ -166,11 +165,11 @@ bool CommandVelocity(int32_t commandedVelocity) {
     double dutyRequest;
     if (commandedVelocity < 0) {
         dutyRequest = 127.5 - (pwmDeadBand / 100 * 255)
-                      + (commandedVelocity * scaleFactor);
+                        + (commandedVelocity * scaleFactor);
     }
     else if (commandedVelocity > 0) {
         dutyRequest = 127.5 + (pwmDeadBand / 100 * 255)
-                      + (commandedVelocity * scaleFactor);
+                        + (commandedVelocity * scaleFactor);
     }
     else {
         dutyRequest = 128.0;

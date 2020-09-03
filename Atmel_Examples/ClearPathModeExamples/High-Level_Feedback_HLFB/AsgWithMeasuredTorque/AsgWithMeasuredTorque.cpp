@@ -52,7 +52,7 @@
 // Specify which serial to use: ConnectorUsb, ConnectorCOM0, or ConnectorCOM1.
 #define SerialPort ConnectorUsb
 
-void setup() {
+int main() {
     // Put the motor connector into the HLFB mode to read bipolar PWM (the
     // correct mode for ASG w/ Measured Torque)
     motor.HlfbMode(MotorDriver::HLFB_MODE_HAS_BIPOLAR_PWM);
@@ -67,29 +67,29 @@ void setup() {
     while (!SerialPort && Milliseconds() - startTime < timeout) {
         continue;
     }
-}
 
-void loop() {
-    SerialPort.Send("HLFB state: ");
+    while (true) {
+        SerialPort.Send("HLFB state: ");
 
-    // Check the current state of the ClearPath's HLFB.
-    MotorDriver::HlfbStates hlfbState = motor.HlfbState();
+        // Check the current state of the ClearPath's HLFB.
+        MotorDriver::HlfbStates hlfbState = motor.HlfbState();
 
-    // Write the HLFB state to the serial port
-    if (hlfbState == MotorDriver::HLFB_HAS_MEASUREMENT) {
-        // Writes the torque measured, as a percent of motor peak torque rating
-        SerialPort.Send(int8_t(round(motor.HlfbPercent())));
-        SerialPort.SendLine("% torque");
+        // Write the HLFB state to the serial port
+        if (hlfbState == MotorDriver::HLFB_HAS_MEASUREMENT) {
+            // Writes the torque measured, as a percent of motor peak torque rating
+            SerialPort.Send(int8_t(round(motor.HlfbPercent())));
+            SerialPort.SendLine("% torque");
+        }
+        else if (hlfbState == MotorDriver::HLFB_ASSERTED) {
+            // Asserted indicates either "Move Done" for position modes, or
+            // "At Target Velocity" for velocity moves
+            SerialPort.SendLine("ASSERTED");
+        }
+        else {
+            SerialPort.SendLine("DISABLED or SHUTDOWN");
+        }
+
+        // Wait before reading HLFB again
+        Delay_ms(500);
     }
-    else if (hlfbState == MotorDriver::HLFB_ASSERTED) {
-        // Asserted indicates either "Move Done" for position modes, or
-        // "At Target Velocity" for velocity moves
-        SerialPort.SendLine("ASSERTED");
-    }
-    else {
-        SerialPort.SendLine("DISABLED or SHUTDOWN");
-    }
-
-    // Wait before reading HLFB again
-    Delay_ms(500);
 }

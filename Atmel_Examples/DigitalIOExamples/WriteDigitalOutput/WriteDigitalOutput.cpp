@@ -30,7 +30,7 @@
 // this true/false.
 bool outputState;
 
-void setup() {
+int main() {
     // Configure pins IO-0 through IO-5 as digital outputs. These are the only
     // pins that support digital output mode.
     ConnectorIO0.Mode(Connector::OUTPUT_DIGITAL);
@@ -42,30 +42,30 @@ void setup() {
 
     // The connectors are all set up; start the loop with turning them all on.
     outputState = true;
-}
 
-void loop() {
-    // Toggle the digital output state.
-    if (outputState) {
-        ConnectorIO0.State(true);
-        ConnectorIO1.State(true);
-        ConnectorIO2.State(true);
-        ConnectorIO3.State(true);
-        ConnectorIO4.State(true);
-        ConnectorIO5.State(true);
+    while (true) {
+        // Toggle the digital output state.
+        if (outputState) {
+            ConnectorIO0.State(true);
+            ConnectorIO1.State(true);
+            ConnectorIO2.State(true);
+            ConnectorIO3.State(true);
+            ConnectorIO4.State(true);
+            ConnectorIO5.State(true);
+        }
+        else {
+            ConnectorIO0.State(false);
+            ConnectorIO1.State(false);
+            ConnectorIO2.State(false);
+            ConnectorIO3.State(false);
+            ConnectorIO4.State(false);
+            ConnectorIO5.State(false);
+        }
+
+        // Toggle the state to write in the next loop.
+        outputState = !outputState;
+
+        // Wait a second, then repeat.
+        Delay_ms(1000);
     }
-    else {
-        ConnectorIO0.State(false);
-        ConnectorIO1.State(false);
-        ConnectorIO2.State(false);
-        ConnectorIO3.State(false);
-        ConnectorIO4.State(false);
-        ConnectorIO5.State(false);
-    }
-
-    // Toggle the state to write in the next loop.
-    outputState = !outputState;
-
-    // Wait a second, then repeat.
-    Delay_ms(1000);
 }

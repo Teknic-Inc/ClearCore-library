@@ -72,7 +72,7 @@ double positionMaxPWM = 10000;
 void LockSensorCallback();
 bool CommandPosition(int32_t commandedPosition);
 
-void setup() {
+int main() {
     // Sets all motor connectors to the correct mode for Follow Digital
     // Position mode.
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
@@ -106,27 +106,27 @@ void setup() {
         continue;
     }
     SerialPort.SendLine("Motor Ready");
+    
+    while (true) {
+        // Move to position +5000.
+        CommandPosition(5000);    // See below for the detailed function definition.
+        // Wait 2000ms.
+        Delay_ms(2000);
+
+        CommandPosition(4000);
+        Delay_ms(2000);
+
+        CommandPosition(1500);
+        Delay_ms(2000);
+
+        CommandPosition(9000);
+        Delay_ms(2000);
+
+        CommandPosition(1000);
+        Delay_ms(2000);     
+    }
 }
 
-
-void loop() {
-    // Move to position +5000.
-    CommandPosition(5000);    // See below for the detailed function definition.
-    // Wait 2000ms.
-    Delay_ms(2000);
-
-    CommandPosition(4000);
-    Delay_ms(2000);
-
-    CommandPosition(1500);
-    Delay_ms(2000);
-
-    CommandPosition(9000);
-    Delay_ms(2000);
-
-    CommandPosition(1000);
-    Delay_ms(2000);
-}
 
 /*------------------------------------------------------------------------------
  * CommandPosition
