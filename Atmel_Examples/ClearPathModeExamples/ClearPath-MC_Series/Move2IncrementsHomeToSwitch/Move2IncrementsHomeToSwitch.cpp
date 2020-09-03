@@ -27,9 +27,11 @@
  *    software which match the #define values below (On the main MSP window
  *    check the "Position Increment Setup (cnts)" box and fill in the two text
  *    boxes labeled "A off" and "A on").
- * 6. Set the Trigger Pulse Time in MSP to 25ms. To configure, click the
- *    "Setup..." button found under the "Trigger Pulse" label on the MSP's
- *    main window, fill in the text box, and hit the OK button.
+ * 6. Ensure the Trigger Pulse Time in MSP is set to 20ms. To configure, click
+ *    the "Setup..." button found under the "Trigger Pulse" label on the MSP's
+ *    main window, fill in the text box, and hit the OK button. Setting this to 
+ *    20ms allows trigger pulses to be as long as 60ms, which will accomodate 
+ *    our 25ms pulses used later.
  * 7. Ensure the Input A & B filters in MSP are both set to 20ms (In MSP
  *    select Advanced>>Input A, B Filtering... then in the Settings box fill in
  *    the textboxes labeled "Input A Filter Time Constant (msec)" and "Input B
@@ -67,8 +69,8 @@
 
 // Increments defined below must be set identically to the position increments
 // set in MSP
-#define POSITION_INCREMENT_1 10000  // Input A "off" setup selection, 10000 counts (CCW)
-#define POSITION_INCREMENT_2 -10000 // Input A "on" setup selection, -10000 counts (CW)
+#define POSITION_INCREMENT_1 1000  // Input A "off" setup selection, 1000 counts (CCW)
+#define POSITION_INCREMENT_2 -1000 // Input A "on" setup selection, -1000 counts (CW)
 
 // Specify the home sensor connector
 #define HomingSensor ConnectorDI6
@@ -126,13 +128,13 @@ int main() {
     SerialPort.SendLine("Motor Ready");
 
     while (true) {
-        // Move a distance equal to 1 * POSITION_INCREMENT_1 = 100 counts.
+        // Move a distance equal to 1 * POSITION_INCREMENT_1 = 1000 counts.
         // See below for the detailed function definition.
         MoveIncrements(1, POSITION_INCREMENT_1);
         // Stay settled for 1 second before moving again.
         Delay_ms(1000);
 
-        // Move a distance equal to 1 * POSITION_INCREMENT_2 = -100 counts.
+        // Move a distance equal to 1 * POSITION_INCREMENT_2 = -1000 counts.
         MoveIncrements(1, POSITION_INCREMENT_2);
         Delay_ms(1000);
 
@@ -140,11 +142,11 @@ int main() {
         // an active move before deceleration begins, then the moves will be
         // seamlessly combined into one continuous move
 
-        // Move a distance equal to 4 * POSITION_INCREMENT_1 = 400 counts.
+        // Move a distance equal to 4 * POSITION_INCREMENT_1 = 4000 counts.
         MoveIncrements(4, POSITION_INCREMENT_1);
         Delay_ms(1000);
 
-        // Move a distance equal to 4 * POSITION_INCREMENT_2 = -400 counts.
+        // Move a distance equal to 4 * POSITION_INCREMENT_2 = -4000 counts.
         MoveIncrements(4, POSITION_INCREMENT_2);
         Delay_ms(1000);
     }

@@ -24,9 +24,11 @@
  *    software which match the #define values below (On the main MSP window
  *    check the "Position Increment Setup (cnts)" box and fill in the four text
  *    boxes labeled "A off B off", "A on B off", "A off B on", and "A on B on").
- * 5. Set the Trigger Pulse Time in MSP to 25ms. To configure, click the
- *    "Setup..." button found under the "Trigger Pulse" label on the MSP's
- *    main window, fill in the text box, and hit the OK button.
+ * 5. Ensure the Trigger Pulse Time in MSP is set to 20ms. To configure, click
+ *    the "Setup..." button found under the "Trigger Pulse" label on the MSP's
+ *    main window, fill in the text box, and hit the OK button. Setting this to 
+ *    20ms allows trigger pulses to be as long as 60ms, which will accomodate 
+ *    our 25ms pulses used later.
  * 6. Ensure the Input A & B filters in MSP are both set to 20ms (In MSP
  *    select Advanced>>Input A, B Filtering... then in the Settings box fill in
  *    the textboxes labeled "Input A Filter Time Constant (msec)" and "Input B
