@@ -7,8 +7,9 @@
  *
  * Description:
  *    This example enables and then moves a ClearPath motor between various
- *    repeating positions within a range defined in the MSP software. During
- *    operation, various move statuses are written to the USB serial port.
+ *    positions within a range defined in the MSP software based on the state
+ *    of an analog sensor. During operation, various move statuses are written
+ *    to the USB serial port.
  *    The resolution for PWM outputs is 8-bit, meaning only 256 discrete
  *    positions can be commanded. The motor's actual commanded position may
  *    differ from what you input below because of this.
@@ -23,16 +24,18 @@
  *    through the MSP software (select Advanced>>High Level Feedback [Mode]...
  *    then choose "All Systems Go (ASG) - Position" from the dropdown and hit
  *    the OK button).
- * 3. The ClearPath must have defined positions for 0% and 100% PWM (On the
+ * 4. The ClearPath must have defined positions for 0% and 100% PWM (On the
  *    main MSP window check the "Position Range Setup (cnts)" box and fill in
  *    the two text boxes labeled "Posn at 0% PWM" and "Posn at 100% PWM").
  *    Change the "PositionZeroPWM" and "PositionMaxPWM" variables in the sketch
  *    below to match.
- * 4. Homing must be configured in the MSP software for your mechanical
+ * 5. Homing must be configured in the MSP software for your mechanical
  *    system (e.g. homing direction, torque limit, etc.). This example does
  *    not use the ClearPath's Input A as a homing sensor, although that may
  *    be configured in this mode through MSP.
- * 5. (Optional) An input source, such as a switch, connected to DI-6 to control
+ * 6. An analog sensor connected to one of the analog inputs (A-9 through A-12)
+ *    to control motor position. Define the appropriate connector below.
+ * 7. (Optional) An input source, such as a switch, connected to DI-6 to control
  *    the Command Lock or Home Sensor (configured in MSP).
  *
  * Links:
@@ -55,6 +58,9 @@
 // Defines the command lock sensor connector
 #define LockSensor ConnectorDI6
 
+// Defines the analog input to control commanded position
+#define AnalogSensor ConnectorA9
+
 // Select the baud rate to match the target device.
 #define baudRate 9600
 
@@ -73,6 +79,9 @@ void LockSensorCallback();
 bool CommandPosition(int32_t commandedPosition);
 
 int main() {
+    // Set up an analog sensor to control commanded position.
+    AnalogSensor.Mode(Connector::INPUT_ANALOG);
+
     // Sets all motor connectors to the correct mode for Follow Digital
     // Position mode.
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
@@ -106,27 +115,18 @@ int main() {
         continue;
     }
     SerialPort.SendLine("Motor Ready");
-    
+
     while (true) {
-        // Move to position +5000.
-        CommandPosition(5000);    // See below for the detailed function definition.
+        // Read the voltage on the analog sensor (0-10V).
+        float analogVoltage = AnalogSensor.AnalogVoltage();
+        // Convert the voltage measured to a position within the valid range.
+        int32_t commandedPosition =
+            static_cast<int32_t>(round(analogVoltage / 10 * positionMaxPWM));
+        CommandPosition(commandedPosition);    // See below for the detailed function definition.
         // Wait 2000ms.
         Delay_ms(2000);
-
-        CommandPosition(4000);
-        Delay_ms(2000);
-
-        CommandPosition(1500);
-        Delay_ms(2000);
-
-        CommandPosition(9000);
-        Delay_ms(2000);
-
-        CommandPosition(1000);
-        Delay_ms(2000);     
     }
 }
-
 
 /*------------------------------------------------------------------------------
  * CommandPosition
@@ -143,7 +143,8 @@ int main() {
  * commanded.
  */
 bool CommandPosition(int32_t commandedPosition) {
-    if (abs(commandedPosition) > abs(positionMaxPWM) || abs(commandedPosition) < abs(positionZeroPWM)) {
+    if (abs(commandedPosition) > abs(positionMaxPWM) ||
+        abs(commandedPosition) < abs(positionZeroPWM)) {
         SerialPort.SendLine("Move rejected, invalid position requested");
         return false;
     }
