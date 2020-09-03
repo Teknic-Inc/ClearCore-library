@@ -23,11 +23,11 @@
  *    through the MSP software (select Advanced>>High Level Feedback [Mode]...
  *    then choose "All Systems Go (ASG) - Position" from the dropdown and hit
  *    the OK button).
- * 6. Wire the homing sensor to Connector DI-6.
- * 7. The ClearPath must have defined Absolute Position Selections set up in the
+ * 5. Wire the homing sensor to Connector DI-6.
+ * 6. The ClearPath must have defined Absolute Position Selections set up in the
  *    MSP software (On the main MSP window check the "Position Selection Setup
  *    (cnts)" box and fill in the two text boxes labeled "A off" and "A on").
- * 8. Ensure the Input A & B filters in MSP are both set to 20ms (In MSP
+ * 7. Ensure the Input A & B filters in MSP are both set to 20ms (In MSP
  *    select Advanced>>Input A, B Filtering... then in the Settings box fill in
  *    the textboxes labeled "Input A Filter Time Constant (msec)" and "Input B
  *    Filter Time Constant (msec)" then hit the OK button).
