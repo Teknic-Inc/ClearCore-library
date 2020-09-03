@@ -13,7 +13,7 @@
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
     <AssemblyName>Examples</AssemblyName>
-    <Name>WriteXbeeOutput</Name>
+    <Name>WriteXBeeOutput</Name>
     <RootNamespace>Examples</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
@@ -252,7 +252,7 @@
       <SubType>compile</SubType>
       <Link>Device_Startup\startup_same53.c</Link>
     </Compile>
-    <Compile Include="WriteXbeeOutput.cpp">
+    <Compile Include="WriteXBeeOutput.cpp">
       <SubType>compile</SubType>
     </Compile>
     <None Include="..\Device_Startup\flash_without_bootloader.ld">

@@ -1,5 +1,5 @@
 /*
- * Title: WriteXbeeOutput
+ * Title: WriteXBeeOutput
  *
  * Objective:
  *    This example demonstrates how to write data to an XBee device connected to
