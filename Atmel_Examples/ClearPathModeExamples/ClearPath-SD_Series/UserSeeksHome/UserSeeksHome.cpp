@@ -123,6 +123,10 @@ void setup() {
         continue;
     }
     SerialPort.SendLine("Homing Complete. Motor Ready.");
+
+    // Zero the motor's reference position after homing to allow for accurate
+    // absolute position moves
+    motor.PositionRefSet(0);
 }
 
 void loop() {
