@@ -34,6 +34,10 @@
 #include <cstring>
 #include <sam.h>
 
+#define NVM_BLOCK_WRITE_V (10)
+#define UNDER_VOLTAGE_TRIP_CNT ((uint16_t)(NVM_BLOCK_WRITE_V * (1 << 15) / \
+    AdcManager::ADC_CHANNEL_MAX_FLOAT[AdcManager::ADC_VSUPPLY_MON]))
+
 namespace ClearCore {
 
 
@@ -73,7 +77,7 @@ NvmManager::NvmManager()
 /**
     Read octet from NVM.
 **/
-int8_t NvmManager::Byte(NvmManager::NvmLocations nvmLocation) {
+int8_t NvmManager::Byte(NvmLocations nvmLocation) {
 
     // Check bounds - upper
     if (nvmLocation >= NvmLocations::NVM_LOC_USER_MAX) {
@@ -86,7 +90,7 @@ int8_t NvmManager::Byte(NvmManager::NvmLocations nvmLocation) {
 /**
     Write octet to NVM.
 **/
-bool NvmManager::Byte(NvmManager::NvmLocations nvmLocation, int8_t newValue) {
+bool NvmManager::Byte(NvmLocations nvmLocation, int8_t newValue) {
 
     // Check bounds - upper
     if (nvmLocation >= NvmLocations::NVM_LOC_USER_MAX) {
@@ -117,7 +121,7 @@ bool NvmManager::Byte(NvmManager::NvmLocations nvmLocation, int8_t newValue) {
 /**
     Read 16-bit integer from NVM.
 **/
-int16_t NvmManager::Int16(NvmManager::NvmLocations nvmLocation) {
+int16_t NvmManager::Int16(NvmLocations nvmLocation) {
 
     // Check bounds - upper
     if (nvmLocation >=
@@ -138,7 +142,7 @@ int16_t NvmManager::Int16(NvmManager::NvmLocations nvmLocation) {
 /**
     Write 16-bit integer to NVM.
 **/
-bool NvmManager::Int16(NvmManager::NvmLocations nvmLocation, int16_t newValue) {
+bool NvmManager::Int16(NvmLocations nvmLocation, int16_t newValue) {
 
     // Check bounds - upper
     if (nvmLocation >=
@@ -177,7 +181,7 @@ bool NvmManager::Int16(NvmManager::NvmLocations nvmLocation, int16_t newValue) {
 /**
     Read 32-bit integer from NVM.
 **/
-int32_t NvmManager::Int32(NvmManager::NvmLocations nvmLocation) {
+int32_t NvmManager::Int32(NvmLocations nvmLocation) {
 
     // Check bounds - upper
     if (nvmLocation >=
@@ -199,7 +203,7 @@ int32_t NvmManager::Int32(NvmManager::NvmLocations nvmLocation) {
 /**
     Write 32-bit integer to NVM.
 **/
-bool NvmManager::Int32(NvmManager::NvmLocations nvmLocation, int32_t newValue) {
+bool NvmManager::Int32(NvmLocations nvmLocation, int32_t newValue) {
 
     // Check bounds - upper
     if (nvmLocation >=
@@ -238,7 +242,7 @@ bool NvmManager::Int32(NvmManager::NvmLocations nvmLocation, int32_t newValue) {
 /**
     Read 64-bit integer from NVM.
 **/
-int64_t NvmManager::Int64(NvmManager::NvmLocations nvmLocationStart) {
+int64_t NvmManager::Int64(NvmLocations nvmLocationStart) {
 
     // Check bounds - upper
     if (nvmLocationStart >=
@@ -259,7 +263,7 @@ int64_t NvmManager::Int64(NvmManager::NvmLocations nvmLocationStart) {
 /**
     Write 64-bit integer to NVM.
 **/
-bool NvmManager::Int64(NvmManager::NvmLocations nvmLocationStart, int64_t newValue) {
+bool NvmManager::Int64(NvmLocations nvmLocationStart, int64_t newValue) {
 
     // Check bounds - upper
     if (nvmLocationStart >=
@@ -302,7 +306,7 @@ bool NvmManager::Int64(NvmManager::NvmLocations nvmLocationStart, int64_t newVal
 /**
     BlockRead from NVM.
 **/
-void NvmManager::BlockRead(NvmManager::NvmLocations nvmLocationStart, int lengthInBytes, uint8_t * const p_data)
+void NvmManager::BlockRead(NvmLocations nvmLocationStart, int lengthInBytes, uint8_t * const p_data)
 {
     // Check bounds - upper
     if (nvmLocationStart >=
@@ -481,10 +485,6 @@ void NvmManager::MacAddress(uint8_t *macAddress) {
 uint32_t NvmManager::SerialNumber() {
     return static_cast<uint32_t>(Int32(NVM_LOC_SERIAL_NUMBER));
 }
-
-#define NVM_BLOCK_WRITE_V (10)
-#define UNDER_VOLTAGE_TRIP_CNT ((uint16_t)(NVM_BLOCK_WRITE_V * (1 << 15) / \
-    AdcManager::ADC_CHANNEL_MAX_FLOAT[AdcManager::ADC_VSUPPLY_MON]))
 
 bool NvmManager::BlockWrite() {
     //return StatusManager::Instance().StatusRT().bit.VSupplyUnderVoltage;
