@@ -96,8 +96,10 @@ public:
 
         \param[in] nvmLocation location to write to
         \param[in] newValue value to write
+
+        \return True if the write was submitted, false otherwise
     **/
-    void Byte(NvmLocations nvmLocation, int8_t newValue);
+    bool Byte(NvmLocations nvmLocation, int8_t newValue);
 
 
     /**
@@ -115,8 +117,9 @@ public:
         \param[in] newValue value to write
 
         \note nvmLocation is the byte address into NVM
+        \return True if the write was submitted, false otherwise
     **/
-    void Int16(NvmLocations nvmLocation, int16_t newValue);
+    bool Int16(NvmLocations nvmLocation, int16_t newValue);
 
 
     /**
@@ -134,8 +137,9 @@ public:
         \param[in] newValue value to write
 
         \note nvmLocation is the byte address into NVM
+        \return True if the write was submitted, false otherwise
     **/
-    void Int32(NvmLocations nvmLocation, int32_t newValue);
+    bool Int32(NvmLocations nvmLocation, int32_t newValue);
 
     /**
         \brief Read 64-bit integer from NVM
@@ -153,8 +157,30 @@ public:
         \param[in] newValue value to write
 
         \note nvmLocation is the byte address into NVM
+        \return True if the write was submitted, false otherwise
     **/
-    void Int64(NvmLocations nvmLocationStart, int64_t newValue);
+    bool Int64(NvmLocations nvmLocationStart, int64_t newValue);
+
+    /**
+        \brief Read a block of bytes from NVM
+
+        \param[in] nvmLocationStart location to start read
+        \param[in] lengthInBytes number of bytes to read
+        \param[in] p_data pointer to store read data
+    **/
+    void BlockRead(NvmLocations nvmLocationStart, int lengthInBytes, uint8_t * const p_data);
+
+    /**
+        \brief Write a block of bytes to NVM
+
+        \param[in] nvmLocationStart location to start write
+        \param[in] lengthInBytes number of bytes to write
+        \param[in] p_data pointer to store read data
+
+        \return True if the write was submitted, false otherwise
+    **/
+    bool BlockWrite(NvmLocations nvmLocationStart, int lengthInBytes, uint8_t const * const p_data);
+
 
     /**
         \brief Get the MAC address of the ClearCore.
@@ -175,7 +201,31 @@ public:
     **/
     uint32_t SerialNumber();
 
+    bool FinishNvmWrite() {
+        while (m_pageModified || m_writeState != IDLE) {
+            if (WriteCacheToNvmProc()) {
+                continue;
+            }
+            else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool Synchonized() const {
+        return !m_pageModified;
+    }
+
 private:
+
+    typedef enum {
+        IDLE,
+        CLEAR_PAGE_BUFFER,
+        ERASE_PAGE,
+        WRITE_DATA,
+    } WriteCacheState;
+
     // Set to false outside of constructor too in case of read/write call before
     // constructor is called.
     bool m_cacheInitialized = false;
@@ -183,6 +233,9 @@ private:
     int8_t m_nvmPageCache[NVMCTRL_PAGE_SIZE];
     // The page cache gets written to NVM as 32-bit pieces
     int32_t *m_nvmPageCache32;
+    WriteCacheState m_writeState;
+    uint8_t m_quadWordIndex;
+    bool m_pageModified;
 
     /**
         \brief Constructor
@@ -203,10 +256,23 @@ private:
     /**
         \brief Write the cache to NVM.
 
+        \return Success
+
         \note Will try to lock the mutex, make sure the calling function has
         released the lock.
     **/
-    void WriteCacheToNvm();
+    bool WriteCacheToNvm();
+
+    /**
+        \brief State machine to write cache to NVM
+
+        \return Cache was successfully written
+
+        \note Using the state machine time splices writing, making it take longer
+    **/
+    bool WriteCacheToNvmProc();
+
+    bool BlockWrite();
 }; //NvmManager
 
 } // ClearCore namespace
