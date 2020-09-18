@@ -1,5 +1,5 @@
 /*
- * Title: SingleAxis
+ * Title: MoveVelocity
  *
  * Objective:
  *    This example demonstrates control of a ClearPath motor in Step and
@@ -7,7 +7,7 @@
  *
  * Description:
  *    This example enables a ClearPath then commands a series of repeating
- *    moves to the motor.
+ *    velocity moves to the motor.
  *
  * Requirements:
  * 1. A ClearPath motor must be connected to Connector M-0.
@@ -57,7 +57,7 @@ int32_t accelerationLimit = 100000; // pulses per sec^2
 // Declares our user-defined helper function, which is used to command moves to
 // the motor. The definition/implementation of this function is at the  bottom
 // of the example
-void MoveDistance(int32_t distance);
+void MoveAtVelocity(int32_t velocity);
 
 int main() {
     // Sets the input clocking rate. This normal rate is ideal for ClearPath
@@ -97,50 +97,40 @@ int main() {
     SerialPort.SendLine("Motor Ready");
 
     while (true) {
-        // Move 6400 counts (positive direction), then wait 2000ms
-        MoveDistance(6400);
+        // Move at 20,000 counts/sec, then wait 2000ms
+        MoveAtVelocity(20000);
         Delay_ms(2000);
-        // Move 19200 counts farther positive, then wait 2000ms
-        MoveDistance(19200);
+        // Move at -40,000 counts/sec, then wait 2000ms
+        MoveAtVelocity(-40000);
         Delay_ms(2000);
-        // Move back 12800 counts (negative direction), then wait 2000ms
-        MoveDistance(-12800);
+        // Move at 10,000 counts/sec, then wait 2000ms
+        MoveAtVelocity(10000);
         Delay_ms(2000);
-        // Move back 6400 counts (negative direction), then wait 2000ms
-        MoveDistance(-6400);
+        // Increase speed to 15,000 counts/sec, then wait 2000ms
+        MoveAtVelocity(15000);
         Delay_ms(2000);
-        // Move back to the start (negative 6400 pulses), then wait 2000ms
-        MoveDistance(-6400);
+        // Command a 0 counts/sec velocity to stop motion, then wait 2000ms
+        MoveAtVelocity(0);
         Delay_ms(2000);
     }
 }
 
 /*------------------------------------------------------------------------------
- * MoveDistance
+ * MoveAtVelocity
  *
- *    Command "distance" number of step pulses away from the current position
+ *    Command the motor to move at the specified "velocity", in steps/second.
  *    Prints the move status to the USB serial port
- *    Returns when HLFB asserts (indicating the motor has reached the commanded
- *    position)
  *
  * Parameters:
- *    int distance  - The distance, in step pulses, to move
+ *    int velocity  - The velocity, in step pulses/sec, to command
  *
  * Returns: None
  */
-void MoveDistance(int32_t distance) {
-    SerialPort.Send("Moving distance: ");
-    SerialPort.SendLine(distance);
+void MoveAtVelocity(int32_t velocity) {
+    SerialPort.Send("Moving at velocity: ");
+    SerialPort.SendLine(velocity);
 
-    // Command the move of incremental distance
-    motor.Move(distance);
-
-    // Waits for HLFB to assert (signaling the move has successfully completed)
-    SerialPort.SendLine("Moving.. Waiting for HLFB");
-    while (!motor.StepsComplete() || motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {
-        continue;
-    }
-
-    SerialPort.SendLine("Move Done");
+    // Command the velocity move
+    motor.MoveVelocity(velocity);
 }
 //------------------------------------------------------------------------------

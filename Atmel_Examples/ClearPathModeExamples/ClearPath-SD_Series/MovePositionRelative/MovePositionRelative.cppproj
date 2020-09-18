@@ -13,7 +13,7 @@
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
     <AssemblyName>Examples</AssemblyName>
-    <Name>SingleAxis</Name>
+    <Name>MovePositionRelative</Name>
     <RootNamespace>Examples</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
@@ -248,7 +248,7 @@
       <SubType>compile</SubType>
       <Link>Device_Startup\startup_same53.c</Link>
     </Compile>
-    <Compile Include="SingleAxis.cpp">
+    <Compile Include="MovePositionRelative.cpp">
       <SubType>compile</SubType>
     </Compile>
     <None Include="..\Device_Startup\flash_without_bootloader.ld">
