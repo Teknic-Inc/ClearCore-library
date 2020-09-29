@@ -57,6 +57,7 @@ namespace ClearCore {
 // accesses the NVM, we'll adjust the given address to account for these
 // reserved bytes.
 #define NVM_LOCATION_TO_INDEX(loc) ((loc) + 32)
+#define DEFAULT_MAC_ADDRESS 0x241510b00000
 
 NvmManager &NvmMgr = NvmManager::Instance();
 uint32_t NvmMgrUnlock;
@@ -455,7 +456,12 @@ void NvmManager::PopulateCache() {
 }
 
 void NvmManager::MacAddress(uint8_t *macAddress) {
-    auto macNvm = Int64(NVM_LOC_MAC_FIRST);
+    uint64_t macNvm = Int64(NVM_LOC_MAC_FIRST);
+    // If an invalid MAC address is detected, revert to 
+    // the default MAC address to be able to come online.
+    if (macNvm == UINT64_MAX || (macNvm >> 48)) {
+        macNvm = DEFAULT_MAC_ADDRESS;
+    }
     for (int8_t shift = 5; shift >= 0; shift--) {
         macAddress[5 - shift] = (macNvm >> shift * 8) & 0xFF;
     }
