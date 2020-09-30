@@ -328,8 +328,8 @@ bool DigitalInOutAnalogOut::DacStoreCalibration(uint16_t zero, uint16_t span) {
     Write a value to the DAC DATA register.
 **/
 void DigitalInOutAnalogOut::DacRegisterWrite(uint16_t value) {
-    DAC->DATA[0].reg = value;
     SYNCBUSY_WAIT(DAC, DAC_SYNCBUSY_DATA0);
+    DAC->DATA[0].reg = value;
 }
 
 /**
