@@ -121,14 +121,14 @@ public:
         Interrupts the current move; Slows the motor at the decel rate
 
         \code{.cpp}
-        // Command an abrupt stop
-        ConnectorM0.MoveStopAbrupt();
+        // Ramp to a stop at a decel rate of 100000 pulses/sec^2
+        ConnectorM0.MoveStopDecel(100000);
         \endcode
 
-        \param[in] velMax The new velocity limit. Passing 0 keeps the
-        previous deceleration rate
+        \param[in] decelMax The deceleration rate. Passing 0 uses the
+        acceleration rate of the current move as the decel rate.
     **/
-    void MoveStopDecel(int32_t decelMax = 0);
+    void MoveStopDecel(uint32_t decelMax = 0);
 
     /**
         \brief Sets the absolute commanded position to the given value.
@@ -186,7 +186,7 @@ public:
 
         \param[in] velMax The new velocity limit
     **/
-    void VelMax(int32_t velMax);
+    void VelMax(uint32_t velMax);
 
     /**
         \brief Sets the maximum acceleration in step pulses per second^2.
@@ -200,22 +200,7 @@ public:
 
         \param[in] accelMax The new acceleration limit
     **/
-    void AccelMax(int32_t accelMax);
-
-    /**
-        \brief Sets the maximum deceleration for E-stop Deceleration in
-        step pulses per second^2. This is only for MoveStopDecel.
-
-        Value will be clipped if out of bounds
-
-        \code{.cpp}
-        // Set the StepGenerator's maximum velocity to 15000 step pulses/sec^2
-        ConnectorM0.AccelMax(15000);
-        \endcode
-
-        \param[in] decelMax The new deceleration limit
-    **/
-    void EStopDecelMax(int32_t decelMax);
+    void AccelMax(uint32_t accelMax);
 
     /**
         \brief Function to check if no steps are currently being commanded to
@@ -284,16 +269,31 @@ protected:
         return m_stepsPrevious;
     }
 
+    /**
+        \brief Sets the maximum deceleration for E-stop Deceleration in
+        step pulses per second^2. This is only for MoveStopDecel.
+
+        Value will be clipped if out of bounds
+
+        \code{.cpp}
+        // Set the StepGenerator's maximum velocity to 15000 step pulses/sec^2
+        ConnectorM0.AccelMax(15000);
+        \endcode
+
+        \param[in] decelMax The new deceleration limit
+    **/
+    void EStopDecelMax(uint32_t decelMax);
+
 private:
     int32_t m_posnAbsolute;
 
     int32_t m_stepsCommanded;
     int32_t m_stepsSent;      // Accumulated integer position
 
-    bool m_eStopDecelMove;    // An e-stop deceleration is active
     bool m_velocityMove;      // A Velocity move is active
     bool m_moveDirChange;     // The move is changing direction
-    bool m_moveOvershoot;     // The new requested position is too close
+    bool m_dirCommanded;      // The direction of the commanded move
+
 
     // All of the position, velocity and acceleration parameters are signed and
     // in Q format, with all arithmetic performed in fixed point.
