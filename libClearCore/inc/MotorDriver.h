@@ -850,6 +850,7 @@ protected:
     float m_hlfbDuty;
     // HLFB state return
     HlfbStates m_hlfbState;
+    bool m_lastHlfbInputValue;
     bool m_hlfbPwmReadingPending;
     uint16_t m_hlfbStateChangeCounter;
 

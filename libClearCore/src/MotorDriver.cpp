@@ -87,14 +87,17 @@ MotorDriver::MotorDriver(ShiftRegister::Masks enableMask,
       m_hlfbTcNum(hlfbTc),
       m_hlfbEvt(hlfbEvt),
       m_hlfbMode(HLFB_MODE_STATIC),
+      m_hlfbWidth{0, 0},
+      m_hlfbPeriod{0, 0},
       m_hlfbNoPwmSampleCount(2),
       m_hlfbCarrierFrequency(HLFB_CARRIER_45_HZ),
       m_hlfbCarrierLossStateChange_ms(HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ),
       m_hlfbLastCarrierDetectTime(UINT32_MAX),
       m_hlfbDuty(HLFB_DUTY_UNKNOWN),
       m_hlfbState(HLFB_UNKNOWN),
+      m_lastHlfbInputValue(false),
       m_hlfbPwmReadingPending(false),
-      m_hlfbStateChangeCounter(0),
+      m_hlfbStateChangeCounter(MS_TO_SAMPLES * HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ),
       m_polarityInversions(0),
       m_enableRequestedState(false),
       m_enableTriggerActive(false),
@@ -128,11 +131,6 @@ MotorDriver::MotorDriver(ShiftRegister::Masks enableMask,
     m_bTccBuffer = &theTcc->CCBUF[ccIndex].reg;
     m_bTccSyncMask = TCC_SYNCBUSY_CC(1UL << ccIndex);
     m_bTccSyncReg = &theTcc->SYNCBUSY.reg;
-
-    for (uint8_t i = 0; i < CPM_HLFB_CAP_HISTORY; i++) {
-        m_hlfbWidth[i] = 0;
-        m_hlfbPeriod[i] = 0;
-    }
 }
 
 /*
@@ -156,7 +154,6 @@ void MotorDriver::Refresh() {
 
     // Process the HLFB information
     switch (m_hlfbMode) {
-        HlfbStates readHlfbState;
         case HLFB_MODE_HAS_PWM:
         case HLFB_MODE_HAS_BIPOLAR_PWM:
             // Check for overflow or error conditions
@@ -215,19 +212,19 @@ void MotorDriver::Refresh() {
                 }
             }
             if (!m_hlfbCarrierLost) {
+                m_hlfbStateChangeCounter = (MS_TO_SAMPLES * m_hlfbCarrierLossStateChange_ms);
                 break;
             }
             else {
                 // check for an HLFB state change
-                readHlfbState = (DigitalIn::m_stateFiltered ^ invert) ?
-                                HLFB_ASSERTED : HLFB_DEASSERTED;
-                if (readHlfbState != m_hlfbState &&
-                    m_hlfbStateChangeCounter++ < 
-                        (MS_TO_SAMPLES * m_hlfbCarrierLossStateChange_ms)) {
+                bool readHlfbState = (DigitalIn::m_stateFiltered ^ invert);
+                if (readHlfbState != m_lastHlfbInputValue) {
+                    m_hlfbStateChangeCounter = (MS_TO_SAMPLES * m_hlfbCarrierLossStateChange_ms);
+                    m_lastHlfbInputValue = readHlfbState;
                     break;
                 }
-                else {
-                    m_hlfbStateChangeCounter = 0;
+                else if (m_hlfbStateChangeCounter && m_hlfbStateChangeCounter--) {
+                    break;
                 }
             }
 
