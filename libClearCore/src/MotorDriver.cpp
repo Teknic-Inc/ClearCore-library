@@ -401,7 +401,7 @@ void MotorDriver::Refresh() {
         // Calculate the number of steps to send in the next sample time
         StepGenerator::StepsCalculated();
         // Check the status of the limits
-
+		StepGenerator::m_limitInfo.InLimit = StepGenerator::CheckTravelLimits();
 
         m_bDutyCnt = StepGenerator::m_stepsPrevious;
         // Queue up the steps by writing the B duty value
