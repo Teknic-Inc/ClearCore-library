@@ -26,7 +26,6 @@
 
 #include "MotorManager.h"
 #include <sam.h>
-#include <cstdlib>
 #include "AdcManager.h"
 #include "MotorDriver.h"
 #include "ShiftRegister.h"
@@ -35,11 +34,6 @@
 
 namespace ClearCore {
 #define MAIN_INTERRUPT_GCLK_ID    1
-
-/** Oscillator frequency, in Hz. (25MHz) **/
-#ifndef __CLEARCORE_OSC_HZ
-#define __CLEARCORE_OSC_HZ 25000000
-#endif // CPU_CLK
 
 extern MotorDriver *const MotorConnectors[MOTOR_CON_CNT];
 extern ShiftRegister ShiftReg;
@@ -64,13 +58,6 @@ MotorManager::MotorManager()
     m_stepDataBits[MOTOR_M2M3] = Mtr_CLK_23.gpioPin;
     m_motorModes[MOTOR_M0M1] = Connector::CPM_MODE_A_DIRECT_B_DIRECT;
     m_motorModes[MOTOR_M2M3] = Connector::CPM_MODE_A_DIRECT_B_DIRECT;
-
-    for (uint8_t index = 0; index < MOTOR_CON_CNT; index++) {
-        m_leadingAxis[index] = CLEARCORE_PIN_INVALID;
-        m_followingMultipliers[index] = 1;
-        m_followingDivisors[index] = 1;
-        m_followingPosnFractionalRemainders[index] = 0;
-    }
 }
 
 /**
@@ -96,9 +83,6 @@ bool MotorManager::MotorInputClocking(MotorClockRates newRate) {
             break;
         case CLOCK_RATE_HIGH:
             clkReq = CPM_CLOCK_RATE_HIGH_HZ;
-            break;
-        case CLOCK_RATE_MAXIMUM:
-            clkReq = __CLEARCORE_OSC_HZ;
             break;
         default:
             modeValid = false;
@@ -220,134 +204,6 @@ void MotorManager::PinMuxSet() {
         else {
             PMUX_DISABLE(m_stepPorts[iMotorPair], m_stepDataBits[iMotorPair]);
         }
-    }
-}
-
-bool MotorManager::FollowAxisUpdate(int8_t followAxis, int8_t leadAxis,
-                                    int32_t multiplier, int32_t divisor) {
-    // Valid lead axis values are 0-4, valid follow axis values are 0-3
-    if (leadAxis < 0 || leadAxis > MOTOR_CON_CNT || 
-        followAxis < 0 || followAxis >= MOTOR_CON_CNT) {
-        m_leadingAxis[followAxis] = -1;
-        return true;
-    }
-
-    // Don't assign a following axis as a leading axis.
-    if (leadAxis < 4 && m_leadingAxis[leadAxis] != -1) {
-        return false;
-    }
-
-    // Don't assign a leading axis as a following axis.
-    for (uint8_t i = 0; i < MOTOR_CON_CNT; i++) {
-        if (m_leadingAxis[i] == followAxis) {
-            return false;
-        }
-    }
-
-    // Make sure both motors are in S&D mode.
-    if (MotorConnectors[followAxis]->Mode() != Connector::CPM_MODE_STEP_AND_DIR ||
-        (leadAxis < MOTOR_CON_CNT && MotorConnectors[leadAxis]->Mode() != Connector::CPM_MODE_STEP_AND_DIR)) {
-        return false;
-    }
-
-    m_leadingAxis[followAxis] = leadAxis;
-    m_followingMultipliers[followAxis] = multiplier;
-    m_followingDivisors[followAxis] = divisor;
-    m_followingPosnFractionalRemainders[followAxis] = 0;
-
-    return true;
-}
-
-void MotorManager::Refresh() {
-    MotorDriver *followAxis;
-    MotorDriver *leadAxis;
-    MotorDriver::StatusRegMotor statusRegPending;
-
-    bool direction;
-    uint32_t leadSteps;
-
-    for (uint8_t i = 0; i < MOTOR_CON_CNT; i++) {
-        followAxis = MotorConnectors[i];
-        bool invertDirection = (m_followingMultipliers[i] < 0);
-        statusRegPending = followAxis->m_statusRegMotor;
-
-        switch (m_leadingAxis[i]) {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-            // Following another motor
-            leadAxis = MotorConnectors[m_leadingAxis[i]];
-
-            // Check for an alert on the follow axis
-            if (followAxis->m_alertRegMotor.reg) {
-                // If there's a problem, notify the lead axis and stop motion
-                leadAxis->m_alertRegMotor.bit.MotionCanceledFollowerAxisFault = 1;
-                leadAxis->MoveStop();
-            }
-
-            statusRegPending.bit.Triggering =
-                leadAxis->m_statusRegMotor.bit.Triggering;
-            statusRegPending.bit.StepsActive =
-                leadAxis->m_statusRegMotor.bit.StepsActive;
-            statusRegPending.bit.AtTargetVelocity =
-                leadAxis->m_statusRegMotor.bit.AtTargetVelocity;
-            statusRegPending.bit.AtTargetPosition =
-                leadAxis->m_statusRegMotor.bit.AtTargetPosition;
-            statusRegPending.bit.PositionalMove =
-                leadAxis->m_statusRegMotor.bit.PositionalMove;
-
-            direction = invertDirection ^ leadAxis->m_direction;
-            leadSteps = leadAxis->m_stepsPrevious;
-            break;
-        case 4:
-
-            // Check for an alert on the follow axis
-            if (followAxis->m_alertRegMotor.reg) {
-                leadSteps = 0;
-                direction = statusRegPending.bit.MoveDirection;
-                statusRegPending.bit.StepsActive = 0;
-            }
-//             else {
-//                 direction = (EncoderIn.StepsLastSample() < 0) ^ invertDirection;
-//                 leadSteps = abs(EncoderIn.StepsLastSample());
-//                 statusRegPending.bit.StepsActive = (bool)EncoderIn.Velocity();
-//             }
-            break;
-        default:
-            // Invalid lead axis, do nothing
-            continue;
-        }
-        
-        statusRegPending.bit.MoveDirection = direction;
-
-        if (followAxis->m_direction != direction) {
-            followAxis->m_direction = direction;
-            followAxis->OutputDirection();
-        }
-
-        ldiv_t stepsPrevious =
-            ldiv(leadSteps * abs(m_followingMultipliers[i]),
-                m_followingDivisors[i]);
-
-        m_followingPosnFractionalRemainders[i] +=
-            (double)stepsPrevious.rem / m_followingDivisors[i];
-
-        if (m_followingPosnFractionalRemainders[i] >= 1) {
-            stepsPrevious.quot += 1;
-            m_followingPosnFractionalRemainders[i] -= 1;
-        }
-
-        followAxis->m_stepsPrevious = stepsPrevious.quot;
-        followAxis->m_stepsSent += followAxis->m_stepsPrevious;
-        followAxis->m_posnAbsolute +=
-            followAxis->m_direction ? -followAxis->m_stepsPrevious
-                                    : followAxis->m_stepsPrevious;
-        followAxis->m_bDutyCnt = followAxis->m_stepsPrevious;
-
-        followAxis->m_statusRegMotor = statusRegPending;
-
-        followAxis->UpdateBDuty();
     }
 }
 

@@ -34,10 +34,11 @@
 #include "ShiftRegister.h"
 #include "StatusManager.h"
 #include "StepGenerator.h"
-#include "SysConnectors.h"
 #include "SysUtils.h"
-#include "SysManager.h"
-#include "SysTiming.h"
+
+#define HLFB_CARRIER_LOSS_ERROR_LIMIT (0)
+#define HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ (25)
+#define HLFB_CARRIER_LOSS_STATE_CHANGE_MS_482_HZ (4)
 
 namespace ClearCore {
 
@@ -54,7 +55,6 @@ namespace ClearCore {
 /** Default enable trigger pulse width, in milliseconds. **/
 #define DEFAULT_TRIGGER_PULSE_WIDTH_MS  25
 
-extern SysManager SysMgr;
 
 /**
     \brief ClearCore motor connector class.
@@ -202,6 +202,11 @@ public:
         HLFB_MODE_HAS_BIPOLAR_PWM
     } HlfbModes;
 
+    typedef enum {
+	    HLFB_CARRIER_45_HZ,
+	    HLFB_CARRIER_482_HZ
+    } HlfbCarrierFrequency;
+
     /**
         \enum MotorReadyStates
 
@@ -268,27 +273,6 @@ public:
             **/
             uint32_t MoveDirection : 1;
             /**
-                Reflects the state of the associated positive limit connector.
-            **/
-            uint32_t InPositiveLimit : 1;
-            /**
-                Reflects the state of the associated negative limit connector.
-            **/
-            uint32_t InNegativeLimit : 1;
-            /**
-                Reflects the state of the associated E-stop sensor connector.
-            **/
-            uint32_t InEStopSensor : 1;
-            /**
-                Reflects the state of the associated homing sensor connector.
-            **/
-            uint32_t InHomeSensor : 1;
-            /**
-                TRUE if the last processed move command loaded had the Homing
-                Flag asserted AND the HasHomed status is FALSE
-            **/
-            uint32_t Homing : 1;
-            /**
                 TRUE if the HLFB is deasserted AND the enable output is asserted
                 When set, any currently executing motion will get canceled
             **/
@@ -299,27 +283,13 @@ public:
             **/
             uint32_t Enabled : 1;
             /**
-                TRUE if soft limits are enabled AND the commanded position is
-                outside or at the boundary of the range specified by the soft
-                limit positions
-            **/
-            uint32_t AtOrOutsideSoftLimits : 1;
-            /**
                 TRUE if the last commanded move was a positional move.
             **/
             uint32_t PositionalMove : 1;
             /**
-                TRUE after AddToPosition is set
-            **/
-            uint32_t HasHomed : 1;
-            /**
                 Reflects the state of the HLFB.
             **/
             uint32_t HlfbState : 2;
-            /**
-                Ready to accept a homing move.
-            **/
-            uint32_t ReadyToHome : 1;
             /**
                 Alerts Present.
             **/
@@ -332,6 +302,18 @@ public:
                 TRUE if enable trigger pulses are being sent
             **/
             uint32_t Triggering : 1;
+            /**
+                Reflects the state of the associated positive limit connector.
+            **/
+            uint32_t InPositiveLimit : 1;
+            /**
+                Reflects the state of the associated negative limit connector.
+            **/
+            uint32_t InNegativeLimit : 1;
+            /**
+                Reflects the state of the associated E-stop sensor connector.
+            **/
+            uint32_t InEStopSensor : 1;
         } bit;
 
         /**
@@ -388,38 +370,11 @@ public:
             **/
             uint16_t MotionCanceledSensorEStop : 1;
             /**
-                TRUE whenever executing motion is canceled due to an E-Stop
-                triggered by the software E-Stop flag or whenever a command
-                is rejected while the software E-Stop is asserted.
-            **/
-            uint16_t MotionCanceledSoftwareEStop : 1;
-            /**
                 TRUE whenever executing motion is canceled due to the enable
                 output deasserting or whenever a command is rejected while the
                 enable output is deasserted.
             **/
             uint16_t MotionCanceledMotorDisabled : 1;
-            /**
-                TRUE whenever executing motion is canceled due to the commanded
-                position or target position exceeding the range defined by the
-                soft limit range.
-            **/
-            uint16_t MotionCanceledSoftLimitsExceeded : 1;
-            /**
-                TRUE whenever executing motion is canceled on an axis that has
-                been configured to follow this axis.
-            **/
-            uint16_t MotionCanceledFollowerAxisFault : 1;
-            /**
-                TRUE whenever a move is commanded to this axis after it has
-                been configured to follow a different axis.
-            **/
-            uint16_t MotionCanceledCommandWhileFollowing : 1;
-            /**
-                TRUE whenever a homing move is commanded to this axis when
-                the ReadyToHome status bit is not set.
-            **/
-            uint16_t MotionCanceledHomingNotReady : 1;
             /**
                 TRUE whenever the MotorInFault status is set in the motor status
                 register.
@@ -830,6 +785,27 @@ public:
     **/
     bool HlfbHasFallen() {
         return DigitalIn::InputFallen();
+    }
+
+    bool HlfbCarrier(HlfbCarrierFrequency freq) {
+	    switch (freq) {
+		    case HLFB_CARRIER_45_HZ:
+		    m_hlfbCarrierLossStateChange_ms =
+		    HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ;
+		    break;
+		    case HLFB_CARRIER_482_HZ:
+		    m_hlfbCarrierLossStateChange_ms =
+		    HLFB_CARRIER_LOSS_STATE_CHANGE_MS_482_HZ;
+		    break;
+		    default:
+		    return false;
+	    }
+	    m_hlfbCarrierFrequency = freq;
+	    return true;
+    }
+
+    HlfbCarrierFrequency HlfbCarrier() {
+	    return m_hlfbCarrierFrequency;
     }
 
     /**
@@ -1406,22 +1382,6 @@ public:
     static bool IsValidOutputPin(ClearCorePins pin);
 
     /**
-        \brief Function to set the on time of a PWM signal being sent to the
-        motor's Input A
-
-        \param[in] count The PWM on time
-    **/
-    bool MotorInACount(uint16_t count);
-
-    /**
-        \brief Function to set the on time of a PWM signal being sent to the
-        motor's Input B
-
-        \param[in] count The PWM on time
-    **/
-    bool MotorInBCount(uint16_t count);
-
-    /**
         \brief Default constructor so this connector can be a global and
         constructed by SysManager.
     **/
@@ -1471,6 +1431,8 @@ protected:
     uint16_t m_hlfbPeriod[CPM_HLFB_CAP_HISTORY];
     // HLFB measurement count, used to show lack of PWM
     uint16_t m_hlfbNoPwmSampleCount;
+    HlfbCarrierFrequency m_hlfbCarrierFrequency;
+    uint32_t m_hlfbCarrierLossStateChange_ms;
     // The last board time (in milliseconds) when PWM carrier was detected
     uint32_t m_hlfbLastCarrierDetectTime;
     // HLFB last duty cycle

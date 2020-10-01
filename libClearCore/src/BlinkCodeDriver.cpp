@@ -218,39 +218,14 @@ bool BlinkCodeDriver::NextCode(uint8_t group, uint8_t code) {
 }
 
 void BlinkCodeDriver::BlinkCodeClear(uint8_t group, uint8_t code) {
-    BlinkCodeGroups blinkGroup;
-
-    switch (group) {
-        case 1:
-            if (code == 0 || code > 6) {
-                return; // Not a valid code.
-            }
-            blinkGroup = BLINK_GROUP_IO_OVERLOAD;
-            break;
-        case 2:
-            if (code == 0 || code > 3) {
-                return; // Not a valid code.
-            }
-            blinkGroup = BLINK_GROUP_SUPPLY_ERROR;
-            break;
-        case 3:
-            if (code == 0 || code > 5) {
-                return; // Not a valid code.
-            }
-            blinkGroup = BLINK_GROUP_DEVICE_ERROR;
-            break;
-        case 4:
-            if (code == 0 || code > 8) {
-                return; // Not a valid code.
-            }
-            blinkGroup = BLINK_GROUP_CCIO_OVERLOAD;
-            break;
-        default:
-            // Not a valid blink code group.
-            return;
+    if (code == 0 || code > 8) {
+        return; // Not a valid code.
+    }
+    if (group == 0 || group > BLINK_GROUP_MAX) {
+        return; // Not a valid group.
     }
 
-    m_codes[blinkGroup] &= ~(1UL << (code - 1));
+    m_codes[group - 1] &= ~(1UL << (code - 1));
 }
 
 }

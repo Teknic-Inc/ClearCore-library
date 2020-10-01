@@ -60,11 +60,7 @@ public:
         /**
             Select the fast speed step input rate (2 MHz, 250nS pulse width)
         **/
-        CLOCK_RATE_HIGH,
-        /**
-            Select the maximum speed step input rate (25 MHz, 20nS pulse width)
-        **/
-        CLOCK_RATE_MAXIMUM
+        CLOCK_RATE_HIGH
     } MotorClockRates;
 
     /**
@@ -99,30 +95,6 @@ public:
         Initialize hardware and/or internal state.
     **/
     void Initialize();
-
-    bool FollowAxisUpdate(int8_t followAxis, int8_t leadAxis,
-                          int32_t multiplier, int32_t divisor);
-
-    int8_t IsFollowing(int8_t axis) {
-        if (axis < 0 || axis >= MOTOR_CON_CNT) {
-            return -1;
-        }
-        return m_leadingAxis[axis];
-    }
-
-    int32_t FollowingMultiplier(uint8_t index) {
-        if (index >= MOTOR_CON_CNT) {
-            return 0;
-        }
-        return m_followingMultipliers[index];
-    }
-
-    int32_t FollowingDivisor(uint8_t index) {
-        if (index >= MOTOR_CON_CNT) {
-            return 0;
-        }
-        return m_followingDivisors[index];
-    }
 #endif
 
     /**
@@ -170,23 +142,12 @@ public:
     **/
     bool MotorModeSet(MotorPair motorPair, Connector::ConnectorModes newMode);
 
-    void Refresh();
-
 protected:
     uint8_t m_gclkIndex;
     MotorClockRates m_clockRate;
     ClearCorePorts m_stepPorts[NUM_MOTOR_PAIRS];
     uint32_t m_stepDataBits[NUM_MOTOR_PAIRS];
     Connector::ConnectorModes m_motorModes[NUM_MOTOR_PAIRS];
-
-    // The axis that a motor is following.
-    int8_t m_leadingAxis[MOTOR_CON_CNT];
-    // The multiplier for a motor following another.
-    int32_t m_followingMultipliers[MOTOR_CON_CNT];
-    // The divisor for a motor following another.
-    int32_t m_followingDivisors[MOTOR_CON_CNT];
-    // Remaining fractional move steps.
-    double m_followingPosnFractionalRemainders[MOTOR_CON_CNT];
 
 private:
 #define CPM_CLOCK_RATE_LOW_HZ \

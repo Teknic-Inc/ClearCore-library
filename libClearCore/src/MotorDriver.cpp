@@ -111,13 +111,17 @@ MotorDriver::MotorDriver(ShiftRegister::Masks enableMask,
       m_hlfbTcNum(hlfbTc),
       m_hlfbEvt(hlfbEvt),
       m_hlfbMode(HLFB_MODE_STATIC),
+      m_hlfbWidth{0, 0},
+      m_hlfbPeriod{0, 0},
       m_hlfbNoPwmSampleCount(2),
+      m_hlfbCarrierFrequency(HLFB_CARRIER_45_HZ),
+      m_hlfbCarrierLossStateChange_ms(HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ),
       m_hlfbLastCarrierDetectTime(UINT32_MAX),
       m_hlfbDuty(HLFB_DUTY_UNKNOWN),
       m_hlfbState(HLFB_UNKNOWN),
       m_lastHlfbInputValue(false),
       m_hlfbPwmReadingPending(false),
-      m_hlfbStateChangeCounter(HLFB_CARRIER_LOSS_STATE_CHANGE_SAMPLES),
+      m_hlfbStateChangeCounter(MS_TO_SAMPLES * HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ),
       m_polarityInversions(0),
       m_enableRequestedState(false),
       m_enableTriggerActive(false),
@@ -159,12 +163,8 @@ MotorDriver::MotorDriver(ShiftRegister::Masks enableMask,
     m_bTccBuffer = &theTcc->CCBUF[ccIndex].reg;
     m_bTccSyncMask = TCC_SYNCBUSY_CC(1UL << ccIndex);
     m_bTccSyncReg = &theTcc->SYNCBUSY.reg;
-
-    for (uint8_t i = 0; i < CPM_HLFB_CAP_HISTORY; i++) {
-        m_hlfbWidth[i] = 0;
-        m_hlfbPeriod[i] = 0;
-    }
 }
+
 
 /*
     Update the HLFB state
@@ -246,14 +246,14 @@ void MotorDriver::Refresh() {
             }
 
             if (!m_hlfbCarrierLost) {
-                m_hlfbStateChangeCounter = HLFB_CARRIER_LOSS_STATE_CHANGE_SAMPLES;
+                m_hlfbStateChangeCounter = (MS_TO_SAMPLES * m_hlfbCarrierLossStateChange_ms);
                 break;
             }
             else {
                 // check for an HLFB state change
                 bool readHlfbState = (DigitalIn::m_stateFiltered ^ invert);
                 if (readHlfbState != m_lastHlfbInputValue) {
-                    m_hlfbStateChangeCounter = HLFB_CARRIER_LOSS_STATE_CHANGE_SAMPLES;
+                    m_hlfbStateChangeCounter = (MS_TO_SAMPLES * m_hlfbCarrierLossStateChange_ms);
                     m_lastHlfbInputValue = readHlfbState;
                     break;
                 }
@@ -269,54 +269,6 @@ void MotorDriver::Refresh() {
             m_hlfbState = (DigitalIn::m_stateFiltered ^ invert) ?
                           HLFB_ASSERTED : HLFB_DEASSERTED;
             break;
-    }
-
-    // Read associated input connectors and write associated output connectors.
-    if (m_enableConnector != CLEARCORE_PIN_INVALID) {
-        // Update the Enable state with the value on the Enable connector.
-        Connector *input= SysMgr.ConnectorByIndex(m_enableConnector);
-        if (input->Type() == ClearCore::Connector::CCIO_DIGITAL_IN_OUT_TYPE) {
-            EnableRequest(CcioMgr.PinState(m_enableConnector));
-        }
-        else {
-            DigitalIn *enableIn = static_cast<DigitalIn *>(input);
-            EnableRequest(enableIn->DigitalIn::State());
-        }
-    }
-    if (m_inputAConnector != CLEARCORE_PIN_INVALID && m_mode != CPM_MODE_STEP_AND_DIR) {
-        // Update the Input A state with the value on the Input A connector.
-        Connector *input= SysMgr.ConnectorByIndex(m_inputAConnector);
-        if (input->Type() == ClearCore::Connector::CCIO_DIGITAL_IN_OUT_TYPE) {
-            MotorInAState(CcioMgr.PinState(m_inputAConnector));
-        }
-        else {
-            DigitalIn *inputA = static_cast<DigitalIn *>(input);
-            MotorInAState(inputA->DigitalIn::State());
-        }
-    }
-    if (m_inputBConnector != CLEARCORE_PIN_INVALID && m_mode != CPM_MODE_STEP_AND_DIR) {
-        // Update the Input B state with the value on the Input B connector.
-        Connector *input= SysMgr.ConnectorByIndex(m_inputBConnector);
-        if (input->Type() == ClearCore::Connector::CCIO_DIGITAL_IN_OUT_TYPE) {
-            MotorInBState(CcioMgr.PinState(m_inputBConnector));
-        }
-        else {
-            DigitalIn *inputB = static_cast<DigitalIn *>(input);
-            MotorInBState(inputB->DigitalIn::State());
-        }
-    }
-    if (m_brakeOutputPin != CLEARCORE_PIN_INVALID) {
-        Connector *brakeOutput = SysMgr.ConnectorByIndex(m_brakeOutputPin);
-        if (brakeOutput->Type() == CCIO_DIGITAL_IN_OUT_TYPE ||
-            brakeOutput->Mode() == ConnectorModes::OUTPUT_DIGITAL) {
-            // Using HLFB_MODE_STATIC assumes the motor is in Servo On HLFB mode
-            if (m_hlfbMode == HLFB_MODE_STATIC) {
-                brakeOutput->State(static_cast<int16_t>(m_hlfbState == HLFB_ASSERTED));
-            }
-            else {
-                brakeOutput->State(static_cast<int16_t>(m_hlfbState != HLFB_DEASSERTED));
-            }
-        }
     }
     if (m_limitSwitchPos != CLEARCORE_PIN_INVALID) {
         // Update the positive limit state with the value on the connector.
@@ -342,26 +294,6 @@ void MotorDriver::Refresh() {
     }
 
 
-    if (m_positionCaptureInput != CLEARCORE_PIN_INVALID) {
-        Connector *input = SysMgr.ConnectorByIndex(m_positionCaptureInput);
-        bool positionCaptureInputState;
-        if (input->Type() == ClearCore::Connector::CCIO_DIGITAL_IN_OUT_TYPE) {
-            positionCaptureInputState = CcioMgr.PinState(m_positionCaptureInput);
-        }
-        else {
-            DigitalIn *positionCaptureInput = static_cast<DigitalIn *>(input);
-            positionCaptureInputState = positionCaptureInput->DigitalIn::State();
-        }
-
-        // If we detected the active edge, capture the position
-        if (m_positionCaptureInputState != positionCaptureInputState) {
-            m_positionCaptureInputState = positionCaptureInputState;
-            if (m_positionCaptureInputState == m_positionCaptureActiveHigh) {
-                m_positionCaptured = m_posnAbsolute;
-            }
-        }
-    }
-
     // Update the Motor Status and Alert Registers
     StatusRegMotor statusRegPending = m_statusRegMotor;
     AlertRegMotor alertRegPending = m_alertRegMotor;
@@ -372,10 +304,8 @@ void MotorDriver::Refresh() {
         m_motionCancellingEStop = false;
     }
     else if (eStopInput && !m_motionCancellingEStop) {
-        if (!m_isFollowing) {
-            MoveStop();
+            MoveStopDecel();
             m_motionCancellingEStop = true;
-        }
         alertRegPending.bit.MotionCanceledSensorEStop = 1;
     }
     statusRegPending.bit.InEStopSensor = (eStopInput || m_motionCancellingEStop);
@@ -393,21 +323,19 @@ void MotorDriver::Refresh() {
     statusRegPending.bit.InPositiveLimit = m_limitInfo.InPosHWLimit;
     statusRegPending.bit.InNegativeLimit = m_limitInfo.InNegHWLimit;
 
-    if (!m_isFollowing) {
-        statusRegPending.bit.Triggering = m_enableTriggerActive;
-        statusRegPending.bit.MoveDirection = StepGenerator::m_direction;
-        statusRegPending.bit.StepsActive =
-            (StepGenerator::m_moveState != StepGenerator::MoveStates::MS_IDLE &&
-             StepGenerator::m_moveState != StepGenerator::MoveStates::MS_END);
-        statusRegPending.bit.AtTargetPosition = m_isEnabled && 
-            m_lastMoveWasPositional && !statusRegPending.bit.StepsActive &&
-            m_hlfbState == HLFB_ASSERTED;
-        statusRegPending.bit.AtTargetVelocity = m_isEnabled &&
-            (StepGenerator::m_moveState == StepGenerator::MoveStates::MS_CRUISE ||
-            (!statusRegPending.bit.StepsActive && !m_lastMoveWasPositional)) &&
-            m_hlfbState != HLFB_DEASSERTED;
-        statusRegPending.bit.PositionalMove = m_lastMoveWasPositional;
-    }
+    statusRegPending.bit.Triggering = m_enableTriggerActive;
+    statusRegPending.bit.MoveDirection = StepGenerator::m_direction;
+    statusRegPending.bit.StepsActive =
+        (StepGenerator::m_moveState != StepGenerator::MoveStates::MS_IDLE &&
+            StepGenerator::m_moveState != StepGenerator::MoveStates::MS_END);
+    statusRegPending.bit.AtTargetPosition = m_isEnabled && 
+        m_lastMoveWasPositional && !statusRegPending.bit.StepsActive &&
+        m_hlfbState == HLFB_ASSERTED;
+    statusRegPending.bit.AtTargetVelocity = m_isEnabled &&
+        (StepGenerator::m_moveState == StepGenerator::MoveStates::MS_CRUISE ||
+        (!statusRegPending.bit.StepsActive && !m_lastMoveWasPositional)) &&
+        m_hlfbState != HLFB_DEASSERTED;
+    statusRegPending.bit.PositionalMove = m_lastMoveWasPositional;
 
     statusRegPending.bit.HlfbState = m_hlfbState;
 
@@ -433,13 +361,12 @@ void MotorDriver::Refresh() {
     }
     else {
         if (m_hlfbMode != HLFB_MODE_STATIC &&
-            m_hlfbState == MotorDriver::HlfbStates::HLFB_DEASSERTED) {
+            m_hlfbState == HlfbStates::HLFB_DEASSERTED) {
             statusRegPending.bit.ReadyState = MotorReadyStates::MOTOR_FAULTED;
             statusRegPending.bit.MotorInFault = 1;
             alertRegPending.bit.MotorFaulted = 1;
-            if (!m_isFollowing) {
-                MoveStop();
-            }
+                MoveStopAbrupt();
+
         }
         else if ((m_hlfbMode == HLFB_MODE_STATIC &&
                   m_hlfbState == MotorDriver::HlfbStates::HLFB_DEASSERTED) ||
@@ -470,10 +397,11 @@ void MotorDriver::Refresh() {
     m_statusRegMotorLast.reg = m_statusRegMotor.reg;
 
     // Calculate the next S&D output step count
-    if (Connector::m_mode == Connector::CPM_MODE_STEP_AND_DIR && !m_isFollowing) {
+    if (Connector::m_mode == Connector::CPM_MODE_STEP_AND_DIR) {
         // Calculate the number of steps to send in the next sample time
         StepGenerator::StepsCalculated();
         // Check the status of the limits
+
 
         m_bDutyCnt = StepGenerator::m_stepsPrevious;
         // Queue up the steps by writing the B duty value
@@ -491,15 +419,11 @@ bool MotorDriver::ValidateMove(bool negDirection) {
         m_alertRegMotor.bit.MotionCanceledMotorDisabled = 1;
         valid = false;
     }
-    if (m_isFollowing) {
-        m_alertRegMotor.bit.MotionCanceledCommandWhileFollowing = 1;
-        valid = false;
-    }
     if (CheckEStopSensor()) {
         m_alertRegMotor.bit.MotionCanceledSensorEStop = 1;
         valid = false;
     }
-    // Check +/- limits, soft limits exceeded here...
+    // Check +/- limits, hard limits exceeded here...
     if (negDirection && m_limitInfo.InNegHWLimit) {
         m_alertRegMotor.bit.MotionCanceledNegativeLimit = 1;
         valid = false;
@@ -522,8 +446,8 @@ bool MotorDriver::Move(int32_t dist, MoveTarget moveTarget) {
     }
 
     if (!ValidateMove(negDir)) {
-        if (m_statusRegMotor.bit.StepsActive && !m_isFollowing) {
-            MoveStop();
+        if (m_statusRegMotor.bit.StepsActive ) {
+            MoveStopDecel();
         }
 		//Clear Alerts after an alert is caught to continue running
 		ClearAlerts();
@@ -538,8 +462,8 @@ bool MotorDriver::MoveVelocity(int32_t velocity) {
     // Calculate a dummy target position for soft limit checking
 
     if (!ValidateMove(velocity < 0)) {
-        if (m_statusRegMotor.bit.StepsActive && !m_isFollowing) {
-            MoveStop();
+        if (m_statusRegMotor.bit.StepsActive ) {
+            MoveStopDecel();
         }
         return false;
     }
@@ -551,7 +475,6 @@ void MotorDriver::AddToPosition(int32_t posnAdjust) {
     __disable_irq();
     // add the value to the current position (commanded and actual?)
     m_posnAbsolute += posnAdjust;
-    m_targetPosition += posnAdjust;
     __enable_irq();
 }
 
@@ -578,33 +501,22 @@ bool MotorDriver::MotorInBState() {
 }
 
 bool MotorDriver::MotorInAState(bool value) {
-    switch (m_mode) {
-    case Connector::CPM_MODE_A_DIRECT_B_DIRECT:
-    case Connector::CPM_MODE_A_DIRECT_B_PWM:
-        DATA_OUTPUT_STATE(m_aInfo->gpioPort, m_aDataMask, !value);
-        return true;
-    case Connector::CPM_MODE_A_PWM_B_PWM:
-        MotorInACount(value ? m_stepsPerSampleMax : 0);
-        return true;
-    case Connector::CPM_MODE_STEP_AND_DIR:
-    default:
-        return false;
-    }
+	if (Connector::m_mode == Connector::CPM_MODE_STEP_AND_DIR ||
+	Connector::m_mode == Connector::CPM_MODE_A_PWM_B_PWM) {
+		return false;
+	}
+
+	DATA_OUTPUT_STATE(m_aInfo->gpioPort, m_aDataMask, !value);
+	return true;
 }
 
 bool MotorDriver::MotorInBState(bool value) {
-    switch (m_mode) {
-    case Connector::CPM_MODE_A_DIRECT_B_DIRECT:
-        DATA_OUTPUT_STATE(m_bInfo->gpioPort, m_bDataMask, !value);
-        return true;
-    case Connector::CPM_MODE_A_DIRECT_B_PWM:
-    case Connector::CPM_MODE_A_PWM_B_PWM:
-        MotorInBCount(value ? m_stepsPerSampleMax : 0);
-        return true;
-    case Connector::CPM_MODE_STEP_AND_DIR:
-    default:
-        return false;
-    }
+	if (Connector::m_mode != Connector::CPM_MODE_A_DIRECT_B_DIRECT) {
+		return false;
+	}
+
+	DATA_OUTPUT_STATE(m_bInfo->gpioPort, m_bDataMask, !value);
+	return true;
 }
 
 bool MotorDriver::MotorInADuty(uint8_t duty) {
@@ -622,25 +534,6 @@ bool MotorDriver::MotorInBDuty(uint8_t duty) {
             Connector::m_mode == Connector::CPM_MODE_A_PWM_B_PWM) {
         m_bDutyCnt = (static_cast<uint32_t>(duty) * m_stepsPerSampleMax +
                       (UINT8_MAX / 2)) / UINT8_MAX;
-        UpdateBDuty();
-        return true;
-    }
-    return false;
-}
-
-bool MotorDriver::MotorInACount(uint16_t count) {
-    if (Connector::m_mode == Connector::CPM_MODE_A_PWM_B_PWM) {
-        m_aDutyCnt = count;
-        UpdateADuty();
-        return true;
-    }
-    return false;
-}
-
-bool MotorDriver::MotorInBCount(uint16_t count) {
-    if (Connector::m_mode == Connector::CPM_MODE_A_DIRECT_B_PWM ||
-            Connector::m_mode == Connector::CPM_MODE_A_PWM_B_PWM) {
-        m_bDutyCnt = count;
         UpdateBDuty();
         return true;
     }
@@ -705,9 +598,7 @@ void MotorDriver::EnableRequest(bool value) {
     if (m_mode == Connector::CPM_MODE_STEP_AND_DIR) {
         if (!value && m_statusRegMotor.bit.StepsActive) {
             m_alertRegMotor.bit.MotionCanceledMotorDisabled = 1;
-            if (!m_isFollowing) {
-                MoveStop();
-            }
+                MoveStopAbrupt();
         }
         if (m_polarityInversions.bit.enableInverted) {
             value = !value;
@@ -759,15 +650,6 @@ bool MotorDriver::PolarityInvertSDHlfb(bool invert) {
     }
 }
 
-bool MotorDriver::BrakeOutput(ClearCorePins pin) {
-    if (pin != m_brakeOutputPin && m_brakeOutputPin != CLEARCORE_PIN_INVALID) {
-        // Reset the state of the previously-set brake output connector
-        SysMgr.ConnectorByIndex(m_brakeOutputPin)->State(false);
-    }
-
-    return SetConnector(pin, m_brakeOutputPin, false);
-}
-
 bool MotorDriver::LimitSwitchPos(ClearCorePins pin) {
     bool retVal = SetConnector(pin, m_limitSwitchPos);
     if (m_limitSwitchPos == CLEARCORE_PIN_INVALID) {
@@ -782,18 +664,6 @@ bool MotorDriver::LimitSwitchNeg(ClearCorePins pin) {
         NegLimitActive(false);
     }
     return retVal;
-}
-
-bool MotorDriver::EnableConnector(ClearCorePins pin) {
-    return SetConnector(pin, m_enableConnector);
-}
-
-bool MotorDriver::InputAConnector(ClearCorePins pin) {
-    return SetConnector(pin, m_inputAConnector);
-}
-
-bool MotorDriver::InputBConnector(ClearCorePins pin) {
-    return SetConnector(pin, m_inputBConnector);
 }
 
 bool MotorDriver::EStopConnector(ClearCorePins pin) {
@@ -1005,39 +875,12 @@ void MotorDriver::RefreshSlow() {
             ToggleEnable();
         }
     }
-
-    switch (m_clearFaultState) {
-    case CLEAR_FAULT_PULSE_ENABLE:
-        if (m_enableTriggerActive) {
-            break;
-        }
-        m_clearFaultState = CLEAR_FAULT_WAIT_FOR_HLFB;
-        // Fall through
-    case CLEAR_FAULT_WAIT_FOR_HLFB:
-        if (m_hlfbState != HLFB_DEASSERTED) {
-            AlertRegMotor mask;
-            mask.bit.MotorFaulted = 1;
-            ClearAlerts(mask.reg);
-            m_clearFaultState = CLEAR_FAULT_IDLE;
-        }
-        else if (!(m_clearFaultHlfbTimer && m_clearFaultHlfbTimer--)) {
-            m_clearFaultState = CLEAR_FAULT_IDLE;
-        }
-        break;
-    case CLEAR_FAULT_IDLE:
-    default:
-        break;
-    }
 }
 
 void MotorDriver::FaultState(bool isFaulted) {
     m_inFault = isFaulted;
     // Let EnableRequest handle the fault condition logic
     EnableRequest(m_enableRequestedState);
-}
-
-bool MotorDriver::PositionCaptureSensorConnector(ClearCorePins capturePin) {
-    return SetConnector(capturePin, m_positionCaptureInput);
 }
 
 bool MotorDriver::SetConnector(ClearCorePins pin, ClearCorePins &memberPin,
@@ -1072,41 +915,6 @@ bool MotorDriver::IsValidInputPin(ClearCorePins pin) {
     // valid digital input pins available.
     return (pin >= CLEARCORE_PIN_IO0 && pin <= CLEARCORE_PIN_A12) ||
            (pin >= CLEARCORE_PIN_CCIOA0 && pin <= CLEARCORE_PIN_CCIOH7);
-}
-
-bool MotorDriver::FollowAxis(int8_t axis, int32_t multiplier, int32_t divisor) {
-    if (multiplier == 0 || divisor == 0) {
-        return false;
-    }
-
-    // Normalize multiplier and divisor so that only multiplier is signed.
-    if (divisor < 0) {
-        multiplier *= -1;
-        divisor *= -1;
-    }
-
-    double ratio = static_cast<double>(labs(multiplier)) / divisor;
-    if (ratio > 128 || ratio < (1.0 / 128)) {
-        return false;
-    }
-
-    uint8_t myAxis = static_cast<int8_t>(m_clearCorePin - CLEARCORE_PIN_M0);
-
-    if (axis < -1 || axis > MOTOR_CON_CNT || axis == myAxis) {
-        // Trying to follow ourselves, or an invalid axis.
-        return false;
-    }
-
-    // Assign the following axis.
-    bool retVal = MotorMgr.FollowAxisUpdate(myAxis, axis, multiplier, divisor);
-    if (retVal) {
-        m_isFollowing = (axis != -1);
-        if (!m_isFollowing) {
-            m_stepsPrevious = 0;
-        }
-    }
-
-    return retVal;
 }
 
 bool MotorDriver::CheckEStopSensor() {
