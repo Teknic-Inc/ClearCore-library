@@ -13,7 +13,7 @@
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
     <AssemblyName>Examples</AssemblyName>
-    <Name>SingleAxis</Name>
+    <Name>StepAndDirection (non-ClearPath)</Name>
     <RootNamespace>Examples</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
@@ -68,7 +68,7 @@
       </ToolNumber>
       <ToolName xmlns="">Custom Programming Tool</ToolName>
     </custom>
-    <CustomProgrammingToolCommand>"$(MSBuildProjectDirectory)\..\..\..\..\Tools\flash_clearcore.cmd" "$(OutputDirectory)\$(OutputFileName).bin"</CustomProgrammingToolCommand>
+    <CustomProgrammingToolCommand>"$(MSBuildProjectDirectory)\..\..\..\Tools\flash_clearcore.cmd" "$(OutputDirectory)\$(OutputFileName).bin"</CustomProgrammingToolCommand>
     <com_atmel_avrdbg_tool_samice>
       <ToolOptions>
         <InterfaceProperties>
@@ -197,9 +197,9 @@
           <ListValues>
             <Value>%24(PackRepoDir)\arm\CMSIS\4.5.0\CMSIS\Include\</Value>
             <Value>%24(PackRepoDir)\atmel\SAME53_DFP\1.1.118\include</Value>
-            <Value>../../../../../libClearCore/inc</Value>
-            <Value>../../../../../LwIP/LwIP/src/include</Value>
-            <Value>../../../../../LwIP/LwIP/port/include</Value>
+            <Value>../../../../libClearCore/inc</Value>
+            <Value>../../../../LwIP/LwIP/src/include</Value>
+            <Value>../../../../LwIP/LwIP/port/include</Value>
           </ListValues>
         </armgcccpp.compiler.directories.IncludePaths>
         <armgcccpp.compiler.optimization.level>Optimize most (-O3)</armgcccpp.compiler.optimization.level>
@@ -241,14 +241,14 @@
         <armgcccpp.preprocessingassembler.debugging.DebugLevel>Default (-Wa,-g)</armgcccpp.preprocessingassembler.debugging.DebugLevel>
       </ArmGccCpp>
     </ToolchainSettings>
-    <PostBuildEvent>"$(SolutionDir)\..\..\..\Tools\uf2-builder\Release\uf2-builder.exe" "$(OutputDirectory)\$(OutputFileName).bin" "$(OutputDirectory)\$(OutputFileName).uf2"</PostBuildEvent>
+    <PostBuildEvent>"$(SolutionDir)\..\..\Tools\uf2-builder\Release\uf2-builder.exe" "$(OutputDirectory)\$(OutputFileName).bin" "$(OutputDirectory)\$(OutputFileName).uf2"</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Device_Startup\startup_same53.c">
       <SubType>compile</SubType>
       <Link>Device_Startup\startup_same53.c</Link>
     </Compile>
-    <Compile Include="SingleAxis.cpp">
+    <Compile Include="StepAndDirection.cpp">
       <SubType>compile</SubType>
     </Compile>
     <None Include="..\Device_Startup\flash_without_bootloader.ld">
@@ -264,12 +264,12 @@
     <Folder Include="Device_Startup\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\libClearCore\ClearCore.cppproj">
+    <ProjectReference Include="..\..\..\libClearCore\ClearCore.cppproj">
       <Name>ClearCore</Name>
       <Project>{2530d5b1-8a40-4a55-95ca-2ec0b63e2088}</Project>
       <Private>True</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\LwIP\LwIP.cppproj">
+    <ProjectReference Include="..\..\..\LwIP\LwIP.cppproj">
       <Name>LwIP</Name>
       <Project>{c373696c-5d45-4b91-ad62-a21552361596}</Project>
       <Private>True</Private>

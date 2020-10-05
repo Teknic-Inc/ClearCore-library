@@ -19,7 +19,8 @@
  * 3. The connected ClearPath motors must have their HLFB modes set to ASG 
  *    Position with measured torque through the MSP software (select
  *    Advanced>>High Level Feedback [Mode]... then choose
- *    "ASG-Position, w/Measured Torque".
+ *    "ASG-Position, w/Measured Torque" from the dropdown and hit
+ *    the OK button).
  * 4. If the two motors must spin in opposite directions (i.e. they are mounted
  *    facing different directions), check the "Reverse Direction" checkbox of
  *    one motor in MSP.

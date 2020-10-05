@@ -26,16 +26,33 @@
 
 #include "MotorDriver.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <sam.h>
 #include "atomic_utils.h"
+#include "CcioBoardManager.h"
+#include "Connector.h"
 #include "InputManager.h"
+#include "MotorManager.h"
 #include "StatusManager.h"
+#include "SysManager.h"
 #include "SysTiming.h"
 #include "SysUtils.h"
 
+#define HLFB_CARRIER_LOSS_ERROR_LIMIT (0)
+#define HLFB_CARRIER_LOSS_STATE_CHANGE_MS (4)
+#define HLFB_CARRIER_LOSS_STATE_CHANGE_SAMPLES (MS_TO_SAMPLES * HLFB_CARRIER_LOSS_STATE_CHANGE_MS)
+
+// TODO - name police, this is the amount of time we allow a move to execute
+// without expecting an HLFB reading to be back yet
+#define HARD_STOP_MOVE_MS (25)
+#define HARD_STOP_MOVE_SAMPLES (MS_TO_SAMPLES * HARD_STOP_MOVE_MS)
+
 namespace ClearCore {
 
+extern MotorManager &MotorMgr;
+extern SysManager SysMgr;
 extern SysTiming &TimingMgr;
+extern CcioBoardManager &CcioMgr;
 extern ShiftRegister ShiftReg;
 extern volatile uint32_t tickCnt;
 
@@ -84,17 +101,27 @@ MotorDriver::MotorDriver(ShiftRegister::Masks enableMask,
       m_hlfbInfo(hlfbInfo),
       m_aDataMask(1UL << aInfo->gpioPin),
       m_bDataMask(1UL << bInfo->gpioPin),
+      m_enableConnector(CLEARCORE_PIN_INVALID),
+      m_inputAConnector(CLEARCORE_PIN_INVALID),
+      m_inputBConnector(CLEARCORE_PIN_INVALID),
+      m_positionCaptureInput(CLEARCORE_PIN_INVALID),
+      m_positionCaptureActiveHigh(true),
+      m_positionCaptureInputState(false),
+      m_positionCaptured(0),
       m_hlfbTcNum(hlfbTc),
       m_hlfbEvt(hlfbEvt),
       m_hlfbMode(HLFB_MODE_STATIC),
+      m_hlfbWidth{0, 0},
+      m_hlfbPeriod{0, 0},
       m_hlfbNoPwmSampleCount(2),
       m_hlfbCarrierFrequency(HLFB_CARRIER_45_HZ),
       m_hlfbCarrierLossStateChange_ms(HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ),
       m_hlfbLastCarrierDetectTime(UINT32_MAX),
       m_hlfbDuty(HLFB_DUTY_UNKNOWN),
       m_hlfbState(HLFB_UNKNOWN),
+      m_lastHlfbInputValue(false),
       m_hlfbPwmReadingPending(false),
-      m_hlfbStateChangeCounter(0),
+      m_hlfbStateChangeCounter(MS_TO_SAMPLES * HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ),
       m_polarityInversions(0),
       m_enableRequestedState(false),
       m_enableTriggerActive(false),
@@ -108,12 +135,20 @@ MotorDriver::MotorDriver(ShiftRegister::Masks enableMask,
       m_statusRegMotorRisen(0),
       m_statusRegMotorFallen(0),
       m_statusRegMotorLast(0),
+      m_alertRegMotor(0),
       m_initialized(false),
       m_isEnabling(false),
       m_isEnabled(false),
       m_hlfbCarrierLost(false),
       m_enableCounter(0),
-      m_shiftRegEnableReq(false) {
+      m_brakeOutputPin(CLEARCORE_PIN_INVALID),
+      m_limitSwitchNeg(CLEARCORE_PIN_INVALID),
+      m_limitSwitchPos(CLEARCORE_PIN_INVALID),
+      m_eStopConnector(CLEARCORE_PIN_INVALID),
+      m_motionCancellingEStop(false),
+      m_shiftRegEnableReq(false),
+      m_clearFaultState(CLEAR_FAULT_IDLE),
+      m_clearFaultHlfbTimer(0) {
 
     m_interruptAvail = true;
 
@@ -128,12 +163,8 @@ MotorDriver::MotorDriver(ShiftRegister::Masks enableMask,
     m_bTccBuffer = &theTcc->CCBUF[ccIndex].reg;
     m_bTccSyncMask = TCC_SYNCBUSY_CC(1UL << ccIndex);
     m_bTccSyncReg = &theTcc->SYNCBUSY.reg;
-
-    for (uint8_t i = 0; i < CPM_HLFB_CAP_HISTORY; i++) {
-        m_hlfbWidth[i] = 0;
-        m_hlfbPeriod[i] = 0;
-    }
 }
+
 
 /*
     Update the HLFB state
@@ -156,13 +187,12 @@ void MotorDriver::Refresh() {
 
     // Process the HLFB information
     switch (m_hlfbMode) {
-        HlfbStates readHlfbState;
         case HLFB_MODE_HAS_PWM:
         case HLFB_MODE_HAS_BIPOLAR_PWM:
             // Check for overflow or error conditions
             if ((intFlagReg & (TC_INTFLAG_OVF | TC_INTFLAG_ERR)) ||
                 (Milliseconds() - m_hlfbLastCarrierDetectTime
-                    >= m_hlfbCarrierLossStateChange_ms)) {
+                    >= HLFB_CARRIER_LOSS_STATE_CHANGE_MS)) {
                 tcCount->INTFLAG.reg = TC_INTFLAG_OVF | TC_INTFLAG_MC0 |
                                        TC_INTFLAG_ERR | TC_INTFLAG_MC1;
                 // Saturating increment
@@ -214,20 +244,21 @@ void MotorDriver::Refresh() {
                     m_hlfbPwmReadingPending = true;
                 }
             }
+
             if (!m_hlfbCarrierLost) {
+                m_hlfbStateChangeCounter = (MS_TO_SAMPLES * m_hlfbCarrierLossStateChange_ms);
                 break;
             }
             else {
                 // check for an HLFB state change
-                readHlfbState = (DigitalIn::m_stateFiltered ^ invert) ?
-                                HLFB_ASSERTED : HLFB_DEASSERTED;
-                if (readHlfbState != m_hlfbState &&
-                    m_hlfbStateChangeCounter++ < 
-                        (MS_TO_SAMPLES * m_hlfbCarrierLossStateChange_ms)) {
+                bool readHlfbState = (DigitalIn::m_stateFiltered ^ invert);
+                if (readHlfbState != m_lastHlfbInputValue) {
+                    m_hlfbStateChangeCounter = (MS_TO_SAMPLES * m_hlfbCarrierLossStateChange_ms);
+                    m_lastHlfbInputValue = readHlfbState;
                     break;
                 }
-                else {
-                    m_hlfbStateChangeCounter = 0;
+                else if (m_hlfbStateChangeCounter && m_hlfbStateChangeCounter--) {
+                    break;
                 }
             }
 
@@ -239,23 +270,73 @@ void MotorDriver::Refresh() {
                           HLFB_ASSERTED : HLFB_DEASSERTED;
             break;
     }
+    if (m_limitSwitchPos != CLEARCORE_PIN_INVALID) {
+        // Update the positive limit state with the value on the connector.
+        Connector *input = SysMgr.ConnectorByIndex(m_limitSwitchPos);
+        if (input->Type() == CCIO_DIGITAL_IN_OUT_TYPE) {
+            PosLimitActive(!input->State());
+        }
+        else {
+            DigitalIn *inputB = static_cast<DigitalIn *>(input);
+            PosLimitActive(!inputB->DigitalIn::State());
+        }
+    }
+    if (m_limitSwitchNeg != CLEARCORE_PIN_INVALID) {
+        // Update the negative limit state with the value on the connector.
+        Connector *input = SysMgr.ConnectorByIndex(m_limitSwitchNeg);
+        if (input->Type() == CCIO_DIGITAL_IN_OUT_TYPE) {
+            NegLimitActive(!input->State());
+        }
+        else {
+            DigitalIn *inputB = static_cast<DigitalIn *>(input);
+            NegLimitActive(!inputB->DigitalIn::State());
+        }
+    }
 
-    // Update the Motor Status Register
+
+    // Update the Motor Status and Alert Registers
     StatusRegMotor statusRegPending = m_statusRegMotor;
+    AlertRegMotor alertRegPending = m_alertRegMotor;
+
+    // Check E-stop
+    bool eStopInput = CheckEStopSensor();
+    if (m_moveState == MS_IDLE) {
+        m_motionCancellingEStop = false;
+    }
+    else if (eStopInput && !m_motionCancellingEStop) {
+            MoveStopDecel();
+            m_motionCancellingEStop = true;
+        alertRegPending.bit.MotionCanceledSensorEStop = 1;
+    }
+    statusRegPending.bit.InEStopSensor = (eStopInput || m_motionCancellingEStop);
+
+    // Check limits
+    if (!m_lastMoveWasPositional && m_statusRegMotor.bit.StepsActive) {
+        if (m_direction && m_limitInfo.InNegHWLimit) {
+            alertRegPending.bit.MotionCanceledNegativeLimit = 1;
+        }
+        else if (!m_direction && m_limitInfo.InPosHWLimit) {
+            alertRegPending.bit.MotionCanceledPositiveLimit = 1;
+        }
+    }
+
+    statusRegPending.bit.InPositiveLimit = m_limitInfo.InPosHWLimit;
+    statusRegPending.bit.InNegativeLimit = m_limitInfo.InNegHWLimit;
 
     statusRegPending.bit.Triggering = m_enableTriggerActive;
     statusRegPending.bit.MoveDirection = StepGenerator::m_direction;
     statusRegPending.bit.StepsActive =
-        (StepGenerator::m_moveState != StepGenerator::MS_IDLE &&
-         StepGenerator::m_moveState != StepGenerator::MS_END);
-    statusRegPending.bit.AtTargetPosition = m_isEnabled &&
+        (StepGenerator::m_moveState != StepGenerator::MoveStates::MS_IDLE &&
+            StepGenerator::m_moveState != StepGenerator::MoveStates::MS_END);
+    statusRegPending.bit.AtTargetPosition = m_isEnabled && 
         m_lastMoveWasPositional && !statusRegPending.bit.StepsActive &&
         m_hlfbState == HLFB_ASSERTED;
     statusRegPending.bit.AtTargetVelocity = m_isEnabled &&
-        (StepGenerator::m_moveState == StepGenerator::MS_CRUISE ||
-         (!statusRegPending.bit.StepsActive && !m_lastMoveWasPositional)) &&
+        (StepGenerator::m_moveState == StepGenerator::MoveStates::MS_CRUISE ||
+        (!statusRegPending.bit.StepsActive && !m_lastMoveWasPositional)) &&
         m_hlfbState != HLFB_DEASSERTED;
     statusRegPending.bit.PositionalMove = m_lastMoveWasPositional;
+
     statusRegPending.bit.HlfbState = m_hlfbState;
 
     if (m_isEnabling) {
@@ -271,28 +352,42 @@ void MotorDriver::Refresh() {
 
     if (!(m_isEnabled || m_isEnabling)) {
         statusRegPending.bit.ReadyState = MotorReadyStates::MOTOR_DISABLED;
+        if (statusRegPending.bit.StepsActive) {
+            alertRegPending.bit.MotionCanceledMotorDisabled = 1;
+        }
     }
     else if (m_isEnabling) {
         statusRegPending.bit.ReadyState = MotorReadyStates::MOTOR_ENABLING;
     }
     else {
         if (m_hlfbMode != HLFB_MODE_STATIC &&
-            m_hlfbState == MotorDriver::HLFB_DEASSERTED) {
-            statusRegPending.bit.ReadyState = MOTOR_FAULTED;
+            m_hlfbState == HlfbStates::HLFB_DEASSERTED) {
+            statusRegPending.bit.ReadyState = MotorReadyStates::MOTOR_FAULTED;
             statusRegPending.bit.MotorInFault = 1;
+            alertRegPending.bit.MotorFaulted = 1;
+                MoveStopAbrupt();
+
         }
         else if ((m_hlfbMode == HLFB_MODE_STATIC &&
-                  m_hlfbState == MotorDriver::HLFB_DEASSERTED) ||
+                  m_hlfbState == MotorDriver::HlfbStates::HLFB_DEASSERTED) ||
                  statusRegPending.bit.StepsActive) {
-            statusRegPending.bit.ReadyState = MOTOR_MOVING;
+            statusRegPending.bit.ReadyState = MotorReadyStates::MOTOR_MOVING;
         }
         else {
-            statusRegPending.bit.ReadyState = MOTOR_READY;
+            statusRegPending.bit.ReadyState = MotorReadyStates::MOTOR_READY;
             statusRegPending.bit.MotorInFault = 0;
         }
     }
 
+    if (statusRegPending.bit.StepsActive) {
+        if (alertRegPending.bit.MotorFaulted) {
+            alertRegPending.bit.MotionCanceledInAlert = 1;
+        }
+    }
+
+    statusRegPending.bit.AlertsPresent = (bool)alertRegPending.reg;
     m_statusRegMotor = statusRegPending;
+    m_alertRegMotor = alertRegPending;
 
     atomic_or_fetch(&m_statusRegMotorRisen.reg,
                     ~m_statusRegMotorLast.reg & statusRegPending.reg);
@@ -305,36 +400,82 @@ void MotorDriver::Refresh() {
     if (Connector::m_mode == Connector::CPM_MODE_STEP_AND_DIR) {
         // Calculate the number of steps to send in the next sample time
         StepGenerator::StepsCalculated();
+        // Check the status of the limits
+		StepGenerator::m_limitInfo.InLimit = StepGenerator::CheckTravelLimits();
+
         m_bDutyCnt = StepGenerator::m_stepsPrevious;
         // Queue up the steps by writing the B duty value
         UpdateBDuty();
     }
 }
 
-bool MotorDriver::ValidateMove() {
-    return EnableRequest() && !m_statusRegMotor.bit.MotorInFault;
+bool MotorDriver::ValidateMove(bool negDirection) {
+    bool valid = true;
+    if (m_alertRegMotor.reg) {
+        m_alertRegMotor.bit.MotionCanceledInAlert = 1;
+        valid = false;
+    }
+    if (!EnableRequest()) {
+        m_alertRegMotor.bit.MotionCanceledMotorDisabled = 1;
+        valid = false;
+    }
+    if (CheckEStopSensor()) {
+        m_alertRegMotor.bit.MotionCanceledSensorEStop = 1;
+        valid = false;
+    }
+    // Check +/- limits, hard limits exceeded here...
+    if (negDirection && m_limitInfo.InNegHWLimit) {
+        m_alertRegMotor.bit.MotionCanceledNegativeLimit = 1;
+        valid = false;
+    }
+    else if (!negDirection && m_limitInfo.InPosHWLimit) {
+        m_alertRegMotor.bit.MotionCanceledPositiveLimit = 1;
+        valid = false;
+    }
+    return valid;
 }
 
 bool MotorDriver::Move(int32_t dist, MoveTarget moveTarget) {
-    if (!ValidateMove()) {
+    bool negDir;
+
+    if (moveTarget == MOVE_TARGET_ABSOLUTE) {
+        negDir = dist - m_posnAbsolute < 0;
+    }
+    else {
+        negDir = dist < 0;
+    }
+
+    if (!ValidateMove(negDir)) {
+        if (m_statusRegMotor.bit.StepsActive ) {
+            MoveStopDecel();
+        }
+		//Clear Alerts after an alert is caught to continue running
+		ClearAlerts();
         return false;
     }
 
     m_lastMoveWasPositional = true;
-    m_statusRegMotor.bit.StepsActive = 1;
     return StepGenerator::Move(dist, moveTarget);
 }
 
 bool MotorDriver::MoveVelocity(int32_t velocity) {
-    if (!ValidateMove()) {
-        if (m_statusRegMotor.bit.StepsActive) {
+    // Calculate a dummy target position for soft limit checking
+
+    if (!ValidateMove(velocity < 0)) {
+        if (m_statusRegMotor.bit.StepsActive ) {
             MoveStopDecel();
         }
         return false;
     }
     m_lastMoveWasPositional = false;
-    m_statusRegMotor.bit.StepsActive = 1;
     return StepGenerator::MoveVelocity(velocity);
+}
+
+void MotorDriver::AddToPosition(int32_t posnAdjust) {
+    __disable_irq();
+    // add the value to the current position (commanded and actual?)
+    m_posnAbsolute += posnAdjust;
+    __enable_irq();
 }
 
 MotorDriver::StatusRegMotor MotorDriver::StatusRegRisen() {
@@ -360,22 +501,22 @@ bool MotorDriver::MotorInBState() {
 }
 
 bool MotorDriver::MotorInAState(bool value) {
-    if (Connector::m_mode == Connector::CPM_MODE_STEP_AND_DIR ||
-            Connector::m_mode == Connector::CPM_MODE_A_PWM_B_PWM) {
-        return false;
-    }
+	if (Connector::m_mode == Connector::CPM_MODE_STEP_AND_DIR ||
+	Connector::m_mode == Connector::CPM_MODE_A_PWM_B_PWM) {
+		return false;
+	}
 
-    DATA_OUTPUT_STATE(m_aInfo->gpioPort, m_aDataMask, !value);
-    return true;
+	DATA_OUTPUT_STATE(m_aInfo->gpioPort, m_aDataMask, !value);
+	return true;
 }
 
 bool MotorDriver::MotorInBState(bool value) {
-    if (Connector::m_mode != Connector::CPM_MODE_A_DIRECT_B_DIRECT) {
-        return false;
-    }
+	if (Connector::m_mode != Connector::CPM_MODE_A_DIRECT_B_DIRECT) {
+		return false;
+	}
 
-    DATA_OUTPUT_STATE(m_bInfo->gpioPort, m_bDataMask, !value);
-    return true;
+	DATA_OUTPUT_STATE(m_bInfo->gpioPort, m_bDataMask, !value);
+	return true;
 }
 
 bool MotorDriver::MotorInADuty(uint8_t duty) {
@@ -455,8 +596,9 @@ void MotorDriver::EnableRequest(bool value) {
 
     // Invert the logic if necessary.
     if (m_mode == Connector::CPM_MODE_STEP_AND_DIR) {
-        if (!value) {
-            MoveStopAbrupt();
+        if (!value && m_statusRegMotor.bit.StepsActive) {
+            m_alertRegMotor.bit.MotionCanceledMotorDisabled = 1;
+                MoveStopAbrupt();
         }
         if (m_polarityInversions.bit.enableInverted) {
             value = !value;
@@ -467,7 +609,7 @@ void MotorDriver::EnableRequest(bool value) {
         // Update the shift register.
         ShiftReg.ShifterState(value, m_enableMask);
     }
-    m_shiftRegEnableReq = value;
+     m_shiftRegEnableReq = value;
 }
 
 void MotorDriver::ToggleEnable() {
@@ -506,6 +648,26 @@ bool MotorDriver::PolarityInvertSDHlfb(bool invert) {
     else {
         return false;
     }
+}
+
+bool MotorDriver::LimitSwitchPos(ClearCorePins pin) {
+    bool retVal = SetConnector(pin, m_limitSwitchPos);
+    if (m_limitSwitchPos == CLEARCORE_PIN_INVALID) {
+        PosLimitActive(false);
+    }
+    return retVal;
+}
+
+bool MotorDriver::LimitSwitchNeg(ClearCorePins pin) {
+    bool retVal = SetConnector(pin, m_limitSwitchNeg);
+    if (m_limitSwitchNeg == CLEARCORE_PIN_INVALID) {
+        NegLimitActive(false);
+    }
+    return retVal;
+}
+
+bool MotorDriver::EStopConnector(ClearCorePins pin) {
+    return SetConnector(pin, m_eStopConnector);
 }
 
 void MotorDriver::Initialize(ClearCorePins clearCorePin) {
@@ -700,6 +862,7 @@ void MotorDriver::RefreshSlow() {
     if (!m_initialized) {
         return;
     }
+
     uint32_t currentTimeMs = TimingMgr.Milliseconds();
     if (m_enableTriggerActive &&
             (currentTimeMs - m_enableTriggerPulseStartMs >=
@@ -718,6 +881,55 @@ void MotorDriver::FaultState(bool isFaulted) {
     m_inFault = isFaulted;
     // Let EnableRequest handle the fault condition logic
     EnableRequest(m_enableRequestedState);
+}
+
+bool MotorDriver::SetConnector(ClearCorePins pin, ClearCorePins &memberPin,
+                               bool input) {
+    if (pin == memberPin) {
+        // Nothing to do; already assigned.
+        return true;
+    }
+
+    // Validate the pin type. If it checks out, write the pin value into the
+    // memberPin member variable. Allow setting an "invalid" pin value to
+    // disable the associated feature.
+    if ((pin == CLEARCORE_PIN_INVALID) || 
+        (input && IsValidInputPin(pin)) ||
+        (!input && IsValidOutputPin(pin))) {
+        memberPin = pin;
+        return true;
+    }
+
+    return false; // Pin supplied was invalid.
+}
+
+bool MotorDriver::IsValidOutputPin(ClearCorePins pin) {
+    // Pins IO-0 through IO-5 and all CCIO-8 connectors are the only
+    // valid digital output pins available.
+    return (pin >= CLEARCORE_PIN_IO0 && pin <= CLEARCORE_PIN_IO5) ||
+           (pin >= CLEARCORE_PIN_CCIOA0 && pin <= CLEARCORE_PIN_CCIOH7);
+}
+
+bool MotorDriver::IsValidInputPin(ClearCorePins pin) {
+    // Pins IO-0 through A-12 and all CCIO-8 connectors are the only
+    // valid digital input pins available.
+    return (pin >= CLEARCORE_PIN_IO0 && pin <= CLEARCORE_PIN_A12) ||
+           (pin >= CLEARCORE_PIN_CCIOA0 && pin <= CLEARCORE_PIN_CCIOH7);
+}
+
+bool MotorDriver::CheckEStopSensor() {
+    bool eStop = false;
+    if (m_eStopConnector != CLEARCORE_PIN_INVALID) {
+        Connector *input = SysMgr.ConnectorByIndex(m_eStopConnector);
+        if (input->Type() == ClearCore::Connector::CCIO_DIGITAL_IN_OUT_TYPE) {
+            eStop = !(input->State());
+        }
+        else {
+            DigitalIn *inputB = static_cast<DigitalIn *>(input);
+            eStop = !(inputB->DigitalIn::State());
+        }
+    }
+    return eStop;
 }
 
 } // ClearCore namespace

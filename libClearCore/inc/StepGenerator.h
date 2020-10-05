@@ -121,14 +121,14 @@ public:
         Interrupts the current move; Slows the motor at the decel rate
 
         \code{.cpp}
-        // Command an abrupt stop
-        ConnectorM0.MoveStopAbrupt();
+        // Ramp to a stop at a decel rate of 100000 pulses/sec^2
+        ConnectorM0.MoveStopDecel(100000);
         \endcode
 
-        \param[in] velMax The new velocity limit. Passing 0 keeps the
-        previous deceleration rate
+        \param[in] decelMax The deceleration rate. Passing 0 uses the
+        acceleration rate of the current move as the decel rate.
     **/
-    void MoveStopDecel(int32_t decelMax = 0);
+    void MoveStopDecel(uint32_t decelMax = 0);
 
     /**
         \brief Sets the absolute commanded position to the given value.
@@ -186,7 +186,7 @@ public:
 
         \param[in] velMax The new velocity limit
     **/
-    void VelMax(int32_t velMax);
+    void VelMax(uint32_t velMax);
 
     /**
         \brief Sets the maximum acceleration in step pulses per second^2.
@@ -200,22 +200,7 @@ public:
 
         \param[in] accelMax The new acceleration limit
     **/
-    void AccelMax(int32_t accelMax);
-
-    /**
-        \brief Sets the maximum deceleration for E-stop Deceleration in
-        step pulses per second^2. This is only for MoveStopDecel.
-
-        Value will be clipped if out of bounds
-
-        \code{.cpp}
-        // Set the StepGenerator's maximum velocity to 15000 step pulses/sec^2
-        ConnectorM0.AccelMax(15000);
-        \endcode
-
-        \param[in] decelMax The new deceleration limit
-    **/
-    void EStopDecelMax(int32_t decelMax);
+    void AccelMax(uint32_t accelMax);
 
     /**
         \brief Function to check if no steps are currently being commanded to
@@ -252,6 +237,27 @@ public:
     }
 
 protected:
+    struct LimitStatus {
+	    uint32_t InLimit            : 1;    // True if we are in a limit
+	    uint32_t LimitRampPos       : 1;    // True if we are ramping into the positive limit
+	    uint32_t LimitRampNeg       : 1;    // True if we are ramping into the negative limit
+	    uint32_t EnterHWLimit       : 1;    // True when entering HW limits
+	    uint32_t InPosHWLimit       : 1;    // True if we are in the positive HW limit
+	    uint32_t InNegHWLimit       : 1;    // True if we are in the negative HW limit
+	    uint32_t InPosHWLimitLast   : 1;
+	    uint32_t InNegHWLimitLast   : 1;
+
+	    public:
+	    LimitStatus()
+	    : InLimit(0),
+	    LimitRampPos(0),
+	    LimitRampNeg(0),
+	    EnterHWLimit(0),
+	    InPosHWLimit(0),
+	    InNegHWLimit(0),
+	    InPosHWLimitLast(0),
+	    InNegHWLimitLast(0) {}
+    };
     typedef enum {
         MS_IDLE,
         MS_START,
@@ -270,6 +276,10 @@ protected:
     // True if the last move commanded was a positional move (latched)
     bool m_lastMoveWasPositional;
 
+    LimitStatus m_limitInfo;
+
+    int32_t m_posnAbsolute;
+
     volatile const bool &Direction() {
         return m_direction;
     }
@@ -284,16 +294,42 @@ protected:
         return m_stepsPrevious;
     }
 
+    bool CheckTravelLimits();
+
+    bool LimitSwitchCheck();
+
+    void PosLimitActive(bool isActive) {
+	    m_limitInfo.InPosHWLimit = isActive;
+    }
+
+    void NegLimitActive(bool isActive) {
+	    m_limitInfo.InNegHWLimit = isActive;
+    }
+
+    /**
+        \brief Sets the maximum deceleration for E-stop Deceleration in
+        step pulses per second^2. This is only for MoveStopDecel.
+
+        Value will be clipped if out of bounds
+
+        \code{.cpp}
+        // Set the StepGenerator's maximum velocity to 15000 step pulses/sec^2
+        ConnectorM0.AccelMax(15000);
+        \endcode
+
+        \param[in] decelMax The new deceleration limit
+    **/
+    void EStopDecelMax(uint32_t decelMax);
+
 private:
-    int32_t m_posnAbsolute;
 
     int32_t m_stepsCommanded;
     int32_t m_stepsSent;      // Accumulated integer position
 
-    bool m_eStopDecelMove;    // An e-stop deceleration is active
     bool m_velocityMove;      // A Velocity move is active
     bool m_moveDirChange;     // The move is changing direction
-    bool m_moveOvershoot;     // The new requested position is too close
+    bool m_dirCommanded;      // The direction of the commanded move
+
 
     // All of the position, velocity and acceleration parameters are signed and
     // in Q format, with all arithmetic performed in fixed point.
