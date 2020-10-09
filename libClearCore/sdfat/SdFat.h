@@ -95,201 +95,6 @@ class SdFileSystem : public FatFileSystem {
     m_card.syncBlocks();
     return &m_card;
   }
-//   /** %Print any SD error code to Serial and halt. */
-//   void errorHalt() {
-//     errorHalt(&Serial);
-//   }
-//   /** %Print any SD error code and halt.
-//    *
-//    * \param[in] pr Print destination.
-//    */
-//   void errorHalt(Print* pr) {
-//     errorPrint(pr);
-//     SysCall::halt();
-//   }
-//   /** %Print msg, any SD error code and halt.
-//    *
-//    * \param[in] msg Message to print.
-//    */
-//   void errorHalt(char const* msg) {
-//     errorHalt(&Serial, msg);
-//   }
-//   /** %Print msg, any SD error code, and halt.
-//    *
-//    * \param[in] pr Print destination.
-//    * \param[in] msg Message to print.
-//    */
-//   void errorHalt(Print* pr, char const* msg) {
-//     errorPrint(pr, msg);
-//     SysCall::halt();
-//   }
-//   /** %Print any SD error code to Serial */
-//   void errorPrint() {
-//     errorPrint(&Serial);
-//   }
-//   /** %Print any SD error code.
-//    * \param[in] pr Print device.
-//    */
-//   void errorPrint(Print* pr) {
-//     if (!cardErrorCode()) {
-//       return;
-//     }
-//     pr->print(F("SD errorCode: 0X"));
-//     pr->print(cardErrorCode(), HEX);
-//     pr->print(F(",0X"));
-//     pr->println(cardErrorData(), HEX);
-//   }
-//   /** %Print msg, any SD error code.
-//    *
-//    * \param[in] msg Message to print.
-//    */
-//   void errorPrint(const char* msg) {
-//     errorPrint(&Serial, msg);
-//   }
-//   /** %Print msg, any SD error code.
-//    *
-//    * \param[in] pr Print destination.
-//    * \param[in] msg Message to print.
-//    */
-//   void errorPrint(Print* pr, char const* msg) {
-//     pr->print(F("error: "));
-//     pr->println(msg);
-//     errorPrint(pr);
-//   }
-//   /** %Print any SD error code and halt. */
-//   void initErrorHalt() {
-//     initErrorHalt(&Serial);
-//   }
-//   /** %Print error details and halt after begin fails.
-//    *
-//    * \param[in] pr Print destination.
-//    */
-//   void initErrorHalt(Print* pr) {
-//     initErrorPrint(pr);
-//     SysCall::halt();
-//   }
-//   /**Print message, error details, and halt after begin() fails.
-//    *
-//    * \param[in] msg Message to print.
-//    */
-//   void initErrorHalt(char const *msg) {
-//     initErrorHalt(&Serial, msg);
-//   }
-//   /**Print message, error details, and halt after begin() fails.
-//    * \param[in] pr Print device.
-//    * \param[in] msg Message to print.
-//    */
-//   void initErrorHalt(Print* pr, char const *msg) {
-//     pr->println(msg);
-//     initErrorHalt(pr);
-//   }
-// 
-//   /** Print error details after begin() fails. */
-//   void initErrorPrint() {
-//     initErrorPrint(&Serial);
-//   }
-//   /** Print error details after begin() fails.
-//    *
-//    * \param[in] pr Print destination.
-//    */
-//   void initErrorPrint(Print* pr) {
-//     if (cardErrorCode()) {
-//       pr->println(F("Can't access SD card. Do not reformat."));
-//       if (cardErrorCode() == SD_CARD_ERROR_CMD0) {
-//         pr->println(F("No card, wrong chip select pin, or SPI problem?"));
-//       }
-//       errorPrint(pr);
-//     } else if (vol()->fatType() == 0) {
-//       pr->println(F("Invalid format, reformat SD."));
-//     } else if (!vwd()->isOpen()) {
-//       pr->println(F("Can't open root directory."));
-//     } else {
-//       pr->println(F("No error found."));
-//     }
-//   }
-//   /**Print message and error details and halt after begin() fails.
-//    *
-//    * \param[in] msg Message to print.
-//    */
-//   void initErrorPrint(char const *msg) {
-//     initErrorPrint(&Serial, msg);
-//   }
-//   /**Print message and error details and halt after begin() fails.
-//    *
-//    * \param[in] pr Print destination.
-//    * \param[in] msg Message to print.
-//    */
-//   void initErrorPrint(Print* pr, char const *msg) {
-//     pr->println(msg);
-//     initErrorPrint(pr);
-//   }
-// #if defined(ARDUINO) || defined(DOXYGEN)
-//   /** %Print msg, any SD error code, and halt.
-//    *
-//    * \param[in] msg Message to print.
-//    */
-//   void errorHalt(const __FlashStringHelper* msg) {
-//     errorHalt(&Serial, msg);
-//   }
-//   /** %Print msg, any SD error code, and halt.
-//    *
-//    * \param[in] pr Print destination.
-//    * \param[in] msg Message to print.
-//    */
-//   void errorHalt(Print* pr, const __FlashStringHelper* msg) {
-//     errorPrint(pr, msg);
-//     SysCall::halt();
-//   }
-// 
-//   /** %Print msg, any SD error code.
-//    *
-//    * \param[in] msg Message to print.
-//    */
-//   void errorPrint(const __FlashStringHelper* msg) {
-//     errorPrint(&Serial, msg);
-//   }
-//   /** %Print msg, any SD error code.
-//    *
-//    * \param[in] pr Print destination.
-//    * \param[in] msg Message to print.
-//    */
-//   void errorPrint(Print* pr, const __FlashStringHelper* msg) {
-//     pr->print(F("error: "));
-//     pr->println(msg);
-//     errorPrint(pr);
-//   }
-//   /**Print message, error details, and halt after begin() fails.
-//     *
-//     * \param[in] msg Message to print.
-//     */
-//   void initErrorHalt(const __FlashStringHelper* msg) {
-//     initErrorHalt(&Serial, msg);
-//   }
-//   /**Print message, error details, and halt after begin() fails.
-//    * \param[in] pr Print device for message.
-//    * \param[in] msg Message to print.
-//    */
-//   void initErrorHalt(Print* pr, const __FlashStringHelper* msg) {
-//     pr->println(msg);
-//     initErrorHalt(pr);
-//   }
-//   /**Print message and error details and halt after begin() fails.
-//    *
-//    * \param[in] msg Message to print.
-//    */
-//   void initErrorPrint(const __FlashStringHelper* msg) {
-//     initErrorPrint(&Serial, msg);
-//   }
-//   /**Print message and error details and halt after begin() fails.
-//    *
-//    * \param[in] pr Print destination.
-//    * \param[in] msg Message to print.
-//    */
-//   void initErrorPrint(Print* pr, const __FlashStringHelper* msg) {
-//     pr->println(msg);
-//     initErrorPrint(pr);
-//   }
-// #endif  // defined(ARDUINO) || defined(DOXYGEN)
   /** \return The card error code */
   uint8_t cardErrorCode() {
         return m_card.errorCode();
@@ -316,7 +121,7 @@ class SdFat : public SdFileSystem<SdSpiCard> {
   /** Constructor with SPI port selection.
    * \param[in] spiPort SPI port number.
    */
-  explicit SdFat(SPIClass* spiPort) {
+  explicit SdFat(CCSPI* spiPort) {
     m_spi.setPort(spiPort);
   }
 #endif  // IMPLEMENT_SPI_PORT_SELECTION
@@ -426,8 +231,8 @@ class SdFatSoftSpi : public SdFileSystem<SdSpiCard>  {
    * \param[in] spiSettings ignored for software SPI..
    * \return true for success else false.
    */
-  bool begin(uint8_t csPin = SS, SPISettings spiSettings = SPI_FULL_SPEED) {
-    return m_card.begin(&m_spi, csPin, spiSettings) &&
+  bool begin(uint8_t csPin = CLEARCORE_PIN_INVALID, uint32_t clockSpeed) {
+    return m_card.begin(&m_spi, csPin,clockSpeed) &&
            SdFileSystem::begin();
   }
  private:
@@ -449,7 +254,7 @@ class SdFatEX : public SdFileSystem<SdSpiCardEX> {
   /** Constructor with SPI port selection.
    * \param[in] spiPort SPI port number.
    */
-  explicit SdFatEX(SPIClass* spiPort) {
+  explicit SdFatEX(CCSPI* spiPort) {
     m_spi.setPort(spiPort);
   }
 #endif  // IMPLEMENT_SPI_PORT_SELECTION
@@ -459,8 +264,8 @@ class SdFatEX : public SdFileSystem<SdSpiCardEX> {
   * \param[in] spiSettings SPI speed, mode, and bit order.
   * \return true for success else false.
   */
-  bool begin(uint8_t csPin = SS, SPISettings spiSettings = SPI_FULL_SPEED) {
-    return m_card.begin(&m_spi, csPin, spiSettings) &&
+  bool begin(uint8_t csPin = CLEARCORE_PIN_INVALID, uint32_t clockSpeed = SPI_FULL_SPEED) {
+    return m_card.begin(&m_spi, csPin, clockSpeed) &&
            SdFileSystem::begin();
   }
 
@@ -482,8 +287,8 @@ class SdFatSoftSpiEX : public SdFileSystem<SdSpiCardEX>  {
    * \param[in] spiSettings ignored for software SPI.
    * \return true for success else false.
    */
-  bool begin(uint8_t csPin = CLEARCORE_PIN_INVALID, SPISettings spiSettings = SPI_FULL_SPEED) {
-    return m_card.begin(&m_spi, csPin, spiSettings) &&
+  bool begin(uint8_t csPin = CLEARCORE_PIN_INVALID, uint32_t clockSpeed = SPI_FULL_SPEED) {
+    return m_card.begin(&m_spi, csPin, clockSpeed) &&
            SdFileSystem::begin();
   }
  private:

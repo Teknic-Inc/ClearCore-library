@@ -24,6 +24,7 @@
  */
 #include "FatFile.h"
 #include "FatFileSystem.h"
+#include "ClearCoreRef.h"
 //------------------------------------------------------------------------------
 // Pointer to cwd directory.
 FatFile* FatFile::m_cwd = 0;
@@ -297,6 +298,7 @@ bool FatFile::mkdir(FatFile* parent, const char* path, bool pFlag) {
   return mkdir(parent, &fname);
 
 fail:
+  setSDErrorCode(1);
   return false;
 }
 //------------------------------------------------------------------------------
@@ -367,6 +369,7 @@ bool FatFile::mkdir(FatFile* parent, fname_t* fname) {
   return m_vol->cacheSync();
 
 fail:
+  setSDErrorCode(0);
   return false;
 }
 //------------------------------------------------------------------------------
@@ -415,6 +418,7 @@ bool FatFile::open(FatFile* dirFile, const char* path, oflag_t oflag) {
   return open(dirFile, &fname, oflag);
 
 fail:
+  setSDErrorCode(1);
   return false;
 }
 //------------------------------------------------------------------------------
@@ -477,9 +481,12 @@ bool FatFile::open(FatFile* dirFile, uint16_t index, oflag_t oflag) {
     DBG_FAIL_MACRO;
     goto fail;
   }
+  //Make sure no error is set
+  setSDErrorCode(0);
   return true;
 
 fail:
+  setSDErrorCode(1);
   return false;
 }
 //------------------------------------------------------------------------------
@@ -558,9 +565,11 @@ bool FatFile::openCachedEntry(FatFile* dirFile, uint16_t dirIndex,
     DBG_FAIL_MACRO;
     goto fail;
   }
+  setSDErrorCode(0);
   return true;
 
 fail:
+  setSDErrorCode(1);
   m_attr = FILE_ATTR_CLOSED;
   return false;
 }
@@ -613,6 +622,7 @@ bool FatFile::openNext(FatFile* dirFile, oflag_t oflag) {
         DBG_FAIL_MACRO;
         goto fail;
       }
+	  setSDErrorCode(0);
       return true;
     } else if (DIR_IS_LONG_NAME(dir)) {
       ldir = reinterpret_cast<ldir_t*>(dir);
@@ -626,6 +636,7 @@ bool FatFile::openNext(FatFile* dirFile, oflag_t oflag) {
   }
 
 fail:
+  setSDErrorCode(1);
   return false;
 }
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -715,9 +726,11 @@ bool FatFile::openRoot(FatVolume* vol) {
   }
   // read only
   m_flags = F_READ;
+  setSDErrorCode(0);
   return true;
 
 fail:
+  setSDErrorCode(1);
   return false;
 }
 //------------------------------------------------------------------------------
@@ -905,6 +918,7 @@ bool FatFile::remove(FatFile* dirFile, const char* path) {
   return file.remove();
 
 fail:
+  setSDErrorCode(1);
   return false;
 }
 //------------------------------------------------------------------------------

@@ -23,6 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 #include "SdSpiCard.h"
+#include "ClearCoreRef.h"
 //==============================================================================
 // debug trace macro
 #define SD_TRACE(m, b)
@@ -308,10 +309,14 @@ bool SdSpiCard::begin(SdSpiDriver* spi, uint8_t csPin, uint32_t clockSpeed) {
     }
   }
   spiStop();
+  //if initialization succeeds, make sure error code is clear
+  setSDErrorCode(0);
   return true;
 
 fail:
   spiStop();
+  //if initialization fails, send error code 1 to Clear Core
+  setSDErrorCode(1);
   return false;
 }
 //------------------------------------------------------------------------------

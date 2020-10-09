@@ -273,6 +273,7 @@ bool FatFile::remove() {
   return m_vol->cacheSync();
 
 fail:
+  setSDErrorCode(1);
   return false;
 }
 #endif  // !USE_LONG_FILE_NAMES

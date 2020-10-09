@@ -1,9 +1,24 @@
 /*
- * ClearCoreRef.cpp
+ * Copyright (c) 2020 Teknic, Inc.
  *
- * Created: 10/6/2020 3:11:58 PM
- *  Author: allen_wells
- */ 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
 #include <sam.h>
 #include "AdcManager.h"
@@ -53,11 +68,6 @@ void digitalWriteClearCore(pin_size_t conNum, PinStatus ulVal) {
 	}
 }
 
-/**
-    This function replaces pinModeAPI in most cases as ClearCore uses
-    a connector model in place of the pin model of the traditional Arduino
-    implementations.
-**/
 void pinModeClearCore(pin_size_t pinNumber, uint32_t ulMode) {
 	pinNumber = (ClearCorePins)pinNumber;
 	ulMode = (PinMode)ulMode;
@@ -85,6 +95,11 @@ void pinModeClearCore(pin_size_t pinNumber, uint32_t ulMode) {
     }
 }
 
+void setSDErrorCode(uint16_t errorCode){
+	SdCard.SetErrorCode(errorCode);
+}
+
+
 CCSPI::CCSPI(SerialBase &thePort, bool isCom)
 : m_serial(&thePort),
   m_isCom(isCom){
@@ -92,7 +107,14 @@ CCSPI::CCSPI(SerialBase &thePort, bool isCom)
 
 void CCSPI::begin(uint32_t clock) {
 	m_clock = clock;
-    m_serial->PortMode(SerialBase::PortModes::SPI);
+    if (m_isCom) {
+	    ISerial *asISerial = dynamic_cast<ISerial *>(m_serial);
+	    SerialDriver *serialDriver = static_cast<SerialDriver *>(asISerial);
+	    serialDriver->Mode(Connector::ConnectorModes::SPI);
+    }
+    else {
+	    m_serial->PortMode(SerialBase::PortModes::SPI);
+    }
 	m_serial->SpiSsMode(SerialBase::CtrlLineModes::LINE_OFF);
 	config();
 	m_serial->PortOpen();
