@@ -145,6 +145,11 @@
             <Value>../usb/class/cdc</Value>
             <Value>../usb/class/cdc/device</Value>
             <Value>../usb/device</Value>
+            <Value>../sdfat</Value>
+            <Value>../sdfat/FatLib</Value>
+            <Value>../sdfat/SdCard</Value>
+            <Value>../sdfat/SpiDriver</Value>
+            <Value>../sdfat/SpiDriver/boards</Value>
           </ListValues>
         </armgcccpp.compiler.directories.IncludePaths>
         <armgcccpp.compiler.optimization.level>Optimize most (-O3)</armgcccpp.compiler.optimization.level>
@@ -316,6 +321,198 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="inc\EncoderInput.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\BlockDriver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\ArduinoFiles.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\ArduinoStream.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\BaseBlockDriver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\bufstream.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\FatApiConstants.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\FatFile.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\FatFile.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\FatFileLFN.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\FatFilePrint.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\FatFileSFN.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\FatFileSystem.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\FatLib.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\FatLibConfig.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\FatStructs.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\FatVolume.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\FatVolume.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\FmtNumber.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\FmtNumber.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\fstream.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\fstream.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\ios.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\iostream.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\istream.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\istream.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\ostream.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\ostream.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\StdioStream.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FatLib\StdioStream.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\FreeStack.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\MinimumSerial.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\MinimumSerial.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SdCard\SdInfo.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SdCard\SdioCard.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SdCard\SdioCardEX.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SdCard\SdioTeensy.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SdCard\SdSpiCard.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SdCard\SdSpiCard.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SdCard\SdSpiCardEX.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SdFat.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SdFatConfig.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\sdios.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\ClearCoreRef.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\ClearCoreRef.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SpiDriver\boards\AvrDevelopersGpioPinMap.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SpiDriver\boards\BobuinoGpioPinMap.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SpiDriver\boards\GpioPinMap.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SpiDriver\boards\LeonardoGpioPinMap.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SpiDriver\boards\MegaGpioPinMap.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SpiDriver\boards\SleepingBeautyGpioPinMap.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SpiDriver\boards\Standard1284GpioPinMap.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SpiDriver\boards\Teensy2GpioPinMap.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SpiDriver\boards\Teensy2ppGpioPinMap.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SpiDriver\boards\UnoGpioPinMap.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SpiDriver\DigitalPin.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SpiDriver\SdSpiBaseDriver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SpiDriver\SdSpiDriver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SpiDriver\SdSpiESP8266.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SpiDriver\SdSpiParticle.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SpiDriver\SdSpiSAM3X.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SpiDriver\SdSpiSTM32.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SpiDriver\SdSpiTeensy3.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SpiDriver\SoftSPI.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\SysCall.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\EncoderInput.cpp">
@@ -739,6 +936,11 @@
     <Folder Include="hal" />
     <Folder Include="hpl" />
     <Folder Include="hri" />
+    <Folder Include="sdfat\" />
+    <Folder Include="sdfat\FatLib\" />
+    <Folder Include="sdfat\SdCard\" />
+    <Folder Include="sdfat\SpiDriver\" />
+    <Folder Include="sdfat\SpiDriver\boards\" />
     <Folder Include="usb" />
     <Folder Include="src\" />
     <Content Include="src\**\*.*" />
