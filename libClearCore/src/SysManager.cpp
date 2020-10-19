@@ -362,6 +362,9 @@ void SysManager::UpdateSlowImpl() {
     // CCIO-8 Auto-Rediscover
     CcioMgr.RefreshSlow();
 
+	//SD Card Data Transfer Check
+	SdCard.SDCardISR();
+
     for (uint8_t iMotor = 0; iMotor < MOTOR_CON_CNT; iMotor++) {
         MotorConnectors[iMotor]->RefreshSlow();
     }

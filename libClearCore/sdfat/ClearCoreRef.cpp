@@ -99,6 +99,10 @@ void setSDErrorCode(uint16_t errorCode){
 	SdCard.SetErrorCode(errorCode);
 }
 
+bool getSDTransferComplete(){
+	return SdCard.getSDTransferComplete(); 
+}
+
 
 CCSPI::CCSPI(SerialBase &thePort, bool isCom)
 : m_serial(&thePort),
@@ -193,14 +197,6 @@ bool block) {
 // Waits for a prior in-background DMA transfer to complete.
 void CCSPI::waitForTransfer(void) {
 	m_serial->SpiAsyncWaitComplete();
-}
-
-void CCSPI::attachInterrupt() {
-	// Should be enableInterrupt()
-}
-
-void CCSPI::detachInterrupt() {
-	// Should be disableInterrupt()
 }
 
 

@@ -278,8 +278,10 @@ bool SerialBase::PortMode(PortModes newMode) {
         IdNvic = SERCOM3_0_IRQn;
     }
     else if (m_serPort == SERCOM4) {
-        m_dmaRxChannel = DMA_INVALID_CHANNEL;
-        m_dmaTxChannel = DMA_INVALID_CHANNEL;
+        m_dmaRxChannel = DMA_SERCOM4_SPI_RX;
+        m_dmaTxChannel = DMA_SERCOM4_SPI_TX;
+        dmaRxTrigger = SERCOM4_DMAC_ID_RX;
+        dmaTxTrigger = SERCOM4_DMAC_ID_TX;
         clockId = SERCOM4_GCLK_ID_CORE;
         IdNvic = SERCOM4_0_IRQn;
     }
@@ -905,6 +907,22 @@ bool SerialBase::SpiAsyncWaitComplete() {
         continue;
     }
     return true;
+}
+
+bool SerialBase::SpiAsyncCheckComplete() {
+	// If this channel is not set up to do DMA transfers, it is already done
+	if (m_dmaRxChannel == DMA_INVALID_CHANNEL ||
+	m_dmaTxChannel == DMA_INVALID_CHANNEL) {
+		return true;
+	}
+	// The transfer is done when all of the Rx data has been read and the
+	// channel disables
+	if(!m_portOpen || m_portMode != SPI ||
+	!(DmaManager::Channel(m_dmaRxChannel)->CHCTRLA.bit.ENABLE)) {
+		return true;
+	}
+	//If the transfer is not done then return false
+	return false;
 }
 
 void SerialBase::HandleFrameError() {

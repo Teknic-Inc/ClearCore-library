@@ -472,6 +472,14 @@ public:
     **/
     bool SpiAsyncWaitComplete();
 
+    /**
+        \Check if asynchronous transfers are completed.
+        \return True when all asynchronous transfers are completed.
+        returns false if the transfer is not completed.
+    **/
+
+	bool SpiAsyncCheckComplete();
+
     // ============================= SETUP API =================================
 
     /**

@@ -341,6 +341,10 @@ class FatFile {
     return file.open(this, path, O_RDONLY);
   }
   /**
+      \brief This function returns false if an SPI transfer is in progress, true if not
+  **/
+  bool readWriteComplete();
+  /**
    * Get a string from a file.
    *
    * fgets() reads bytes from a file into the array pointed to by \a str, until

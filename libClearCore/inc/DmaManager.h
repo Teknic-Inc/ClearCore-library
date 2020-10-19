@@ -42,6 +42,8 @@ typedef enum {
     DMA_ADC_SEQUENCE,   ///< ADC conversion info
     DMA_SERCOM0_SPI_RX, ///< COM1 SPI streaming input
     DMA_SERCOM0_SPI_TX, ///< COM1 SPI streaming output
+	DMA_SERCOM4_SPI_RX, ///< SD SPI streaming input
+    DMA_SERCOM4_SPI_TX, ///< SD SPI streaming output
     DMA_SERCOM7_SPI_RX, ///< COM0 SPI streaming input
     DMA_SERCOM7_SPI_TX, ///< COM0 SPI streaming output
     DMA_CHANNEL_COUNT,  // Keep at end

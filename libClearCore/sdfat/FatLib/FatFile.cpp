@@ -226,6 +226,10 @@ uint32_t FatFile::dirSize() {
   return 512UL*n;
 }
 //------------------------------------------------------------------------------
+bool FatFile::readWriteComplete(){
+	return getSDTransferComplete();
+}
+//------------------------------------------------------------------------------
 int16_t FatFile::fgets(char* str, int16_t num, char* delim) {
   char ch;
   int16_t n = 0;

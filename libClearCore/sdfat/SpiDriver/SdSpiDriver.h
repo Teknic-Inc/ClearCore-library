@@ -81,10 +81,19 @@ class SdSpiLibDriver {
   * \return Zero for no error or nonzero error code.
   */
   uint8_t receive(uint8_t* buf, size_t n) {
-    for (size_t i = 0; i < n; i++) {
-      buf[i] = m_spi->transfer(0XFF);
-    }
-    return 0;
+	for (size_t i = 0; i < n; i++) {
+		buf[i] = 0xFF;
+	}
+	const uint8_t *txbuff = buf;
+	m_spi->transfer(txbuff,buf,n,DONT_WAIT_FOR_TRANSFER);	
+	//Make sure to update the ISR before leaving
+	SdCard.SDCardISR();		
+	while(getSDTransferComplete()){
+		//SPI transfer is blocked here
+		continue;
+	}
+
+	return 0;
   }
   /** Send a byte.
    *
@@ -99,9 +108,14 @@ class SdSpiLibDriver {
    * \param[in] n Number of bytes to send.
    */
   void send(const uint8_t* buf, size_t n) {
-    for (size_t i = 0; i < n; i++) {
-      m_spi->transfer(buf[i]);
-    }
+	m_spi->transfer(buf,NULL,n,false);
+	//Make sure to update ISR before leaving
+	SdCard.SDCardISR();
+	while(getSDTransferComplete()){
+		//SPI transfer is blocked here
+		continue;
+	}
+
   }
 #else  // IMPLEMENT_SPI_PORT_SELECTION
   /** Activate SPI hardware. */
@@ -137,9 +151,19 @@ class SdSpiLibDriver {
   * \return Zero for no error or nonzero error code.
   */
   uint8_t receive(uint8_t* buf, size_t n) {
-    for (size_t i = 0; i < n; i++) {
-      buf[i] = SDCARD_SPI.transfer(0XFF);
-    }
+	for (size_t i = 0; i < n; i++) {
+		buf[i] = 0xFF;
+	}
+    const uint8_t *txbuff = buf;
+	//blocking is enabled by default
+	SDCARD_SPI.transfer(txbuff,buf,n,DONT_WAIT_FOR_TRANSFER);
+	//Make sure to update value before leaving
+	SdCard.SDCardISR();
+	while(getSDTransferComplete()){
+		//SPI transfer is blocked here
+		continue;
+	}
+
     return 0;
   }
   /** Send a byte.
@@ -155,9 +179,13 @@ class SdSpiLibDriver {
    * \param[in] n Number of bytes to send.
    */
   void send(const uint8_t* buf, size_t n) {
-    for (size_t i = 0; i < n; i++) {
-      SDCARD_SPI.transfer(buf[i]);
-    }
+	   SDCARD_SPI.transfer(buf,NULL,n,DONT_WAIT_FOR_TRANSFER);
+	    //Make sure to update value before leaving
+		SdCard.SDCardISR();	
+		while(getSDTransferComplete()){
+			//SPI transfer is blocked here
+			continue;
+		}
   }
 #endif  // IMPLEMENT_SPI_PORT_SELECTION
   /** Set CS low. */

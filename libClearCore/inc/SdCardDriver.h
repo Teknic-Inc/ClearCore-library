@@ -47,6 +47,7 @@ class SdCardDriver : public SerialBase {
 
 public:
 #ifndef HIDE_FROM_DOXYGEN
+
     /**
         \brief Default constructor so this connector can be a global and
         constructed by SysManager
@@ -62,6 +63,10 @@ public:
         m_errorCode = errorCode;
     }
 
+	bool getSDTransferComplete(){
+		return SDTransferComplete;
+	}
+
     /**
         \brief Check if the SD card is in a fault state
 
@@ -70,10 +75,20 @@ public:
     bool IsInFault() {
         return (m_errorCode != 0);
     }
+
+    /**
+        \brief Checks if the DMA is actively in use
+
+    **/
+    void SDCardISR(){
+			SDTransferComplete = this->SpiAsyncCheckComplete();
+	}
+
 #endif // HIDE_FROM_DOXYGEN
 
 private:
     uint8_t m_errorCode;
+	bool SDTransferComplete = true;	//flag accessed by the SDfat library to check if transfered SD data is done
 
     /**
         Construction, wires in pins and non-volatile info.

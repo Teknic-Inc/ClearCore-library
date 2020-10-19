@@ -92,7 +92,8 @@ void DmaManager::Initialize() {
     DMAC->SWTRIGCTRL.reg &=
         ~((1UL << DMA_ADC_SEQUENCE) | (1UL << DMA_ADC_RESULTS) |
           (1UL << DMA_SERCOM0_SPI_TX) | (1UL << DMA_SERCOM0_SPI_RX) |
-          (1UL << DMA_SERCOM7_SPI_TX) | (1UL << DMA_SERCOM7_SPI_RX));
+		  (1UL << DMA_SERCOM7_SPI_TX) | (1UL << DMA_SERCOM7_SPI_RX) |
+          (1UL << DMA_SERCOM4_SPI_TX) | (1UL << DMA_SERCOM4_SPI_RX));
 }
 
 DmacChannel *DmaManager::Channel(DmaChannels index) {

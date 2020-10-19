@@ -31,6 +31,10 @@
 #define MAX_SPI 10000000
 #define SPI_MIN_CLOCK_DIVIDER 1
 
+//define transfer blocking parameters
+#define WAIT_FOR_TRANSFER true
+#define DONT_WAIT_FOR_TRANSFER false
+
 typedef uint8_t pin_size_t;
 
 
@@ -74,6 +78,11 @@ void pinModeClearCore(pin_size_t pinNumber, uint32_t ulMode);
 void setSDErrorCode(uint16_t errorCode);
 
     /**
+        \brief This function returns false if a transfer is in progress, true if not
+    **/
+bool getSDTransferComplete();
+
+    /**
         \brief Clear Core SPI connection class
 
         \param[in] &thePort, the adress of the SPI or serial port
@@ -95,10 +104,6 @@ class CCSPI {
 	void notUsingInterrupt(int interruptNumber);
 	void beginTransaction();
 	void endTransaction(void);
-
-	// SPI Configuration methods
-	void attachInterrupt();
-	void detachInterrupt();
 
 	void begin(uint32_t clock);
 	void end();

@@ -326,6 +326,12 @@
     <Compile Include="sdfat\BlockDriver.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="sdfat\ClearCoreTMRpcm.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="sdfat\ClearCoreTMRpcm.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="sdfat\FatLib\ArduinoFiles.h">
       <SubType>compile</SubType>
     </Compile>
