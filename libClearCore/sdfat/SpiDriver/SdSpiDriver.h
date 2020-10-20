@@ -88,7 +88,7 @@ class SdSpiLibDriver {
 	m_spi->transfer(txbuff,buf,n,DONT_WAIT_FOR_TRANSFER);	
 	//Make sure to update the ISR before leaving
 	SdCard.SDCardISR();		
-	while(getSDTransferComplete()){
+	while(!getSDTransferComplete()){
 		//SPI transfer is blocked here
 		continue;
 	}
@@ -111,7 +111,7 @@ class SdSpiLibDriver {
 	m_spi->transfer(buf,NULL,n,false);
 	//Make sure to update ISR before leaving
 	SdCard.SDCardISR();
-	while(getSDTransferComplete()){
+	while(!getSDTransferComplete()){
 		//SPI transfer is blocked here
 		continue;
 	}
@@ -159,7 +159,7 @@ class SdSpiLibDriver {
 	SDCARD_SPI.transfer(txbuff,buf,n,DONT_WAIT_FOR_TRANSFER);
 	//Make sure to update value before leaving
 	SdCard.SDCardISR();
-	while(getSDTransferComplete()){
+	while(!getSDTransferComplete()){
 		//SPI transfer is blocked here
 		continue;
 	}
@@ -180,9 +180,9 @@ class SdSpiLibDriver {
    */
   void send(const uint8_t* buf, size_t n) {
 	   SDCARD_SPI.transfer(buf,NULL,n,DONT_WAIT_FOR_TRANSFER);
-	    //Make sure to update value before leaving
+	    //Make sure to update SD ISR before leaving
 		SdCard.SDCardISR();	
-		while(getSDTransferComplete()){
+		while(!getSDTransferComplete()){
 			//SPI transfer is blocked here
 			continue;
 		}

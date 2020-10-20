@@ -43,7 +43,7 @@ namespace ClearCore {
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 
 // PWM related constants
-#define TONE_RATE_HZ (22050)
+#define TONE_RATE_HZ (44100)
 #define TONE_MAXIMUM_FREQ_HZ (TONE_RATE_HZ / 4)
 
 extern ShiftRegister ShiftReg;
@@ -140,6 +140,7 @@ bool DigitalInOutHBridge::State(int16_t newState) {
             }
         // Fall through
         case OUTPUT_TONE:
+		case OUTPUT_WAVE:
             // Create a PWM differential where state 0 is 50/50 duty cycles
             m_tcc->CCBUF[0].reg = halfDuty + halfDuty * newState / INT16_MAX;
             m_tcc->CCBUF[1].reg = halfDuty - halfDuty * newState / INT16_MAX;
