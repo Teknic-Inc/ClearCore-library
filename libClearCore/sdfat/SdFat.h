@@ -29,6 +29,7 @@
  * \brief SdFat class
  */
 #include "SysCall.h"
+#include "ClearCoreTMRpcm.h"
 #include "BlockDriver.h"
 #include "FatLib/FatLib.h"
 #include "SdCard/SdioCard.h"
@@ -149,6 +150,17 @@ class SdFat : public SdFileSystem<SdSpiCard> {
    */
   bool fsBegin() {
     return FatFileSystem::begin(card());
+  }
+
+  /** Initialize and play WAV file using ClearCoreTMRpcm
+   *  Make sure to initialize the SD card before playing a file
+   *
+   * \param[in] char* filename, name of file to open
+   * \param[in] DigitalInOutHBridge audioOut, specify the connector to play audio out of (IO4 to IO5)
+   */
+  void playFile(char* filename,DigitalInOutHBridge audioOut){
+	ClearCoreTMRpcm player(audioOut);
+	player.Play(filename);
   }
 
  private:

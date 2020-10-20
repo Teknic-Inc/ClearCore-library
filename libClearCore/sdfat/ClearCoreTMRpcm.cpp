@@ -4,7 +4,6 @@ Released into the public domain.*/
 #include "ClearCoreTMRpcm.h"
 #include <ArduinoFiles.h>
 #include <stdint.h>
-#include "SdFat.h"
 #include "FatFile.h"
 
 volatile bool m_reallyDone = false;
@@ -16,17 +15,16 @@ uint8_t *m_soundData = 0;
 uint8_t m_volume = 40;
 uint32_t m_endOfDataPosn = 0;
 bool sixteenBitFile = false;
-SdFat SD;
-#define g_wav_speaker ConnectorIO5
-#define g_wav_speaker2 ConnectorIO4
+DigitalInOutHBridge g_wav_speaker = ConnectorIO5;
 
 const size_t BUF_SIZE = 8192;
 
 
 extern "C" void TCC2_0_Handler(void) __attribute__((alias("PeriodicInterrupt")));
 
-ClearCoreTMRpcm::ClearCoreTMRpcm() {
+ClearCoreTMRpcm::ClearCoreTMRpcm(DigitalInOutHBridge audioOut) {
 	soundBuff = BUF_SIZE;
+	g_wav_speaker = audioOut;
 }
 
 bool ClearCoreTMRpcm::PlaybackFinished() {
@@ -37,9 +35,9 @@ void ClearCoreTMRpcm::Play(char* filename) {
 	FatFile sFile;
 	uint8_t fileReadRetry = 0;
 	bool fileFound = false;
+	//set connector to wave output mode
 	g_wav_speaker.Mode(Connector::OUTPUT_WAVE);
-	g_wav_speaker2.Mode(Connector::OUTPUT_WAVE);
-	SD.begin();
+
 	while (!fileFound && fileReadRetry < 3) {
 		sFile.open(filename);
 		if (sFile.fileSize() > 0) {
@@ -51,10 +49,8 @@ void ClearCoreTMRpcm::Play(char* filename) {
 	}
 
 	if (sFile.isOpen()) {
-// 		uint8_t *SDsamples = (uint8_t*) malloc(soundBuff+1);
-// 		uint8_t *SDsamples2 = (uint8_t*) malloc(soundBuff+1);
-		uint8_t SDsamples[soundBuff];
-		uint8_t SDsamples2[soundBuff];
+		uint8_t SDsamples[BUF_SIZE];
+		uint8_t SDsamples2[BUF_SIZE];
 
 		int fileLoc = 0;
 		ClearCore::ConnectorUsb.SendLine("File Open!");

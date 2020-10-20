@@ -1,7 +1,7 @@
 /*Library by TMRh20, Released into the public domain.*/
 
 #include "ClearCore.h"
-#include "SdFat.h"
+#include "FatFile.h"
 #include <ArduinoFiles.h>
 
 #ifndef tmrPCM_h
@@ -23,7 +23,7 @@ class ClearCoreTMRpcm {
 public:
 	int soundBuff;
 
-	ClearCoreTMRpcm();
+	ClearCoreTMRpcm(DigitalInOutHBridge audioOut = ConnectorIO5);
 	void Play(char* filename);
 	void StopPlayback();
 	bool PlaybackFinished();
