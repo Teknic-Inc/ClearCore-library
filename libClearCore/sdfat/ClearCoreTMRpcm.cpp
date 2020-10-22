@@ -1,10 +1,11 @@
 /*Library by TMRh20 2012
 Released into the public domain.*/
 
+#include "ClearCore.h"
 #include "ClearCoreTMRpcm.h"
-#include <ArduinoFiles.h>
 #include <stdint.h>
 #include "FatFile.h"
+
 
 volatile bool m_reallyDone = false;
 volatile bool m_playDone = true;
@@ -16,14 +17,16 @@ uint8_t m_volume = 40;
 uint32_t m_endOfDataPosn = 0;
 bool sixteenBitFile = false;
 DigitalInOutHBridge g_wav_speaker = ConnectorIO5;
+DigitalInOutHBridge g_wav_speaker2 = ConnectorIO4;
 
 const size_t BUF_SIZE = 8192;
 
 
 extern "C" void TCC2_0_Handler(void) __attribute__((alias("PeriodicInterrupt")));
 
-ClearCoreTMRpcm::ClearCoreTMRpcm(DigitalInOutHBridge audioOut) {
+ClearCoreTMRpcm::ClearCoreTMRpcm(int volume,DigitalInOutHBridge audioOut) {
 	soundBuff = BUF_SIZE;
+	m_volume = (uint8_t) volume;
 	g_wav_speaker = audioOut;
 }
 
@@ -31,12 +34,13 @@ bool ClearCoreTMRpcm::PlaybackFinished() {
 	return m_playDone && m_reallyDone;
 }
 
-void ClearCoreTMRpcm::Play(char* filename) {
+void ClearCoreTMRpcm::Play(const char* filename) {
 	FatFile sFile;
 	uint8_t fileReadRetry = 0;
 	bool fileFound = false;
 	//set connector to wave output mode
 	g_wav_speaker.Mode(Connector::OUTPUT_WAVE);
+	ConnectorIO4.Mode(Connector::OUTPUT_WAVE);
 
 	while (!fileFound && fileReadRetry < 3) {
 		sFile.open(filename);
@@ -111,11 +115,13 @@ extern "C" void PeriodicInterrupt(void) {
 	}
 	else if(sixteenBitFile){
 		g_wav_speaker.State((int16_t)((uint16_t)m_soundData[m_sample]+((uint16_t)m_soundData[m_sample+1] << 8)) >> 3);
-		m_sample+=2;
+		ConnectorIO4.State((int16_t)((uint16_t)m_soundData[m_sample+2]+((uint16_t)m_soundData[m_sample+3] << 8)) >> 3);
+		m_sample+=4;
 	}
 	else {
 		g_wav_speaker.State(((int16_t)m_soundData[m_sample]) * m_volume);
-		m_sample++;
+		ConnectorIO4.State(((int16_t)m_soundData[m_sample+1]) * m_volume);
+		m_sample+=2;
 	}
 
 	// Ack the interrupt to clear the flag and wait for the next interrupt.
@@ -223,6 +229,7 @@ void ClearCoreTMRpcm::ParseHeader(FatFile &theFile) {
 	sampleBits = sampleBits >> 16;
 	if(sampleBits==16){
 		sixteenBitFile = true;
+		m_volume = m_volume/3;
 	}
 	else{
 		sixteenBitFile = false;

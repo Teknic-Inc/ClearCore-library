@@ -32,16 +32,12 @@
 #include <string.h>
 #include <stddef.h>
 #include <limits.h>
-#include "FatLibConfig.h"
+#include <stdint.h>
 #include "FatApiConstants.h"
 #include "FatStructs.h"
 #include "FatVolume.h"
 class FatFileSystem;
 //------------------------------------------------------------------------------
-// Stuff to store strings in AVR flash.
-#ifdef __AVR__
-#include <avr/pgmspace.h>
-#else  // __AVR__
 #ifndef PSTR
 /** store literal string in flash for ARM */
 #define PSTR(x) (x)
@@ -58,7 +54,6 @@ class FatFileSystem;
 /** store in flash for ARM */
 #define PROGMEM
 #endif  // PROGMEM
-#endif  // __AVR__
 //------------------------------------------------------------------------------
 /**
  * \struct FatPos_t
@@ -123,57 +118,6 @@ class FatFile {
     m_error = 0;
     open(path, oflag);
   }
-#if DESTRUCTOR_CLOSES_FILE
-  ~FatFile() {
-    if (isOpen()) {
-      close();
-    }
-  }
-#endif  // DESTRUCTOR_CLOSES_FILE
-
-#if ENABLE_ARDUINO_FEATURES
-  /** List directory contents.
-   *
-   * \param[in] flags The inclusive OR of
-   *
-   * LS_DATE - %Print file modification date
-   *
-   * LS_SIZE - %Print file size.
-   *
-   * LS_R - Recursive list of subdirectories.
-   *
-   * \return true for success or false if an error occurred.
-   */
-  bool ls(uint8_t flags = 0) {
-    return ls(&Serial, flags);
-  }
-  /** %Print a directory date field.
-   *
-   *  Format is yyyy-mm-dd.
-   *
-   * \param[in] fatDate The date field from a directory entry.
-   */
-  static void printFatDate(uint16_t fatDate) {
-    printFatDate(&Serial, fatDate);
-  }
-  /** %Print a directory time field.
-   *
-   * Format is hh:mm:ss.
-   *
-   * \param[in] fatTime The time field from a directory entry.
-   */
-  static void printFatTime(uint16_t fatTime) {
-    printFatTime(&Serial, fatTime);
-  }
-  /** Print a file's name.
-   *
-   * \return The value true is returned for success and
-   * the value false is returned for failure.
-   */
-  size_t printName() {
-    return FatFile::printName(&Serial);
-  }
-#endif  // ENABLE_ARDUINO_FEATURES
 
   /** \return value of writeError */
   bool getWriteError() {

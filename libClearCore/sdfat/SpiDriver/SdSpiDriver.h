@@ -29,10 +29,10 @@
 #ifndef SdSpiDriver_h
 #define SdSpiDriver_h
 #include "SdSpiBaseDriver.h"
-#include "SdFatConfig.h"
 #include "ClearCoreRef.h"
 #include "stddef.h"
 #include "SerialBase.h"
+#include <stdint.h>
 //------------------------------------------------------------------------------
 /** SDCARD_SPI is defined if board has built-in SD card socket */
 #ifndef SDCARD_SPI
@@ -46,78 +46,6 @@
 
 class SdSpiLibDriver {
  public:
-#if IMPLEMENT_SPI_PORT_SELECTION
-  /** Activate SPI hardware. */
-  void activate() {
-    m_spi->beginTransaction(m_spiSettings);
-  }
-  /** Deactivate SPI hardware. */
-  void deactivate() {
-    m_spi->endTransaction();
-  }
-  /** Initialize the SPI bus.
-   *
-   * \param[in] csPin SD card chip select pin.
-   */
-  void begin(uint8_t csPin) {
-    m_csPin = csPin;
-	digitalWriteClearCore(m_csPin, (PinStatus)HIGH);
-
-	pinModeClearCore(csPin, OUTPUT);
-    m_spi->begin();
-  }
-  /** Receive a byte.
-   *
-   * \return The byte.
-   */
-  uint8_t receive() {
-    return m_spi->transfer( 0XFF);
-  }
-  /** Receive multiple bytes.
-  *
-  * \param[out] buf Buffer to receive the data.
-  * \param[in] n Number of bytes to receive.
-  *
-  * \return Zero for no error or nonzero error code.
-  */
-  uint8_t receive(uint8_t* buf, size_t n) {
-	for (size_t i = 0; i < n; i++) {
-		buf[i] = 0xFF;
-	}
-	const uint8_t *txbuff = buf;
-	m_spi->transfer(txbuff,buf,n,DONT_WAIT_FOR_TRANSFER);	
-	//Make sure to update the ISR before leaving
-	SdCard.SDCardISR();		
-	while(!getSDTransferComplete()){
-		//SPI transfer is blocked here
-		continue;
-	}
-
-	return 0;
-  }
-  /** Send a byte.
-   *
-   * \param[in] data Byte to send
-   */
-  void send(uint8_t data) {
-    m_spi->transfer(data);
-  }
-  /** Send multiple bytes.
-   *
-   * \param[in] buf Buffer for data to be sent.
-   * \param[in] n Number of bytes to send.
-   */
-  void send(const uint8_t* buf, size_t n) {
-	m_spi->transfer(buf,NULL,n,false);
-	//Make sure to update ISR before leaving
-	SdCard.SDCardISR();
-	while(!getSDTransferComplete()){
-		//SPI transfer is blocked here
-		continue;
-	}
-
-  }
-#else  // IMPLEMENT_SPI_PORT_SELECTION
   /** Activate SPI hardware. */
   void activate() {
     SDCARD_SPI.beginTransaction();
@@ -155,7 +83,7 @@ class SdSpiLibDriver {
 		buf[i] = 0xFF;
 	}
     const uint8_t *txbuff = buf;
-	//blocking is enabled by default
+	//blocking is disabled by default
 	SDCARD_SPI.transfer(txbuff,buf,n,DONT_WAIT_FOR_TRANSFER);
 	//Make sure to update value before leaving
 	SdCard.SDCardISR();
@@ -187,7 +115,6 @@ class SdSpiLibDriver {
 			continue;
 		}
   }
-#endif  // IMPLEMENT_SPI_PORT_SELECTION
   /** Set CS low. */
   void select() {
 	digitalWriteClearCore(m_csPin, (PinStatus)LOW);
@@ -206,244 +133,16 @@ class SdSpiLibDriver {
 //   }
  private:
   CCSPI* m_spi;
-// #else   // IMPLEMENT_SPI_PORT_SELECTION
-//  private:
-// #endif  // IMPLEMENT_SPI_PORT_SELECTION
   uint8_t m_csPin;
 };
-//------------------------------------------------------------------------------
-/**
- * \class SdSpiAltDriver
- * \brief Optimized SPI class for access to SD and SDHC flash memory cards.
- */
-class SdSpiAltDriver : public SdSpiBaseDriver {
-
-
- public:
-  /** Activate SPI hardware. */
-  void activate();
-  /** Deactivate SPI hardware. */
-  void deactivate();
-  /** Initialize the SPI bus.
-   *
-   * \param[in] csPin SD card chip select pin.
-   */
-  void begin(uint8_t csPin, uint32_t clockSpeed);
-  /** Receive a byte.
-   *
-   * \return The byte.
-   */
-  uint8_t receive();
-  /** Receive multiple bytes.
-  *
-  * \param[out] buf Buffer to receive the data.
-  * \param[in] n Number of bytes to receive.
-  *
-  * \return Zero for no error or nonzero error code.
-  */
-  uint8_t receive(uint8_t* buf, size_t n);
-  /** Send a byte.
-   *
-   * \param[in] data Byte to send
-   */
-  void send(uint8_t data);
-  /** Send multiple bytes.
-   *
-   * \param[in] buf Buffer for data to be sent.
-   * \param[in] n Number of bytes to send.
-   */
-  void send(const uint8_t* buf, size_t n);
-  /** Set CS low. */
-  void select() {
-	digitalWriteClearCore(m_csPin, (PinStatus)LOW);
-  }
-  /** Set CS high. */
-  void unselect() {
-	digitalWriteClearCore(m_csPin, (PinStatus)HIGH);
-  }
-#if IMPLEMENT_SPI_PORT_SELECTION || defined(DOXYGEN)
-  /** Set SPI port number.
-   * \param[in] spiPort Hardware SPI port.
-   */
-  void setPort(CCSPI* spiPort) {
-    m_spi = spiPort ? spiPort : &SDCARD_SPI;
-  }
- private:
-  CCSPI* m_spi;
-#else   // IMPLEMENT_SPI_PORT_SELECTION
- private:
-#endif  // IMPLEMENT_SPI_PORT_SELECTION
-  uint8_t m_csPin;
-};
-//------------------------------------------------------------------------------
-#if ENABLE_SOFTWARE_SPI_CLASS || defined(DOXYGEN)
-#ifdef ARDUINO
-#include "SoftSPI.h"
-#elif defined(PLATFORM_ID)  // Only defined if a Particle device
-#include "SoftSPIParticle.h"
-#endif  // ARDUINO
-/**
- * \class SdSpiSoftDriver
- * \brief Software SPI class for access to SD and SDHC flash memory cards.
- */
-template<uint8_t MisoPin, uint8_t MosiPin, uint8_t SckPin>
-class SdSpiSoftDriver : public SdSpiBaseDriver {
- public:
-  /** Dummy activate SPI hardware for software SPI */
-  void activate() {}
-  /** Dummy deactivate SPI hardware for software SPI */
-  void deactivate() {}
-  /** Initialize the SPI bus.
-   *
-   * \param[in] csPin SD card chip select pin.
-   */
-  void begin(uint8_t csPin) {
-    m_csPin = csPin;
-    pinModeClearCore(m_csPin, OUTPUT);
-    digitalWriteClearCore(m_csPin, (PinStatus)HIGH);
-    m_spi.begin();
-  }
-  /** Receive a byte.
-   *
-   * \return The byte.
-   */
-  uint8_t receive() {
-    return m_spi.receive();
-  }
-  /** Receive multiple bytes.
-  *
-  * \param[out] buf Buffer to receive the data.
-  * \param[in] n Number of bytes to receive.
-  *
-  * \return Zero for no error or nonzero error code.
-  */
-  uint8_t receive(uint8_t* buf, size_t n) {
-    for (size_t i = 0; i < n; i++) {
-      buf[i] = receive();
-    }
-    return 0;
-  }
-  /** Send a byte.
-   *
-   * \param[in] data Byte to send
-   */
-  void send(uint8_t data) {
-    m_spi.send(data);
-  }
-  /** Send multiple bytes.
-   *
-   * \param[in] buf Buffer for data to be sent.
-   * \param[in] n Number of bytes to send.
-   */
-  void send(const uint8_t* buf , size_t n) {
-    for (size_t i = 0; i < n; i++) {
-      send(buf[i]);
-    }
-  }
-  /** Set CS low. */
-  void select() {
-	digitalWriteClearCore(m_csPin, (PinStatus)LOW);
-  }
-  /** Save SPISettings.
-   *
-   * \param[in] spiSettings SPI speed, mode, and byte order.
-   */
-  void setSpiSettings(SPISettings spiSettings) {
-    (void)spiSettings;
-  }
-  /** Set CS high. */
-  void unselect() {
-	digitalWriteClearCore(m_csPin, (PinStatus)HIGH);
-  }
-
- private:
-  uint8_t m_csPin;
-  SoftSPI<MisoPin, MosiPin, SckPin, 0> m_spi;
-};
-#endif  // ENABLE_SOFTWARE_SPI_CLASS || defined(DOXYGEN)
 //------------------------------------------------------------------------------
 // Choose SPI driver for SdFat and SdFatEX classes.
-#if USE_STANDARD_SPI_LIBRARY || !SD_HAS_CUSTOM_SPI
 /** SdFat uses Arduino library SPI. */
 typedef SdSpiLibDriver SdFatSpiDriver;
-#else  // USE_STANDARD_SPI_LIBRARY || !SD_HAS_CUSTOM_SPI
-/** SdFat uses custom fast SPI. */
-typedef SdSpiAltDriver SdFatSpiDriver;
-#endif  // USE_STANDARD_SPI_LIBRARY || !SD_HAS_CUSTOM_SPI
 
-/** typedef for for SdSpiCard class. */
-#if ENABLE_SOFTWARE_SPI_CLASS
-// Need virtual driver.
-typedef SdSpiBaseDriver SdSpiDriver;
-#else  // ENABLE_SOFTWARE_SPI_CLASS
 // Don't need virtual driver.
 typedef SdFatSpiDriver SdSpiDriver;
-#endif  // ENABLE_SOFTWARE_SPI_CLASS
+
 //==============================================================================
 // Use of in-line for AVR to save flash.
-#ifdef __AVR__
-//------------------------------------------------------------------------------
-inline void SdSpiAltDriver::begin(uint8_t csPin,uint32_t clockSpeed) {
-  m_csPin = csPin;
-  pinModeClearCore(m_csPin, OUTPUT);
-  digitalWriteClearCore(m_csPin, (PinStatus)HIGH);
-
-  CCSPI.begin(clockSpeed);
-}
-//------------------------------------------------------------------------------
-inline void SdSpiAltDriver::activate() {
-  CCSPI.beginTransaction();
-}
-//------------------------------------------------------------------------------
-inline void SdSpiAltDriver::deactivate() {
-  CCSPI.endTransaction();
-}
-//------------------------------------------------------------------------------
-inline uint8_t SdSpiAltDriver::receive() {
-  SPDR = 0XFF;
-  while (!(SPSR & (1 << SPIF))) {}
-  return SPDR;
-}
-//------------------------------------------------------------------------------
-inline uint8_t SdSpiAltDriver::receive(uint8_t* buf, size_t n) {
-  if (n-- == 0) {
-    return 0;
-  }
-  SPDR = 0XFF;
-  for (size_t i = 0; i < n; i++) {
-    while (!(SPSR & (1 << SPIF))) {}
-    uint8_t b = SPDR;
-    SPDR = 0XFF;
-    buf[i] = b;
-  }
-  while (!(SPSR & (1 << SPIF))) {}
-  buf[n] = SPDR;
-  return 0;
-}
-//------------------------------------------------------------------------------
-inline void SdSpiAltDriver::send(uint8_t data) {
-  SPDR = data;
-  while (!(SPSR & (1 << SPIF))) {}
-}
-//------------------------------------------------------------------------------
-inline void SdSpiAltDriver::send(const uint8_t* buf , size_t n) {
-  if (n == 0) {
-    return;
-  }
-  SPDR = buf[0];
-  if (n > 1) {
-    uint8_t b = buf[1];
-    size_t i = 2;
-    while (1) {
-      while (!(SPSR & (1 << SPIF))) {}
-      SPDR = b;
-      if (i == n) {
-        break;
-      }
-      b = buf[i++];
-    }
-  }
-  while (!(SPSR & (1 << SPIF))) {}
-}
-#endif  // __AVR__
 #endif  // SdSpiDriver_h

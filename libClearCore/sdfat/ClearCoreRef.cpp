@@ -21,21 +21,6 @@
  */
 
 #include <sam.h>
-#include "AdcManager.h"
-#include "DigitalInOutAnalogOut.h"
-#include "DigitalInAnalogIn.h"
-#include "DigitalInOut.h"
-#include "DigitalIn.h"
-#include "DigitalInOutHBridge.h"
-#include "InputManager.h"
-#include "LedDriver.h"
-#include "MotorDriver.h"
-#include "SysConnectors.h"
-#include "SysManager.h"
-#include "SysUtils.h"
-#include "CcioBoardManager.h"
-#include "ShiftRegister.h"
-#include "MotorManager.h"
 #include "ClearCoreRef.h"
 #include "ClearCore.h"
 

@@ -32,10 +32,6 @@
 #include "ClearCoreTMRpcm.h"
 #include "BlockDriver.h"
 #include "FatLib/FatLib.h"
-#include "SdCard/SdioCard.h"
-#if INCLUDE_SDIOS
-#include "sdios.h"
-#endif  // INCLUDE_SDIOS
 //------------------------------------------------------------------------------
 /** SdFat version 1.1.2 */
 #define SD_FAT_VERSION 10102
@@ -57,26 +53,6 @@ class SdBaseFile : public FatFile {
    */
   SdBaseFile(const char* path, oflag_t oflag) : FatFile(path, oflag) {}
 };
-//-----------------------------------------------------------------------------
-#if ENABLE_ARDUINO_FEATURES
-/**
- * \class SdFile
- * \brief Class for backward compatibility.
- */
-class SdFile : public PrintFile {
- public:
-  SdFile() {}
-  /**  Create a file object and open it in the current working directory.
-   *
-   * \param[in] path A path for a file to be opened.
-   *
-   * \param[in] oflag Values for \a oflag are constructed by a
-   * bitwise-inclusive OR of open flags. see
-   * FatFile::open(FatFile*, const char*, oflag_t).
-   */
-  SdFile(const char* path, oflag_t oflag) : PrintFile(path, oflag) {}
-};
-#endif  // #if ENABLE_ARDUINO_FEATURES
 //-----------------------------------------------------------------------------
 /**
  * \class SdFileSystem
@@ -115,17 +91,6 @@ class SdFileSystem : public FatFileSystem {
  */
 class SdFat : public SdFileSystem<SdSpiCard> {
  public:
-#if IMPLEMENT_SPI_PORT_SELECTION || defined(DOXYGEN)
-  SdFat() {
-    m_spi.setPort(nullptr);
-  }
-  /** Constructor with SPI port selection.
-   * \param[in] spiPort SPI port number.
-   */
-  explicit SdFat(CCSPI* spiPort) {
-    m_spi.setPort(spiPort);
-  }
-#endif  // IMPLEMENT_SPI_PORT_SELECTION
   /** Initialize SD card and file system.
    *
    * \param[in] csPin SD card chip select pin.
@@ -156,102 +121,18 @@ class SdFat : public SdFileSystem<SdSpiCard> {
    *  Make sure to initialize the SD card before playing a file
    *
    * \param[in] char* filename, name of file to open
+   * \param[in] int volume, value from 0 to 100 that controls the volume of the WAV file playback
    * \param[in] DigitalInOutHBridge audioOut, specify the connector to play audio out of (IO4 to IO5)
    */
-  void playFile(char* filename,DigitalInOutHBridge audioOut){
-	ClearCoreTMRpcm player(audioOut);
+  void playFile(const char* filename, int volume = 40, DigitalInOutHBridge audioOut = ConnectorIO5){
+	ClearCoreTMRpcm player(volume, audioOut);
 	player.Play(filename);
   }
 
  private:
   SdFatSpiDriver m_spi;
 };
-//==============================================================================
-#if ENABLE_SDIO_CLASS || defined(DOXYGEN)
-/**
- * \class SdFatSdio
- * \brief SdFat class using SDIO.
- */
-class SdFatSdio : public SdFileSystem<SdioCard> {
- public:
-  /** Initialize SD card and file system.
-   * \return true for success else false.
-   */
-  bool begin() {
-    return m_card.begin() && SdFileSystem::begin();
-  }
-  /** Initialize SD card for diagnostic use only.
-   *
-   * \return true for success else false.
-   */
-  bool cardBegin() {
-    return m_card.begin();
-  }
-  /** Initialize file system for diagnostic use only.
-   * \return true for success else false.
-   */
-  bool fsBegin() {
-    return SdFileSystem::begin();
-  }
-};
-#if ENABLE_SDIOEX_CLASS || defined(DOXYGEN)
-//-----------------------------------------------------------------------------
-/**
- * \class SdFatSdioEX
- * \brief SdFat class using SDIO.
- */
-class SdFatSdioEX : public SdFileSystem<SdioCardEX> {
- public:
-  /** Initialize SD card and file system.
-   * \return true for success else false.
-   */
-  bool begin() {
-    return m_card.begin() && SdFileSystem::begin();
-  }
-  /** \return Pointer to SD card object */
-  SdioCardEX* card() {
-    return &m_card;
-  }
-  /** Initialize SD card for diagnostic use only.
-   *
-   * \return true for success else false.
-   */
-  bool cardBegin() {
-    return m_card.begin();
-  }
-  /** Initialize file system for diagnostic use only.
-   * \return true for success else false.
-   */
-  bool fsBegin() {
-    return SdFileSystem::begin();
-  }
-};
-#endif  // ENABLE_SDIOEX_CLASS || defined(DOXYGEN)
-#endif  // ENABLE_SDIO_CLASS || defined(DOXYGEN)
 //=============================================================================
-#if ENABLE_SOFTWARE_SPI_CLASS || defined(DOXYGEN)
-/**
- * \class SdFatSoftSpi
- * \brief SdFat class using software SPI.
- */
-template<uint8_t MisoPin, uint8_t MosiPin, uint8_t SckPin>
-class SdFatSoftSpi : public SdFileSystem<SdSpiCard>  {
- public:
-  /** Initialize SD card and file system.
-   *
-   * \param[in] csPin SD card chip select pin.
-   * \param[in] spiSettings ignored for software SPI..
-   * \return true for success else false.
-   */
-  bool begin(uint8_t csPin = CLEARCORE_PIN_INVALID, uint32_t clockSpeed) {
-    return m_card.begin(&m_spi, csPin,clockSpeed) &&
-           SdFileSystem::begin();
-  }
- private:
-  SdSpiSoftDriver<MisoPin, MosiPin, SckPin> m_spi;
-};
-#endif  // #if ENABLE_SOFTWARE_SPI_CLASS || defined(DOXYGEN)
-//==============================================================================
 #if ENABLE_EXTENDED_TRANSFER_CLASS || defined(DOXYGEN)
 /**
  * \class SdFatEX
@@ -259,17 +140,6 @@ class SdFatSoftSpi : public SdFileSystem<SdSpiCard>  {
  */
 class SdFatEX : public SdFileSystem<SdSpiCardEX> {
  public:
-#if IMPLEMENT_SPI_PORT_SELECTION  || defined(DOXYGEN)
-  SdFatEX() {
-    m_spi.setPort(nullptr);
-  }
-  /** Constructor with SPI port selection.
-   * \param[in] spiPort SPI port number.
-   */
-  explicit SdFatEX(CCSPI* spiPort) {
-    m_spi.setPort(spiPort);
-  }
-#endif  // IMPLEMENT_SPI_PORT_SELECTION
   /** Initialize SD card and file system.
   *
   * \param[in] csPin SD card chip select pin.
@@ -284,29 +154,7 @@ class SdFatEX : public SdFileSystem<SdSpiCardEX> {
  private:
   SdFatSpiDriver m_spi;
 };
-//==============================================================================
-#if ENABLE_SOFTWARE_SPI_CLASS || defined(DOXYGEN)
-/**
- * \class SdFatSoftSpiEX
- * \brief SdFat class using software SPI and extended SD I/O.
- */
-template<uint8_t MisoPin, uint8_t MosiPin, uint8_t SckPin>
-class SdFatSoftSpiEX : public SdFileSystem<SdSpiCardEX>  {
- public:
-  /** Initialize SD card and file system.
-   *
-   * \param[in] csPin SD card chip select pin.
-   * \param[in] spiSettings ignored for software SPI.
-   * \return true for success else false.
-   */
-  bool begin(uint8_t csPin = CLEARCORE_PIN_INVALID, uint32_t clockSpeed = SPI_FULL_SPEED) {
-    return m_card.begin(&m_spi, csPin, clockSpeed) &&
-           SdFileSystem::begin();
-  }
- private:
-  SdSpiSoftDriver<MisoPin, MosiPin, SckPin> m_spi;
-};
-#endif  // #if ENABLE_SOFTWARE_SPI_CLASS || defined(DOXYGEN)
+
 #endif  // ENABLE_EXTENDED_TRANSFER_CLASS || defined(DOXYGEN)
 //=============================================================================
 /**

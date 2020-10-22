@@ -24,26 +24,8 @@
  */
 #ifndef FatApiConstants_h
 #define FatApiConstants_h
-#include "SdFatConfig.h"
+#include <stdint.h>
 
-#if USE_FCNTL_H
-#include <fcntl.h>
-/* values for GNU Arm Embedded Toolchain.
- * O_RDONLY:   0x0
- * O_WRONLY:   0x1
- * O_RDWR:     0x2
- * O_ACCMODE:  0x3
- * O_APPEND:   0x8
- * O_CREAT:    0x200
- * O_TRUNC:    0x400
- * O_EXCL:     0x800
- * O_SYNC:     0x2000
- * O_NONBLOCK: 0x4000
- */
-/** Use O_NONBLOCK for open at EOF */
-#define O_AT_END O_NONBLOCK  ///< Open at EOF.
-typedef int oflag_t;
-#else  // USE_FCNTL_H
 #define O_RDONLY  0X00  ///< Open for reading only.
 #define O_WRONLY  0X01  ///< Open for writing only.
 #define O_RDWR    0X02  ///< Open for reading and writing.
@@ -56,7 +38,6 @@ typedef int oflag_t;
 
 #define O_ACCMODE (O_RDONLY|O_WRONLY|O_RDWR)  ///< Mask for access mode.
 typedef uint8_t oflag_t;
-#endif  // USE_FCNTL_H
 
 #define O_READ    O_RDONLY
 #define O_WRITE   O_WRONLY

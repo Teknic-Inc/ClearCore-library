@@ -2,7 +2,6 @@
 
 #include "ClearCore.h"
 #include "FatFile.h"
-#include <ArduinoFiles.h>
 
 #ifndef tmrPCM_h
 #define tmrPCM_h
@@ -23,8 +22,8 @@ class ClearCoreTMRpcm {
 public:
 	int soundBuff;
 
-	ClearCoreTMRpcm(DigitalInOutHBridge audioOut = ConnectorIO5);
-	void Play(char* filename);
+	ClearCoreTMRpcm(int volume = 40, DigitalInOutHBridge audioOut = ConnectorIO5);
+	void Play(const char* filename);
 	void StopPlayback();
 	bool PlaybackFinished();
 	

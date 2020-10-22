@@ -26,7 +26,6 @@
 #define FatFileSystem_h
 #include "FatVolume.h"
 #include "FatFile.h"
-#include "ArduinoFiles.h"
 /**
  * \file
  * \brief FatFileSystem class
@@ -51,60 +50,7 @@ class FatFileSystem : public  FatVolume {
     return (part ? init(part) : init(1) || init(0))
             && vwd()->openRoot(this) && FatFile::setCwd(vwd());
   }
-#if ENABLE_ARDUINO_FEATURES
-   /** List the directory contents of the volume working directory to Serial.
-   *
-   * \param[in] flags The inclusive OR of
-   *
-   * LS_DATE - %Print file modification date
-   *
-   * LS_SIZE - %Print file size.
-   *
-   * LS_R - Recursive list of subdirectories.
-   *
-   * \return true for success or false if an error occurred.
-   */
-  bool ls(uint8_t flags = 0) {
-    return ls(&Serial, flags);
-  }
-  /** List the directory contents of a directory to Serial.
-   *
-   * \param[in] path directory to list.
-   *
-   * \param[in] flags The inclusive OR of
-   *
-   * LS_DATE - %Print file modification date
-   *
-   * LS_SIZE - %Print file size.
-   *
-   * LS_R - Recursive list of subdirectories.
-   *
-   * \return true for success or false if an error occurred.
-   */
-  bool ls(const char* path, uint8_t flags = 0) {
-    return ls(&Serial, path, flags);
-  }
-  /** open a file
-   *
-   * \param[in] path location of file to be opened.
-   * \param[in] oflag open flags.
-   * \return a File object.
-   */
-  File open(const char *path, oflag_t oflag = FILE_READ) {
-    File tmpFile;
-    tmpFile.open(vwd(), path, oflag);
-    return tmpFile;
-  }
-  /** open a file
-   *
-   * \param[in] path location of file to be opened.
-   * \param[in] oflag open flags.
-   * \return a File object.
-   */
-  File open(const String &path, oflag_t oflag = FILE_READ) {
-    return open(path.c_str(), oflag );
-  }
-#endif  // ENABLE_ARDUINO_FEATURES
+
   /** Change a volume's working directory to root
    *
    * Changes the volume's working directory to the SD's root directory.

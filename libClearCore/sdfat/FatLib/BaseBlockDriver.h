@@ -24,7 +24,7 @@
  */
 #ifndef BaseBlockDriver_h
 #define BaseBlockDriver_h
-#include "FatLibConfig.h"
+#include <stdint.h>
 /**
  * \class BaseBlockDriver
  * \brief Base block driver.

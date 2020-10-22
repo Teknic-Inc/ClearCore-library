@@ -713,9 +713,6 @@ bool FatFile::openRoot(FatVolume* vol) {
 
   m_vol = vol;
   switch (vol->fatType()) {
-#if FAT12_SUPPORT
-  case 12:
-#endif  // FAT12_SUPPORT
   case 16:
     m_attr = FILE_ATTR_ROOT_FIXED;
     break;
@@ -939,11 +936,6 @@ bool FatFile::rename(FatFile* dirFile, const char* newPath) {
     DBG_FAIL_MACRO;
     goto fail;
   }
-  // Can't rename LFN in 8.3 mode.
-  if (!USE_LONG_FILE_NAMES && isLFN()) {
-    DBG_FAIL_MACRO;
-    goto fail;
-  }
   // Can't move file to new volume.
   if (m_vol != dirFile->m_vol) {
     DBG_FAIL_MACRO;
@@ -1035,7 +1027,7 @@ fail:
 //------------------------------------------------------------------------------
 bool FatFile::rmdir() {
   // must be open subdirectory
-  if (!isSubDir() || (!USE_LONG_FILE_NAMES && isLFN())) {
+  if (!isSubDir()) {
     DBG_FAIL_MACRO;
     goto fail;
   }
@@ -1491,7 +1483,6 @@ int FatFile::write(const void* buf, size_t nbyte) {
           goto fail;
         }
       }
-#if USE_MULTI_BLOCK_IO
     } else if (nToWrite >= 1024) {
       // use multiple block write command
       uint8_t maxBlocks = m_vol->blocksPerCluster() - blockOfCluster;
@@ -1509,7 +1500,6 @@ int FatFile::write(const void* buf, size_t nbyte) {
         DBG_FAIL_MACRO;
         goto fail;
       }
-#endif  // USE_MULTI_BLOCK_IO
     } else {
       // use single block write command
       n = 512;

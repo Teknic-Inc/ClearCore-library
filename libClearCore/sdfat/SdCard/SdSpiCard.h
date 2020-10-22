@@ -39,11 +39,7 @@
  * \class SdSpiCard
  * \brief Raw access to SD and SDHC flash memory cards via SPI protocol.
  */
-#if ENABLE_EXTENDED_TRANSFER_CLASS || ENABLE_SDIO_CLASS
-class SdSpiCard : public BaseBlockDriver {
-#else  // ENABLE_EXTENDED_TRANSFER_CLASS || ENABLE_SDIO_CLASS
 class SdSpiCard {
-#endif  // ENABLE_EXTENDED_TRANSFER_CLASS || ENABLE_SDIO_CLASS
  public:
   /** Construct an instance of SdSpiCard. */
   SdSpiCard() : m_errorCode(SD_CARD_ERROR_INIT_NOT_CALLED), m_type(0) {}
@@ -307,74 +303,5 @@ class SdSpiCard {
   uint8_t m_status;
   uint8_t m_type;
 };
-//==============================================================================
-/**
- * \class SdSpiCardEX
- * \brief Extended SD I/O block driver.
- */
-class SdSpiCardEX : public SdSpiCard {
- public:
-  /** Initialize the SD card
-   *
-   * \param[in] spi SPI driver.
-   * \param[in] csPin Card chip select pin number.
-   * \param[in] spiSettings SPI speed, mode, and bit order.
-   * \return The value true is returned for success and
-   * the value false is returned for failure.
-   */
-  bool begin(SdSpiDriver* spi, uint8_t csPin, uint32_t clockSpeed) {
-    m_curState = IDLE_STATE;
-    return SdSpiCard::begin(spi, csPin, clockSpeed);
-  }
-  /**
-   * Read a 512 byte block from an SD card.
-   *
-   * \param[in] block Logical block to be read.
-   * \param[out] dst Pointer to the location that will receive the data.
-   * \return The value true is returned for success and
-   * the value false is returned for failure.
-   */
-  bool readBlock(uint32_t block, uint8_t* dst);
-  /** End multi-block transfer and go to idle state.
-   * \return The value true is returned for success and
-   * the value false is returned for failure.
-   */
-  bool syncBlocks();
-  /**
-   * Writes a 512 byte block to an SD card.
-   *
-   * \param[in] block Logical block to be written.
-   * \param[in] src Pointer to the location of the data to be written.
-   * \return The value true is returned for success and
-   * the value false is returned for failure.
-   */
-  bool writeBlock(uint32_t block, const uint8_t* src);
-  /**
-   * Read multiple 512 byte blocks from an SD card.
-   *
-   * \param[in] block Logical block to be read.
-   * \param[in] nb Number of blocks to be read.
-   * \param[out] dst Pointer to the location that will receive the data.
-   * \return The value true is returned for success and
-   * the value false is returned for failure.
-   */
-  bool readBlocks(uint32_t block, uint8_t* dst, size_t nb);
-  /**
-   * Write multiple 512 byte blocks to an SD card.
-   *
-   * \param[in] block Logical block to be written.
-   * \param[in] nb Number of blocks to be written.
-   * \param[in] src Pointer to the location of the data to be written.
-   * \return The value true is returned for success and
-   * the value false is returned for failure.
-   */
-  bool writeBlocks(uint32_t block, const uint8_t* src, size_t nb);
 
- private:
-  static const uint32_t IDLE_STATE = 0;
-  static const uint32_t READ_STATE = 1;
-  static const uint32_t WRITE_STATE = 2;
-  uint32_t m_curBlock;
-  uint8_t m_curState;
-};
 #endif  // SdSpiCard_h

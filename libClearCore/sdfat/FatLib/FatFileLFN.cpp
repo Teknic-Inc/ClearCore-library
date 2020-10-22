@@ -24,7 +24,22 @@
  */
 #include "FatFile.h"
 //------------------------------------------------------------------------------
-//
+/**
+ * This implementation allows 7-bit characters in the range
+ * 0X20 to 0X7E except the following characters are not allowed:
+ *
+ *  < (less than)
+ *  > (greater than)
+ *  : (colon)
+ *  " (double quote)
+ *  / (forward slash)
+ *  \ (backslash)
+ *  | (vertical bar or pipe)
+ *  ? (question mark)
+ *  * (asterisk)
+ *
+ */
+//------------------------------------------------------------------------------
 uint8_t FatFile::lfnChecksum(uint8_t* name) {
   uint8_t sum = 0;
   for (uint8_t i = 0; i < 11; i++) {
@@ -32,7 +47,6 @@ uint8_t FatFile::lfnChecksum(uint8_t* name) {
   }
   return sum;
 }
-#if USE_LONG_FILE_NAMES
 //------------------------------------------------------------------------------
 // Saves about 90 bytes of flash on 328 over tolower().
 inline char lfnToLower(char c) {
@@ -500,54 +514,6 @@ fail:
   return false;
 }
 //------------------------------------------------------------------------------
-size_t FatFile::printName(print_t* pr) {
-  FatFile dirFile;
-  ldir_t* ldir;
-  size_t n = 0;
-  uint16_t u;
-  uint8_t buf[13];
-  uint8_t i;
-
-  if (!isLFN()) {
-    return printSFN(pr);
-  }
-  if (!dirFile.openCluster(this)) {
-    DBG_FAIL_MACRO;
-    goto fail;
-  }
-  for (uint8_t ord = 1; ord <= m_lfnOrd; ord++) {
-    if (!dirFile.seekSet(32UL*(m_dirIndex - ord))) {
-      DBG_FAIL_MACRO;
-      goto fail;
-    }
-    ldir = reinterpret_cast<ldir_t*>(dirFile.readDirCache());
-    if (!ldir) {
-      DBG_FAIL_MACRO;
-      goto fail;
-    }
-
-    if (ldir->attr != DIR_ATT_LONG_NAME ||
-        ord != (ldir->ord & 0X1F)) {
-      DBG_FAIL_MACRO;
-      goto fail;
-    }
-    for (i = 0; i < 13; i++) {
-      u = lfnGetChar(ldir, i);
-      if (u == 0) {
-        // End of name.
-        break;
-      }
-      buf[i] = u < 0X7F ? u : '?';
-      n++;
-    }
-
-  }
-  return n;
-
-fail:
-  return 0;
-}
-//------------------------------------------------------------------------------
 bool FatFile::remove() {
   bool last;
   uint8_t chksum;
@@ -682,4 +648,4 @@ fail:
 done:
   return true;
 }
-#endif  // #if USE_LONG_FILE_NAMES
+

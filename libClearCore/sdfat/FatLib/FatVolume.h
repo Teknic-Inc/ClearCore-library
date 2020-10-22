@@ -29,7 +29,7 @@
  * \brief FatVolume class
  */
 #include <stddef.h>
-#include "FatLibConfig.h"
+#include <stdint.h>
 #include "FatStructs.h"
 #include "BlockDriver.h"
 //------------------------------------------------------------------------------
@@ -48,10 +48,6 @@
 #endif  // DEBUG_MODE
 #endif  // DOXYGEN_SHOULD_SKIP_THIS
 //------------------------------------------------------------------------------
-#if ENABLE_ARDUINO_FEATURES
-/** Use Print for Arduino */
-typedef Print print_t;
-#else  // ENABLE_ARDUINO_FEATURES
 /**
  * \class CharWriter
  * \brief Character output - often serial port.
@@ -62,7 +58,6 @@ class CharWriter {
   virtual size_t write(const char* s) = 0;
 };
 typedef CharWriter print_t;
-#endif  // ENABLE_ARDUINO_FEATURES
 //------------------------------------------------------------------------------
 // Forward declaration of FatVolume.
 class FatVolume;
@@ -310,45 +305,21 @@ class FatVolume {
   bool writeBlock(uint32_t block, const uint8_t* src) {
     return m_blockDev->writeBlock(block, src);
   }
-#if USE_MULTI_BLOCK_IO
   bool readBlocks(uint32_t block, uint8_t* dst, size_t nb) {
     return m_blockDev->readBlocks(block, dst, nb);
   }
   bool writeBlocks(uint32_t block, const uint8_t* src, size_t nb) {
     return m_blockDev->writeBlocks(block, src, nb);
   }
-#endif  // USE_MULTI_BLOCK_IO
-#if MAINTAIN_FREE_CLUSTER_COUNT
-  int32_t  m_freeClusterCount;     // Count of free clusters in volume.
-  void setFreeClusterCount(int32_t value) {
-    m_freeClusterCount = value;
-  }
-  void updateFreeClusterCount(int32_t change) {
-    if (m_freeClusterCount >= 0) {
-      m_freeClusterCount += change;
-    }
-  }
-#else  // MAINTAIN_FREE_CLUSTER_COUNT
   void setFreeClusterCount(int32_t value) {
     (void)value;
   }
   void updateFreeClusterCount(int32_t change) {
     (void)change;
   }
-#endif  // MAINTAIN_FREE_CLUSTER_COUNT
 
 // block caches
   FatCache m_cache;
-#if USE_SEPARATE_FAT_CACHE
-  FatCache m_fatCache;
-  cache_t* cacheFetchFat(uint32_t blockNumber, uint8_t options) {
-    return m_fatCache.read(blockNumber,
-                           options | FatCache::CACHE_STATUS_MIRROR_FAT);
-  }
-  bool cacheSync() {
-    return m_cache.sync() && m_fatCache.sync() && syncBlocks();
-  }
-#else  //
   cache_t* cacheFetchFat(uint32_t blockNumber, uint8_t options) {
     return cacheFetchData(blockNumber,
                           options | FatCache::CACHE_STATUS_MIRROR_FAT);
@@ -356,7 +327,6 @@ class FatVolume {
   bool cacheSync() {
     return m_cache.sync() && syncBlocks();
   }
-#endif  // USE_SEPARATE_FAT_CACHE
   cache_t* cacheFetchData(uint32_t blockNumber, uint8_t options) {
     return m_cache.read(blockNumber, options);
   }
