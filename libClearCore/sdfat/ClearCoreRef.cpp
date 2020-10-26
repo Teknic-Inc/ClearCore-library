@@ -31,31 +31,31 @@ using ClearCore::ISerial;
 
 
 namespace ClearCore {
-	extern SdCardDriver SdCard;
-	extern SerialDriver ConnectorCOM0;
-	extern SerialDriver ConnectorCOM1;
+    extern SdCardDriver SdCard;
+    extern SerialDriver ConnectorCOM0;
+    extern SerialDriver ConnectorCOM1;
 }
 
 void digitalWriteClearCore(pin_size_t conNum, PinStatus ulVal) {
-	// Get a reference to the appropriate connector
-	ClearCore::Connector *connector =
-	ClearCore::SysMgr.ConnectorByIndex(
-	static_cast<ClearCorePins>(conNum));
+    // Get a reference to the appropriate connector
+    ClearCore::Connector *connector =
+        ClearCore::SysMgr.ConnectorByIndex(
+            static_cast<ClearCorePins>(conNum));
 
-	// If connector cannot be written, just return
-	if (!connector || !connector->IsWritable()) {
-		return;
-	}
+    // If connector cannot be written, just return
+    if (!connector || !connector->IsWritable()) {
+        return;
+    }
 
-	connector->Mode(ClearCore::Connector::OUTPUT_DIGITAL);
-	if (connector->Mode() == ClearCore::Connector::OUTPUT_DIGITAL) {
-		connector->State(ulVal);
-	}
+    connector->Mode(ClearCore::Connector::OUTPUT_DIGITAL);
+    if (connector->Mode() == ClearCore::Connector::OUTPUT_DIGITAL) {
+        connector->State(ulVal);
+    }
 }
 
 void pinModeClearCore(pin_size_t pinNumber, uint32_t ulMode) {
-	pinNumber = (ClearCorePins)pinNumber;
-	ulMode = (PinMode)ulMode;
+    pinNumber = (ClearCorePins)pinNumber;
+    ulMode = (PinMode)ulMode;
     // Get a reference to the appropriate connector
     ClearCore::Connector *connector =
         ClearCore::SysMgr.ConnectorByIndex(
@@ -80,108 +80,108 @@ void pinModeClearCore(pin_size_t pinNumber, uint32_t ulMode) {
     }
 }
 
-void setSDErrorCode(uint16_t errorCode){
-	SdCard.SetErrorCode(errorCode);
+void setSDErrorCode(uint16_t errorCode) {
+    SdCard.SetErrorCode(errorCode);
 }
 
-bool getSDTransferComplete(){
-	return SdCard.getSDTransferComplete(); 
+bool getSDTransferComplete() {
+    return SdCard.getSDTransferComplete();
 }
 
 
 CCSPI::CCSPI(SerialBase &thePort, bool isCom)
-: m_serial(&thePort),
-  m_isCom(isCom){
+    : m_serial(&thePort),
+      m_isCom(isCom) {
 }
 
 void CCSPI::begin(uint32_t clock) {
-	m_clock = clock;
+    m_clock = clock;
     if (m_isCom) {
-	    ISerial *asISerial = dynamic_cast<ISerial *>(m_serial);
-	    SerialDriver *serialDriver = static_cast<SerialDriver *>(asISerial);
-	    serialDriver->Mode(Connector::ConnectorModes::SPI);
+        ISerial *asISerial = dynamic_cast<ISerial *>(m_serial);
+        SerialDriver *serialDriver = static_cast<SerialDriver *>(asISerial);
+        serialDriver->Mode(Connector::ConnectorModes::SPI);
     }
     else {
-	    m_serial->PortMode(SerialBase::PortModes::SPI);
+        m_serial->PortMode(SerialBase::PortModes::SPI);
     }
-	m_serial->SpiSsMode(SerialBase::CtrlLineModes::LINE_OFF);
-	config();
-	m_serial->PortOpen();
+    m_serial->SpiSsMode(SerialBase::CtrlLineModes::LINE_OFF);
+    config();
+    m_serial->PortOpen();
 }
 
 void CCSPI::config() {
-	m_serial->Speed(m_clock);
-	m_serial->SpiClock(SerialBase::SpiClockPolarities::SCK_LOW,
-								SerialBase::SpiClockPhases::LEAD_SAMPLE);
+    m_serial->Speed(m_clock);
+    m_serial->SpiClock(SerialBase::SpiClockPolarities::SCK_LOW,
+                       SerialBase::SpiClockPhases::LEAD_SAMPLE);
 }
 
 void CCSPI::end() {
-	m_serial->PortClose();
+    m_serial->PortClose();
 }
 
 void CCSPI::usingInterrupt(int interruptNumber) {
-	(void)interruptNumber;
+    (void)interruptNumber;
 }
 
 void CCSPI::notUsingInterrupt(int interruptNumber) {
-	(void)interruptNumber;
+    (void)interruptNumber;
 }
 
 void CCSPI::beginTransaction() {
-	config();
-	m_serial->SpiSsMode(SerialBase::CtrlLineModes::LINE_ON);
+    config();
+    m_serial->SpiSsMode(SerialBase::CtrlLineModes::LINE_ON);
 }
 
 void CCSPI::endTransaction(void) {
-	m_serial->SpiSsMode(SerialBase::CtrlLineModes::LINE_OFF);
+    m_serial->SpiSsMode(SerialBase::CtrlLineModes::LINE_OFF);
 }
 
 void CCSPI::setClockDivider(uint8_t div) {
-	m_clock = MAX_SPI / div;
-	config();
+    m_clock = MAX_SPI / div;
+    config();
 }
 
-void CCSPI::SetClockSpeed(uint32_t clockSpeed){
+void CCSPI::SetClockSpeed(uint32_t clockSpeed) {
     m_clock = clockSpeed;
-	config();
+    config();
 }
 
 uint8_t CCSPI::transfer(uint8_t data) {
-	return m_serial->SpiTransferData(data);
+    return m_serial->SpiTransferData(data);
 }
 
 uint16_t CCSPI::transfer16(uint16_t data) {
-	union {
-		uint16_t val;
-		struct {
-			uint8_t lsb;
-			uint8_t msb;
-		} bytes;
-	} t;
+    union {
+        uint16_t val;
+        struct {
+            uint8_t lsb;
+            uint8_t msb;
+        } bytes;
+    } t;
 
-	t.val = data;
+    t.val = data;
     t.bytes.msb = transfer(t.bytes.msb);
-	t.bytes.lsb = transfer(t.bytes.lsb);
+    t.bytes.lsb = transfer(t.bytes.lsb);
 
-	return t.val;
+    return t.val;
 }
 
 void CCSPI::transfer(void *buf, size_t count) {
-	m_serial->SpiTransferData((uint8_t *)buf, (uint8_t *)buf, count);
+    m_serial->SpiTransferData((uint8_t *)buf, (uint8_t *)buf, count);
 }
 
 void CCSPI::transfer(const void *txbuf, void *rxbuf, size_t count,
-bool block) {
-	if (!block &&
-	m_serial->SpiTransferDataAsync((uint8_t *)txbuf, (uint8_t *)rxbuf, count)) {
-		return;
-	}
-	m_serial->SpiTransferData((uint8_t *)txbuf, (uint8_t *)rxbuf, count);
+                     bool block) {
+    if (!block &&
+            m_serial->SpiTransferDataAsync((uint8_t *)txbuf, (uint8_t *)rxbuf, count)) {
+        return;
+    }
+    m_serial->SpiTransferData((uint8_t *)txbuf, (uint8_t *)rxbuf, count);
 }
 
 // Waits for a prior in-background DMA transfer to complete.
 void CCSPI::waitForTransfer(void) {
-	m_serial->SpiAsyncWaitComplete();
+    m_serial->SpiAsyncWaitComplete();
 }
 
 

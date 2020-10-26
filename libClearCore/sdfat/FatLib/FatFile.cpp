@@ -816,7 +816,6 @@ int FatFile::read(void* buf, size_t nbyte) {
       }
       uint8_t* src = pc->data + offset;
       memcpy(dst, src, n);
-#if USE_MULTI_BLOCK_IO
     } else if (toRead >= 1024) {
       size_t nb = toRead >> 9;
       if (!isRootFixed()) {
@@ -838,7 +837,6 @@ int FatFile::read(void* buf, size_t nbyte) {
         DBG_FAIL_MACRO;
         goto fail;
       }
-#endif  // USE_MULTI_BLOCK_IO
     } else {
       // read single block
       n = 512;

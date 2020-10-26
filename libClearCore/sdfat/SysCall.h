@@ -39,18 +39,18 @@
 // #endif  // defined(ARDUINO)
 //------------------------------------------------------------------------------
 #ifdef ESP8266
-// undefine F macro if ESP8266.
-#undef F
+    // undefine F macro if ESP8266.
+    #undef F
 #endif  // ESP8266
 //------------------------------------------------------------------------------
 #ifndef F
-/** Define macro for strings stored in flash. */
-#define F(str) (str)
+    /** Define macro for strings stored in flash. */
+    #define F(str) (str)
 #endif  // F
 //------------------------------------------------------------------------------
 /** \return the time in milliseconds. */
 inline uint16_t curTimeMS() {
-  return Milliseconds();
+    return Milliseconds();
 }
 //------------------------------------------------------------------------------
 /**
@@ -58,30 +58,30 @@ inline uint16_t curTimeMS() {
  * \brief SysCall - Class to wrap system calls.
  */
 class SysCall {
- public:
-  /** Halt execution of this thread. */
-  static void halt() {
-    while (1) {
-      yield();
+public:
+    /** Halt execution of this thread. */
+    static void halt() {
+        while (1) {
+            yield();
+        }
     }
-  }
-  /** Yield to other threads. */
-  static void yield();
+    /** Yield to other threads. */
+    static void yield();
 };
 
 #if defined(ESP8266)
 inline void SysCall::yield() {
-  // Avoid ESP8266 bug
-  delay(0);
+    // Avoid ESP8266 bug
+    delay(0);
 }
 #elif defined(ARDUINO)
 inline void SysCall::yield() {
-  // Use the external Arduino yield() function.
-  ::yield();
+    // Use the external Arduino yield() function.
+    ::yield();
 }
 #elif defined(PLATFORM_ID)  // Only defined if a Particle device
 inline void SysCall::yield() {
-  Particle.process();
+    Particle.process();
 }
 #else  // ESP8266
 inline void SysCall::yield() {}

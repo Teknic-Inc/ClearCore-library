@@ -54,7 +54,6 @@ class BaseBlockDriver {
    * the value false is returned for failure.
    */
   virtual bool writeBlock(uint32_t block, const uint8_t* src) = 0;
-#if USE_MULTI_BLOCK_IO
   /**
    * Read multiple 512 byte blocks from an SD card.
    *
@@ -75,6 +74,5 @@ class BaseBlockDriver {
    * the value false is returned for failure.
    */
   virtual bool writeBlocks(uint32_t block, const uint8_t* src, size_t nb) = 0;
-#endif  // USE_MULTI_BLOCK_IO
 };
 #endif  // BaseBlockDriver_h

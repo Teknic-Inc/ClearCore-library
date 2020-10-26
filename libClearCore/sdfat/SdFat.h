@@ -41,17 +41,17 @@
  * \brief Class for backward compatibility.
  */
 class SdBaseFile : public FatFile {
- public:
-  SdBaseFile() {}
-  /**  Create a file object and open it in the current working directory.
-   *
-   * \param[in] path A path for a file to be opened.
-   *
-   * \param[in] oflag Values for \a oflag are constructed by a
-   * bitwise-inclusive OR of open flags. see
-   * FatFile::open(FatFile*, const char*, oflag_t).
-   */
-  SdBaseFile(const char* path, oflag_t oflag) : FatFile(path, oflag) {}
+public:
+    SdBaseFile() {}
+    /**  Create a file object and open it in the current working directory.
+     *
+     * \param[in] path A path for a file to be opened.
+     *
+     * \param[in] oflag Values for \a oflag are constructed by a
+     * bitwise-inclusive OR of open flags. see
+     * FatFile::open(FatFile*, const char*, oflag_t).
+     */
+    SdBaseFile(const char *path, oflag_t oflag) : FatFile(path, oflag) {}
 };
 //-----------------------------------------------------------------------------
 /**
@@ -60,29 +60,29 @@ class SdBaseFile : public FatFile {
  */
 template<class SdDriverClass>
 class SdFileSystem : public FatFileSystem {
- public:
-  /** Initialize file system.
-   * \return true for success else false.
-   */
-  bool begin() {
-    return FatFileSystem::begin(&m_card);
-  }
-  /** \return Pointer to SD card object */
-  SdDriverClass *card() {
-    m_card.syncBlocks();
-    return &m_card;
-  }
-  /** \return The card error code */
-  uint8_t cardErrorCode() {
+public:
+    /** Initialize file system.
+     * \return true for success else false.
+     */
+    bool begin() {
+        return FatFileSystem::begin(&m_card);
+    }
+    /** \return Pointer to SD card object */
+    SdDriverClass *card() {
+        m_card.syncBlocks();
+        return &m_card;
+    }
+    /** \return The card error code */
+    uint8_t cardErrorCode() {
         return m_card.errorCode();
-  }
-  /** \return the card error data */
-  uint32_t cardErrorData() {
-    return m_card.errorData();
-  }
+    }
+    /** \return the card error data */
+    uint32_t cardErrorData() {
+        return m_card.errorData();
+    }
 
- protected:
-  SdDriverClass m_card;
+protected:
+    SdDriverClass m_card;
 };
 //==============================================================================
 /**
@@ -90,47 +90,47 @@ class SdFileSystem : public FatFileSystem {
  * \brief Main file system class for %SdFat library.
  */
 class SdFat : public SdFileSystem<SdSpiCard> {
- public:
-  /** Initialize SD card and file system.
-   *
-   * \param[in] csPin SD card chip select pin.
-   * \param[in] spiSettings SPI speed, mode, and bit order.
-   * \return true for success else false.
-   */
-  bool begin(uint8_t csPin = CLEARCORE_PIN_INVALID, uint32_t clockSpeed = SPI_FULL_SPEED) {
-    return m_card.begin(&m_spi, csPin, clockSpeed) &&
-           SdFileSystem::begin();
-  }
-  /** Initialize SD card for diagnostic use only.
-   *
-   * \param[in] csPin SD card chip select pin.
-   * \param[in] settings SPI speed, mode, and bit order.
-   * \return true for success else false.
-   */
-  bool cardBegin(uint8_t csPin = CLEARCORE_PIN_INVALID, uint32_t clockSpeed = SPI_FULL_SPEED) {
-    return m_card.begin(&m_spi, csPin, clockSpeed);
-  }
-  /** Initialize file system for diagnostic use only.
-   * \return true for success else false.
-   */
-  bool fsBegin() {
-    return FatFileSystem::begin(card());
-  }
+public:
+    /** Initialize SD card and file system.
+     *
+     * \param[in] csPin SD card chip select pin.
+     * \param[in] spiSettings SPI speed, mode, and bit order.
+     * \return true for success else false.
+     */
+    bool begin(uint8_t csPin = CLEARCORE_PIN_INVALID, uint32_t clockSpeed = SPI_FULL_SPEED) {
+        return m_card.begin(&m_spi, csPin, clockSpeed) &&
+               SdFileSystem::begin();
+    }
+    /** Initialize SD card for diagnostic use only.
+     *
+     * \param[in] csPin SD card chip select pin.
+     * \param[in] settings SPI speed, mode, and bit order.
+     * \return true for success else false.
+     */
+    bool cardBegin(uint8_t csPin = CLEARCORE_PIN_INVALID, uint32_t clockSpeed = SPI_FULL_SPEED) {
+        return m_card.begin(&m_spi, csPin, clockSpeed);
+    }
+    /** Initialize file system for diagnostic use only.
+     * \return true for success else false.
+     */
+    bool fsBegin() {
+        return FatFileSystem::begin(card());
+    }
 
-  /** Initialize and play WAV file using ClearCoreTMRpcm
-   *  Make sure to initialize the SD card before playing a file
-   *
-   * \param[in] char* filename, name of file to open
-   * \param[in] int volume, value from 0 to 100 that controls the volume of the WAV file playback
-   * \param[in] DigitalInOutHBridge audioOut, specify the connector to play audio out of (IO4 to IO5)
-   */
-  void playFile(const char* filename, int volume = 40, DigitalInOutHBridge audioOut = ConnectorIO5){
-	ClearCoreTMRpcm player(volume, audioOut);
-	player.Play(filename);
-  }
+    /** Initialize and play WAV file using ClearCoreTMRpcm
+     *  Make sure to initialize the SD card before playing a file
+     *
+     * \param[in] char* filename, name of file to open
+     * \param[in] int volume, value from 0 to 100 that controls the volume of the WAV file playback
+     * \param[in] DigitalInOutHBridge audioOut, specify the connector to play audio out of (IO4 to IO5)
+     */
+    void playFile(const char *filename, int volume = 40, DigitalInOutHBridge audioOut = ConnectorIO5) {
+        ClearCoreTMRpcm player(volume, audioOut);
+        player.Play(filename);
+    }
 
- private:
-  SdFatSpiDriver m_spi;
+private:
+    SdFatSpiDriver m_spi;
 };
 //=============================================================================
 #if ENABLE_EXTENDED_TRANSFER_CLASS || defined(DOXYGEN)
@@ -139,20 +139,20 @@ class SdFat : public SdFileSystem<SdSpiCard> {
  * \brief SdFat class with extended SD I/O.
  */
 class SdFatEX : public SdFileSystem<SdSpiCardEX> {
- public:
-  /** Initialize SD card and file system.
-  *
-  * \param[in] csPin SD card chip select pin.
-  * \param[in] spiSettings SPI speed, mode, and bit order.
-  * \return true for success else false.
-  */
-  bool begin(uint8_t csPin = CLEARCORE_PIN_INVALID, uint32_t clockSpeed = SPI_FULL_SPEED) {
-    return m_card.begin(&m_spi, csPin, clockSpeed) &&
-           SdFileSystem::begin();
-  }
+public:
+    /** Initialize SD card and file system.
+    *
+    * \param[in] csPin SD card chip select pin.
+    * \param[in] spiSettings SPI speed, mode, and bit order.
+    * \return true for success else false.
+    */
+    bool begin(uint8_t csPin = CLEARCORE_PIN_INVALID, uint32_t clockSpeed = SPI_FULL_SPEED) {
+        return m_card.begin(&m_spi, csPin, clockSpeed) &&
+               SdFileSystem::begin();
+    }
 
- private:
-  SdFatSpiDriver m_spi;
+private:
+    SdFatSpiDriver m_spi;
 };
 
 #endif  // ENABLE_EXTENDED_TRANSFER_CLASS || defined(DOXYGEN)
@@ -162,16 +162,16 @@ class SdFatEX : public SdFileSystem<SdSpiCardEX> {
  * \brief Raw access to SD and SDHC card using default SPI library.
  */
 class Sd2Card : public SdSpiCard {
- public:
-  /** Initialize the SD card.
-   * \param[in] csPin SD chip select pin.
-   * \param[in] settings SPI speed, mode, and bit order.
-   * \return true for success else false.
-   */
-  bool begin(uint8_t csPin = CLEARCORE_PIN_INVALID, uint32_t clockSpeed = SD_SCK_MHZ(50)) {
-    return SdSpiCard::begin(&m_spi, csPin, clockSpeed);
-  }
- private:
-  SdFatSpiDriver m_spi;
+public:
+    /** Initialize the SD card.
+     * \param[in] csPin SD chip select pin.
+     * \param[in] settings SPI speed, mode, and bit order.
+     * \return true for success else false.
+     */
+    bool begin(uint8_t csPin = CLEARCORE_PIN_INVALID, uint32_t clockSpeed = SD_SCK_MHZ(50)) {
+        return SdSpiCard::begin(&m_spi, csPin, clockSpeed);
+    }
+private:
+    SdFatSpiDriver m_spi;
 };
 #endif  // SdFat_h

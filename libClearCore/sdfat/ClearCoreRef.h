@@ -39,25 +39,25 @@ typedef uint8_t pin_size_t;
 
 
 typedef enum {
-	LOW = 0,
-	HIGH = 1,
-	CHANGE = 2,
-	FALLING = 3,
-	RISING = 4,
+    LOW = 0,
+    HIGH = 1,
+    CHANGE = 2,
+    FALLING = 3,
+    RISING = 4,
 } PinStatus;
 
 typedef enum {
-	INPUT = 0x0,
-	OUTPUT = 0x1,
-	INPUT_PULLUP = 0x2,
+    INPUT = 0x0,
+    OUTPUT = 0x1,
+    INPUT_PULLUP = 0x2,
 } PinMode;
 
-    /**
-        \brief This function sends data to a Clear Core connector
+/**
+    \brief This function sends data to a Clear Core connector
 
-        \param[in] conNum, specifies the pin connection number
-		\param[in] ulVal, state being set of the specified connector
-    **/
+    \param[in] conNum, specifies the pin connection number
+    \param[in] ulVal, state being set of the specified connector
+**/
 void digitalWriteClearCore(pin_size_t conNum, PinStatus ulVal);
 
 /**
@@ -66,58 +66,58 @@ void digitalWriteClearCore(pin_size_t conNum, PinStatus ulVal);
         implementations.
 
         \param[in] pinNumber, the number of the pin being set
-		\param[in] ulMode, the mode the specified pin is set to
+        \param[in] ulMode, the mode the specified pin is set to
     **/
 void pinModeClearCore(pin_size_t pinNumber, uint32_t ulMode);
 
-    /**
-        \brief This function updates the Clear Core status register if there is an error
+/**
+    \brief This function updates the Clear Core status register if there is an error
 
-        \param[in] errorCode An error code; 0 = no error, !0 = error
-    **/
+    \param[in] errorCode An error code; 0 = no error, !0 = error
+**/
 void setSDErrorCode(uint16_t errorCode);
 
-    /**
-        \brief This function returns false if a transfer is in progress, true if not
-    **/
+/**
+    \brief This function returns false if a transfer is in progress, true if not
+**/
 bool getSDTransferComplete();
 
-    /**
-        \brief Clear Core SPI connection class
+/**
+    \brief Clear Core SPI connection class
 
-        \param[in] &thePort, the adress of the SPI or serial port
-		\param[in] isCom, specifies whether
-    **/
+    \param[in] &thePort, the adress of the SPI or serial port
+    \param[in] isCom, specifies whether
+**/
 class CCSPI {
-	public:
-	CCSPI(ClearCore::SerialBase &thePort, bool isCom);
+public:
+    CCSPI(ClearCore::SerialBase &thePort, bool isCom);
 
-	uint8_t transfer(uint8_t data);
-	uint16_t transfer16(uint16_t data);
-	void transfer(void *buf, size_t count);
-	void transfer(const void *txbuf, void *rxbuf, size_t count,
-	bool block = true);
-	void waitForTransfer(void);
+    uint8_t transfer(uint8_t data);
+    uint16_t transfer16(uint16_t data);
+    void transfer(void *buf, size_t count);
+    void transfer(const void *txbuf, void *rxbuf, size_t count,
+                  bool block = true);
+    void waitForTransfer(void);
 
-	// Transaction Functions
-	void usingInterrupt(int interruptNumber);
-	void notUsingInterrupt(int interruptNumber);
-	void beginTransaction();
-	void endTransaction(void);
+    // Transaction Functions
+    void usingInterrupt(int interruptNumber);
+    void notUsingInterrupt(int interruptNumber);
+    void beginTransaction();
+    void endTransaction(void);
 
-	void begin(uint32_t clock);
-	void end();
+    void begin(uint32_t clock);
+    void end();
 
-	void setDataMode(uint8_t uc_mode);
-	void setClockDivider(uint8_t uc_div);
-	void SetClockSpeed(uint32_t clockSpeed);
+    void setDataMode(uint8_t uc_mode);
+    void setClockDivider(uint8_t uc_div);
+    void SetClockSpeed(uint32_t clockSpeed);
 
-	private:
-	void config();
+private:
+    void config();
 
-	ClearCore::SerialBase *m_serial;
-	bool m_isCom;
-	uint32_t m_clock;
+    ClearCore::SerialBase *m_serial;
+    bool m_isCom;
+    uint32_t m_clock;
 
 };
 

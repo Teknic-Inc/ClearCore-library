@@ -22,10 +22,10 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
- /**
- * \file
- * \brief Define block driver.
- */
+/**
+* \file
+* \brief Define block driver.
+*/
 #ifndef BlockDriver_h
 #define BlockDriver_h
 #include "FatLib/BaseBlockDriver.h"
