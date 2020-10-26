@@ -36,7 +36,7 @@
 //------------------------------------------------------------------------------
 /** SDCARD_SPI is defined if board has built-in SD card socket */
 #ifndef SDCARD_SPI
-#define SDCARD_SPI SPI
+    #define SDCARD_SPI SPI
 #endif  // SDCARD_SPI
 //------------------------------------------------------------------------------
 /**
@@ -45,95 +45,95 @@
  */
 
 class SdSpiLibDriver {
- public:
-  /** Activate SPI hardware. */
-  void activate() {
-    SDCARD_SPI.beginTransaction();
-  }
-  /** Deactivate SPI hardware. */
-  void deactivate() {
-    SDCARD_SPI.endTransaction();
-  }
-  /** Initialize the SPI bus.
-   *
-   * \param[in] csPin SD card chip select pin.
-   */
-  void begin(uint8_t csPin,uint32_t clockSpeed) {
-    m_csPin = csPin;
-	digitalWriteClearCore(csPin, (PinStatus)HIGH);
-    pinModeClearCore(csPin, OUTPUT);
-    SDCARD_SPI.begin(clockSpeed);
-  }
-  /** Receive a byte.
-   *
-   * \return The byte.
-   */
-  uint8_t receive() {
-    return SDCARD_SPI.transfer( 0XFF);
-  }
-  /** Receive multiple bytes.
-  *
-  * \param[out] buf Buffer to receive the data.
-  * \param[in] n Number of bytes to receive.
-  *
-  * \return Zero for no error or nonzero error code.
-  */
-  uint8_t receive(uint8_t* buf, size_t n) {
-	for (size_t i = 0; i < n; i++) {
-		buf[i] = 0xFF;
-	}
-    const uint8_t *txbuff = buf;
-	//blocking is disabled by default
-	SDCARD_SPI.transfer(txbuff,buf,n,DONT_WAIT_FOR_TRANSFER);
-	//Make sure to update value before leaving
-	SdCard.SDCardISR();
-	while(!getSDTransferComplete()){
-		//SPI transfer is blocked here
-		continue;
-	}
+public:
+    /** Activate SPI hardware. */
+    void activate() {
+        SDCARD_SPI.beginTransaction();
+    }
+    /** Deactivate SPI hardware. */
+    void deactivate() {
+        SDCARD_SPI.endTransaction();
+    }
+    /** Initialize the SPI bus.
+     *
+     * \param[in] csPin SD card chip select pin.
+     */
+    void begin(uint8_t csPin, uint32_t clockSpeed) {
+        m_csPin = csPin;
+        digitalWriteClearCore(csPin, (PinStatus)HIGH);
+        pinModeClearCore(csPin, OUTPUT);
+        SDCARD_SPI.begin(clockSpeed);
+    }
+    /** Receive a byte.
+     *
+     * \return The byte.
+     */
+    uint8_t receive() {
+        return SDCARD_SPI.transfer(0XFF);
+    }
+    /** Receive multiple bytes.
+    *
+    * \param[out] buf Buffer to receive the data.
+    * \param[in] n Number of bytes to receive.
+    *
+    * \return Zero for no error or nonzero error code.
+    */
+    uint8_t receive(uint8_t *buf, size_t n) {
+        for (size_t i = 0; i < n; i++) {
+            buf[i] = 0xFF;
+        }
+        const uint8_t *txbuff = buf;
+        //blocking is disabled by default
+        SDCARD_SPI.transfer(txbuff, buf, n, DONT_WAIT_FOR_TRANSFER);
+        //Make sure to update value before leaving
+        SdCard.SDCardISR();
+        while (!getSDTransferComplete()) {
+            //SPI transfer is blocked here
+            continue;
+        }
 
-    return 0;
-  }
-  /** Send a byte.
-   *
-   * \param[in] data Byte to send
-   */
-  void send(uint8_t data) {
-    SDCARD_SPI.transfer(data);
-  }
-  /** Send multiple bytes.
-   *
-   * \param[in] buf Buffer for data to be sent.
-   * \param[in] n Number of bytes to send.
-   */
-  void send(const uint8_t* buf, size_t n) {
-	   SDCARD_SPI.transfer(buf,NULL,n,DONT_WAIT_FOR_TRANSFER);
-	    //Make sure to update SD ISR before leaving
-		SdCard.SDCardISR();	
-		while(!getSDTransferComplete()){
-			//SPI transfer is blocked here
-			continue;
-		}
-  }
-  /** Set CS low. */
-  void select() {
-	digitalWriteClearCore(m_csPin, (PinStatus)LOW);
-  }
-  /** Set CS high. */
-  void unselect() {
-	digitalWriteClearCore(m_csPin, (PinStatus)HIGH);
-	
-  }
+        return 0;
+    }
+    /** Send a byte.
+     *
+     * \param[in] data Byte to send
+     */
+    void send(uint8_t data) {
+        SDCARD_SPI.transfer(data);
+    }
+    /** Send multiple bytes.
+     *
+     * \param[in] buf Buffer for data to be sent.
+     * \param[in] n Number of bytes to send.
+     */
+    void send(const uint8_t *buf, size_t n) {
+        SDCARD_SPI.transfer(buf, NULL, n, DONT_WAIT_FOR_TRANSFER);
+        //Make sure to update SD ISR before leaving
+        SdCard.SDCardISR();
+        while (!getSDTransferComplete()) {
+            //SPI transfer is blocked here
+            continue;
+        }
+    }
+    /** Set CS low. */
+    void select() {
+        digitalWriteClearCore(m_csPin, (PinStatus)LOW);
+    }
+    /** Set CS high. */
+    void unselect() {
+        digitalWriteClearCore(m_csPin, (PinStatus)HIGH);
 
-  /** Set SPI port.
-   * \param[in] spiPort Hardware SPI port.
-   */
+    }
+
+    /** Set SPI port.
+     * \param[in] spiPort Hardware SPI port.
+     */
 //   void setPort(SPIClass* spiPort) {
 //     m_spi = spiPort ? spiPort : &SDCARD_SPI;
 //   }
- private:
-  CCSPI* m_spi;
-  uint8_t m_csPin;
+private:
+    CCSPI *m_spi;
+    uint8_t m_csPin;
 };
 //------------------------------------------------------------------------------
 // Choose SPI driver for SdFat and SdFatEX classes.

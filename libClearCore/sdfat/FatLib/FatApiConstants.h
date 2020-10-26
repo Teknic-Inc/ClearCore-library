@@ -43,8 +43,8 @@ typedef uint8_t oflag_t;
 #define O_WRITE   O_WRONLY
 
 inline bool isWriteMode(oflag_t oflag) {
-  oflag &= O_ACCMODE;
-  return oflag == O_WRONLY || oflag == O_RDWR;
+    oflag &= O_ACCMODE;
+    return oflag == O_WRONLY || oflag == O_RDWR;
 }
 
 // FatFile class static and const definitions

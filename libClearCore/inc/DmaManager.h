@@ -36,60 +36,60 @@
 #ifndef HIDE_FROM_DOXYGEN
 namespace ClearCore {
 
-/* DMA channels */
-typedef enum {
-    DMA_ADC_RESULTS,    ///< ADC result data
-    DMA_ADC_SEQUENCE,   ///< ADC conversion info
-    DMA_SERCOM0_SPI_RX, ///< COM1 SPI streaming input
-    DMA_SERCOM0_SPI_TX, ///< COM1 SPI streaming output
-	DMA_SERCOM4_SPI_RX, ///< SD SPI streaming input
-    DMA_SERCOM4_SPI_TX, ///< SD SPI streaming output
-    DMA_SERCOM7_SPI_RX, ///< COM0 SPI streaming input
-    DMA_SERCOM7_SPI_TX, ///< COM0 SPI streaming output
-    DMA_CHANNEL_COUNT,  // Keep at end
-    DMA_INVALID_CHANNEL // Placeholder for unset values
-} DmaChannels;
-
-/**
-    \brief DMA Peripheral Manager for the ClearCore Board
-
-    This class manages the DMA transfers on the Teknic ClearCore.
-**/
-class DmaManager {
-    friend class SysManager;
-
-public:
-    static DmacChannel *Channel(DmaChannels index);
-    static DmacDescriptor *BaseDescriptor(DmaChannels index);
+    /* DMA channels */
+    typedef enum {
+        DMA_ADC_RESULTS,    ///< ADC result data
+        DMA_ADC_SEQUENCE,   ///< ADC conversion info
+        DMA_SERCOM0_SPI_RX, ///< COM1 SPI streaming input
+        DMA_SERCOM0_SPI_TX, ///< COM1 SPI streaming output
+        DMA_SERCOM4_SPI_RX, ///< SD SPI streaming input
+        DMA_SERCOM4_SPI_TX, ///< SD SPI streaming output
+        DMA_SERCOM7_SPI_RX, ///< COM0 SPI streaming input
+        DMA_SERCOM7_SPI_TX, ///< COM0 SPI streaming output
+        DMA_CHANNEL_COUNT,  // Keep at end
+        DMA_INVALID_CHANNEL // Placeholder for unset values
+    } DmaChannels;
 
     /**
-        Public accessor for singleton instance
+        \brief DMA Peripheral Manager for the ClearCore Board
+
+        This class manages the DMA transfers on the Teknic ClearCore.
     **/
-    static DmaManager &Instance();
-private:
+    class DmaManager {
+        friend class SysManager;
 
-    static DmacDescriptor writeBackDescriptor[DMA_CHANNEL_COUNT] __attribute__((
-                aligned(16)));
-    static DmacDescriptor descriptorBase[DMA_CHANNEL_COUNT] __attribute__((aligned(
-                16)));
+    public:
+        static DmacChannel *Channel(DmaChannels index);
+        static DmacDescriptor *BaseDescriptor(DmaChannels index);
 
-    /**
-        \brief Constructor for DmaManager
+        /**
+            Public accessor for singleton instance
+        **/
+        static DmaManager &Instance();
+    private:
 
-        Initializes member variables, doesn't do any work.
+        static DmacDescriptor writeBackDescriptor[DMA_CHANNEL_COUNT] __attribute__((
+                    aligned(16)));
+        static DmacDescriptor descriptorBase[DMA_CHANNEL_COUNT] __attribute__((aligned(
+                    16)));
 
-        \note Should not be called by anything other than SysManager
-    **/
-    DmaManager() {};
+        /**
+            \brief Constructor for DmaManager
 
-    /**
-        \brief One-time initialization of the DMAC
+            Initializes member variables, doesn't do any work.
 
-        Enables Peripheral clock and configures DMAC (Direct Memory Access
-        Controller).
-    **/
-    static void Initialize();
-}; // DmaManager
+            \note Should not be called by anything other than SysManager
+        **/
+        DmaManager() {};
+
+        /**
+            \brief One-time initialization of the DMAC
+
+            Enables Peripheral clock and configures DMAC (Direct Memory Access
+            Controller).
+        **/
+        static void Initialize();
+    }; // DmaManager
 
 } // ClearCore namespace
 

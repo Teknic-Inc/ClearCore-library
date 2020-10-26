@@ -25,40 +25,40 @@
 #include "FatFile.h"
 #include "FatFileSystem.h"
 //------------------------------------------------------------------------------
-bool FatFile::getSFN(char* name) {
-  dir_t* dir;
-  if (!isOpen()) {
-    DBG_FAIL_MACRO;
-    goto fail;
-  }
-  if (isRoot()) {
-    name[0] = '/';
-    name[1] = '\0';
+bool FatFile::getSFN(char *name) {
+    dir_t *dir;
+    if (!isOpen()) {
+        DBG_FAIL_MACRO;
+        goto fail;
+    }
+    if (isRoot()) {
+        name[0] = '/';
+        name[1] = '\0';
+        return true;
+    }
+    // cache entry
+    dir = cacheDirEntry(FatCache::CACHE_FOR_READ);
+    if (!dir) {
+        DBG_FAIL_MACRO;
+        goto fail;
+    }
+    // format name
+    dirName(dir, name);
     return true;
-  }
-  // cache entry
-  dir = cacheDirEntry(FatCache::CACHE_FOR_READ);
-  if (!dir) {
-    DBG_FAIL_MACRO;
-    goto fail;
-  }
-  // format name
-  dirName(dir, name);
-  return true;
 
 fail:
-  return false;
+    return false;
 }
 //------------------------------------------------------------------------------
-size_t FatFile::printSFN(print_t* pr) {
-  char name[13];
-  if (!getSFN(name)) {
-    DBG_FAIL_MACRO;
-    goto fail;
-  }
-  return pr->write(name);
+size_t FatFile::printSFN(print_t *pr) {
+    char name[13];
+    if (!getSFN(name)) {
+        DBG_FAIL_MACRO;
+        goto fail;
+    }
+    return pr->write(name);
 
 fail:
-  return 0;
+    return 0;
 }
 

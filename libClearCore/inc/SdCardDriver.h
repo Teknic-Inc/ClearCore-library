@@ -37,68 +37,68 @@
 
 namespace ClearCore {
 
-/**
-    \brief ClearCore SD card interface
+    /**
+        \brief ClearCore SD card interface
 
-    This class manages access to the micro SD Card reader.
-**/
-class SdCardDriver : public SerialBase {
-    friend class SysManager;
+        This class manages access to the micro SD Card reader.
+    **/
+    class SdCardDriver : public SerialBase {
+        friend class SysManager;
 
-public:
+    public:
 #ifndef HIDE_FROM_DOXYGEN
 
-    /**
-        \brief Default constructor so this connector can be a global and
-        constructed by SysManager
-    **/
-    SdCardDriver() {};
+        /**
+            \brief Default constructor so this connector can be a global and
+            constructed by SysManager
+        **/
+        SdCardDriver() {};
 
-    /**
-        \brief Signal an error in the SD card
+        /**
+            \brief Signal an error in the SD card
 
-        \param[in] errorCode An error code; constants are defined in SD.h
-    **/
-    void SetErrorCode(uint8_t errorCode) {
-        m_errorCode = errorCode;
-    }
+            \param[in] errorCode An error code; constants are defined in SD.h
+        **/
+        void SetErrorCode(uint8_t errorCode) {
+            m_errorCode = errorCode;
+        }
 
-	bool getSDTransferComplete(){
-		return SDTransferComplete;
-	}
+        bool getSDTransferComplete() {
+            return SDTransferComplete;
+        }
 
-    /**
-        \brief Check if the SD card is in a fault state
+        /**
+            \brief Check if the SD card is in a fault state
 
-        \return True if an error code is present
-    **/
-    bool IsInFault() {
-        return (m_errorCode != 0);
-    }
+            \return True if an error code is present
+        **/
+        bool IsInFault() {
+            return (m_errorCode != 0);
+        }
 
-    /**
-        \brief Checks if the DMA is actively in use
+        /**
+            \brief Checks if the DMA is actively in use
 
-    **/
-    void SDCardISR(){
-			SDTransferComplete = this->SpiAsyncCheckComplete();
-	}
+        **/
+        void SDCardISR() {
+            SDTransferComplete = this->SpiAsyncCheckComplete();
+        }
 
 #endif // HIDE_FROM_DOXYGEN
 
-private:
-    uint8_t m_errorCode;
-	bool SDTransferComplete = true;	//flag accessed by the SDfat library to check if transfered SD data is done
+    private:
+        uint8_t m_errorCode;
+        bool SDTransferComplete = true; //flag accessed by the SDfat library to check if transfered SD data is done
 
-    /**
-        Construction, wires in pins and non-volatile info.
-    **/
-    SdCardDriver(const PeripheralRoute *misoPin,
-                 const PeripheralRoute *ssPin,
-                 const PeripheralRoute *sckPin,
-                 const PeripheralRoute *mosiPin,
-                 uint8_t peripheral);
-};
+        /**
+            Construction, wires in pins and non-volatile info.
+        **/
+        SdCardDriver(const PeripheralRoute *misoPin,
+                     const PeripheralRoute *ssPin,
+                     const PeripheralRoute *sckPin,
+                     const PeripheralRoute *mosiPin,
+                     uint8_t peripheral);
+    };
 
 } // ClearCore namespace
 
