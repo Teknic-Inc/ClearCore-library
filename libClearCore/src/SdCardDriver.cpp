@@ -46,6 +46,8 @@ SdCardDriver::SdCardDriver(const PeripheralRoute *misoInfo,
     PortMode(SerialBase::SPI);
     SpiClock(SCK_LOW, LEAD_SAMPLE);
     PortOpen();
+    currentState = IDLE;
 }
+
 
 } // ClearCore namespace

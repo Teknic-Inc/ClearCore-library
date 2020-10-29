@@ -299,6 +299,9 @@ private:
     bool readBlock(uint32_t block, uint8_t *dst) {
         return m_blockDev->readBlock(block, dst);
     }
+    bool readBlockASync(uint32_t block, uint8_t *dst) {
+        return m_blockDev->readBlockASync(block, dst);
+    }
     bool syncBlocks() {
         return m_blockDev->syncBlocks();
     }
@@ -308,6 +311,9 @@ private:
     bool readBlocks(uint32_t block, uint8_t *dst, size_t nb) {
         return m_blockDev->readBlocks(block, dst, nb);
     }
+    bool readBlocksASync(uint32_t block, uint8_t *dst, size_t nb) {
+        return m_blockDev->readBlocksASync(block, dst, nb);
+    }
     bool writeBlocks(uint32_t block, const uint8_t *src, size_t nb) {
         return m_blockDev->writeBlocks(block, src, nb);
     }
@@ -316,6 +322,12 @@ private:
     }
     void updateFreeClusterCount(int32_t change) {
         (void)change;
+    }
+    void setSDErrorCode(uint16_t errorCode){
+        m_blockDev->spiSetSDErrorCode(errorCode);
+    }
+    bool getSDTransferComplete(){
+        return m_blockDev->spiGetSDTransferComplete();
     }
 
 // block caches

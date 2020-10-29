@@ -25,7 +25,6 @@
 #ifndef SdSpiBaseDriver_h
 #define SdSpiBaseDriver_h
 #include <stdint.h>
-#include "ClearCoreRef.h"
 /**
  * \class SdSpiBaseDriver
  * \brief SPI base driver.

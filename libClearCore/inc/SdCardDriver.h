@@ -35,6 +35,7 @@
 #include "PeripheralRoute.h"
 #include "SerialBase.h"
 
+
 namespace ClearCore {
 
     /**
@@ -48,6 +49,7 @@ namespace ClearCore {
     public:
 #ifndef HIDE_FROM_DOXYGEN
 
+        
         /**
             \brief Default constructor so this connector can be a global and
             constructed by SysManager
@@ -67,6 +69,10 @@ namespace ClearCore {
             return SDTransferComplete;
         }
 
+        bool getSDBlockTransferComplete() {
+            return SDBlockTransferComplete;
+        }
+
         /**
             \brief Check if the SD card is in a fault state
 
@@ -80,15 +86,100 @@ namespace ClearCore {
             \brief Checks if the DMA is actively in use
 
         **/
-        void SDCardISR() {
-            SDTransferComplete = this->SpiAsyncCheckComplete();
+        void Refresh() {
+                SDTransferComplete = this->SpiAsyncCheckComplete();
+
+                switch (currentState) {
+                    case INITIALIZING:
+                     SpiTransferDataAsync(srcBuf,dstBuf,512);
+                     bufCount--;
+                     dstBuf += 512;
+                     SDReadByte = 0x0;
+                     if(bufCount == 0x0){
+                         currentState = SDState::FINISHED;
+                     }
+                     else{
+                         currentState = PROCESSING;
+                     }
+                        break;
+                    case PROCESSING:
+                        if(SDTransferComplete){
+                            SpiTransferDataAsync(&SDWriteByte,&SDReadByte,0x1);
+                            if(SDReadByte==0xFE){
+                                currentState = SDState::INITIALIZING;
+                            }
+                            else{
+                                SpiTransferDataAsync(&SDWriteByte,&SDReadByte,0x1);
+                                
+                            }
+                        }
+                        break;
+                    case FINISHED:
+                        if(SDTransferComplete){
+                            SDBlockTransferComplete = true;
+                            currentState = SDState::IDLE;
+                        }
+                        break;
+                    case IDLE:
+                    default:
+                        break;
+                }
+  
         }
+
+        void sendBlockASync(uint8_t *buf, size_t count){
+            for (size_t i = 0; i < count; i++) {
+                buf[i] = 0xFF;
+            }
+            dstBuf = buf;
+            srcBuf = reinterpret_cast<const uint8_t *>(buf);
+            bufCount = count;
+            SDBlockTransferComplete = false;
+            currentState = SDState::INITIALIZING;
+        }
+
+        void receiveBlockASync(const uint8_t *buf, size_t count){
+            srcBuf = buf;
+            dstBuf = NULL;
+            bufCount = count;
+            SDBlockTransferComplete = false;
+            currentState = INITIALIZING;
+        }
+
 
 #endif // HIDE_FROM_DOXYGEN
 
     private:
         uint8_t m_errorCode;
-        bool SDTransferComplete = true; //flag accessed by the SDfat library to check if transfered SD data is done
+        //flag accessed by the SDfat library to check if transfered SD data is done
+        bool SDTransferComplete = false;
+        bool SDBlockTransferComplete = true;
+//         typedef enum {
+//             TRANSFER_PENDING = 0,
+//             TRANSFER_STARTED = 1,
+//             TRANSFER_DONE = 2,
+//             TRANSFER_ERR = 3,
+//             TRANSFER_ERR_SD_NOT_PRESENT = 4,
+//         } Status;
+
+        typedef enum {
+            INITIALIZING,
+            PROCESSING,
+            FINISHED,
+            IDLE,
+        } SDState;
+
+        //Status currentStatus = TRANSFER_DONE;
+        SDState currentState;
+        //The single byte variables used for asynchronous transfer
+        uint8_t SDReadByte;
+        uint8_t SDWriteByte = 0xFF;
+        //The multi-byte pointers used for asynchronous transfer
+        uint8_t *dstBuf;
+        const uint8_t *srcBuf;
+        //size of the multi-byte buffers
+        size_t bufCount;
+
 
         /**
             Construction, wires in pins and non-volatile info.

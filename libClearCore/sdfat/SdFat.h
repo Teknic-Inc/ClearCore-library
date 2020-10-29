@@ -98,8 +98,15 @@ public:
      * \return true for success else false.
      */
     bool begin(uint8_t csPin = CLEARCORE_PIN_INVALID, uint32_t clockSpeed = SPI_FULL_SPEED) {
-        return m_card.begin(&m_spi, csPin, clockSpeed) &&
-               SdFileSystem::begin();
+        if(m_card.begin(&m_spi, csPin, clockSpeed) &&
+            SdFileSystem::begin()){
+            return true;
+        }
+        else{
+            return false;
+        }
+
+
     }
     /** Initialize SD card for diagnostic use only.
      *

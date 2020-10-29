@@ -24,7 +24,6 @@
  */
 #include "FatFile.h"
 #include "FatFileSystem.h"
-#include "ClearCoreRef.h"
 //------------------------------------------------------------------------------
 // Pointer to cwd directory.
 FatFile *FatFile::m_cwd = 0;
@@ -94,6 +93,7 @@ fail:
 }
 //------------------------------------------------------------------------------
 bool FatFile::close() {
+    //TODO AW move to FileSystem
     bool rtn = sync();
     m_attr = FILE_ATTR_CLOSED;
     return rtn;
@@ -163,6 +163,7 @@ fail:
 }
 //------------------------------------------------------------------------------
 bool FatFile::dirEntry(dir_t *dst) {
+
     dir_t *dir;
     // Make sure fields on device are correct.
     if (!sync()) {
@@ -228,7 +229,7 @@ uint32_t FatFile::dirSize() {
 }
 //------------------------------------------------------------------------------
 bool FatFile::readWriteComplete() {
-    return getSDTransferComplete();
+    return m_vol->getSDTransferComplete();
 }
 //------------------------------------------------------------------------------
 int16_t FatFile::fgets(char *str, int16_t num, char *delim) {
@@ -304,7 +305,7 @@ bool FatFile::mkdir(FatFile *parent, const char *path, bool pFlag) {
     return mkdir(parent, &fname);
 
 fail:
-    setSDErrorCode(1);
+    m_vol->setSDErrorCode(1);
     return false;
 }
 //------------------------------------------------------------------------------
@@ -375,7 +376,7 @@ bool FatFile::mkdir(FatFile *parent, fname_t *fname) {
     return m_vol->cacheSync();
 
 fail:
-    setSDErrorCode(0);
+    m_vol->setSDErrorCode(0);
     return false;
 }
 //------------------------------------------------------------------------------
@@ -424,7 +425,7 @@ bool FatFile::open(FatFile *dirFile, const char *path, oflag_t oflag) {
     return open(dirFile, &fname, oflag);
 
 fail:
-    setSDErrorCode(1);
+    m_vol->setSDErrorCode(1);
     return false;
 }
 //------------------------------------------------------------------------------
@@ -489,11 +490,11 @@ bool FatFile::open(FatFile *dirFile, uint16_t index, oflag_t oflag) {
         goto fail;
     }
     //Make sure no error is set
-    setSDErrorCode(0);
+    m_vol->setSDErrorCode(0);
     return true;
 
 fail:
-    setSDErrorCode(1);
+    m_vol->setSDErrorCode(1);
     return false;
 }
 //------------------------------------------------------------------------------
@@ -573,11 +574,11 @@ bool FatFile::openCachedEntry(FatFile *dirFile, uint16_t dirIndex,
         DBG_FAIL_MACRO;
         goto fail;
     }
-    setSDErrorCode(0);
+    m_vol->setSDErrorCode(0);
     return true;
 
 fail:
-    setSDErrorCode(1);
+    m_vol->setSDErrorCode(1);
     m_attr = FILE_ATTR_CLOSED;
     return false;
 }
@@ -631,7 +632,7 @@ bool FatFile::openNext(FatFile *dirFile, oflag_t oflag) {
                 DBG_FAIL_MACRO;
                 goto fail;
             }
-            setSDErrorCode(0);
+            m_vol->setSDErrorCode(0);
             return true;
         }
         else if (DIR_IS_LONG_NAME(dir)) {
@@ -647,7 +648,7 @@ bool FatFile::openNext(FatFile *dirFile, oflag_t oflag) {
     }
 
 fail:
-    setSDErrorCode(1);
+    m_vol->setSDErrorCode(1);
     return false;
 }
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -736,11 +737,11 @@ bool FatFile::openRoot(FatVolume *vol) {
     }
     // read only
     m_flags = F_READ;
-    setSDErrorCode(0);
+    m_vol->setSDErrorCode(0);
     return true;
 
 fail:
-    setSDErrorCode(1);
+    m_vol->setSDErrorCode(1);
     return false;
 }
 //------------------------------------------------------------------------------
@@ -781,6 +782,15 @@ int FatFile::read(void *buf, size_t nbyte) {
             nbyte = tmp16;
         }
     }
+//     if(nbyte>512){
+//         int bytesLeft = readInitialize(buf,nbyte);
+//         if(bytesLeft == -1 || bytesLeft>512){
+//             goto fail;
+//         }
+//         else{
+//             return nbyte - bytesLeft;
+//         }
+//     }
     toRead = nbyte;
     while (toRead) {
         size_t n;
@@ -870,6 +880,122 @@ fail:
     return -1;
 }
 //------------------------------------------------------------------------------
+int FatFile::readASync(void *buf, size_t nbyte) {
+    int8_t fg;
+    uint8_t blockOfCluster = 0;
+    uint8_t *dst = reinterpret_cast<uint8_t *>(buf);
+    uint16_t offset;
+    size_t toRead;
+    uint32_t block;  // raw device block number
+    cache_t *pc;
+
+    // error if not open for read
+    if (!isOpen() || !(m_flags & F_READ)) {
+        DBG_FAIL_MACRO;
+        goto fail;
+    }
+
+    if (isFile()) {
+        uint32_t tmp32 = m_fileSize - m_curPosition;
+        if (nbyte >= tmp32) {
+            nbyte = tmp32;
+        }
+    }
+    else if (isRootFixed()) {
+        uint16_t tmp16 = 32 * m_vol->m_rootDirEntryCount - (uint16_t)m_curPosition;
+        if (nbyte > tmp16) {
+            nbyte = tmp16;
+        }
+    }
+    toRead = nbyte;
+    while (toRead >= 512) {
+        size_t n;
+        offset = m_curPosition & 0X1FF;  // offset in block
+        if (isRootFixed()) {
+            block = m_vol->rootDirStart() + (m_curPosition >> 9);
+        }
+        else {
+            blockOfCluster = m_vol->blockOfCluster(m_curPosition);
+            if (offset == 0 && blockOfCluster == 0) {
+                // start of new cluster
+                if (m_curPosition == 0) {
+                    // use first cluster in file
+                    m_curCluster = isRoot32() ? m_vol->rootDirStart() : m_firstCluster;
+                }
+                else {
+                    // get next cluster from FAT
+                    fg = m_vol->fatGet(m_curCluster, &m_curCluster);
+                    if (fg < 0) {
+                        DBG_FAIL_MACRO;
+                        goto fail;
+                    }
+                    if (fg == 0) {
+                        if (isDir()) {
+                            break;
+                        }
+                        DBG_FAIL_MACRO;
+                        goto fail;
+                    }
+                }
+            }
+            block = m_vol->clusterFirstBlock(m_curCluster) + blockOfCluster;
+        }
+        if (offset != 0 || toRead < 512 || block == m_vol->cacheBlockNumber()) {
+            // amount to be read from current block
+            n = 512 - offset;
+            if (n > toRead) {
+                n = toRead;
+            }
+            // read block to cache and copy data to caller
+            pc = m_vol->cacheFetchData(block, FatCache::CACHE_FOR_READ);
+            if (!pc) {
+                DBG_FAIL_MACRO;
+                goto fail;
+            }
+            uint8_t *src = pc->data + offset;
+            memcpy(dst, src, n);
+        }
+        else if (toRead >= 1024) {
+            size_t nb = toRead >> 9;
+            if (!isRootFixed()) {
+                uint8_t mb = m_vol->blocksPerCluster() - blockOfCluster;
+                if (mb < nb) {
+                    nb = mb;
+                }
+            }
+            n = 512 * nb;
+            if (m_vol->cacheBlockNumber() <= block
+                    && block < (m_vol->cacheBlockNumber() + nb)) {
+                // flush cache if a block is in the cache
+                if (!m_vol->cacheSyncData()) {
+                    DBG_FAIL_MACRO;
+                    goto fail;
+                }
+            }
+            if (!m_vol->readBlocksASync(block, dst, nb)) {
+                DBG_FAIL_MACRO;
+                goto fail;
+            }
+        }
+        else {
+            // read single block
+            n = 512;
+            if (!m_vol->readBlock(block, dst)) {
+                DBG_FAIL_MACRO;
+                goto fail;
+            }
+        }
+        dst += n;
+        m_curPosition += n;
+        toRead -= n;
+    }
+    return nbyte - toRead;
+
+fail:
+    m_error |= READ_ERROR;
+    return -1;
+}
+//------------------------------------------------------------------------------
 int8_t FatFile::readDir(dir_t *dir) {
     int16_t n;
     // if not a directory file or miss-positioned return an error
@@ -932,7 +1058,6 @@ bool FatFile::remove(FatFile *dirFile, const char *path) {
     return file.remove();
 
 fail:
-    setSDErrorCode(1);
     return false;
 }
 //------------------------------------------------------------------------------

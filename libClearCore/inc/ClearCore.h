@@ -111,6 +111,7 @@ extern SysTiming &TimingMgr;
 
 /// SD card
 extern SdCardDriver SdCard;
+//extern SdFat SdLibrary;
 
 /// System manager
 extern SysManager SysMgr;

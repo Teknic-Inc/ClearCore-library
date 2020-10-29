@@ -23,7 +23,11 @@
  * DEALINGS IN THE SOFTWARE.
  */
 #include "SdSpiCard.h"
-#include "ClearCoreRef.h"
+#include "SdCardDriver.h"
+
+ namespace ClearCore {
+     extern SdCardDriver SdCard;
+ }
 //==============================================================================
 // debug trace macro
 #define SD_TRACE(m, b)
@@ -170,7 +174,7 @@ bool SdSpiCard::begin(SdSpiDriver *spi, uint8_t csPin, uint32_t clockSpeed) {
         spiSend(STOP_TRAN_TOKEN);
         // finish block transfer
         for (int i = 0; i < 520; i++) {
-            spiReceive();
+            SdCard.SpiTransferData(0XFF);
         }
     }
     DBG_END_TIME(DBG_CMD0_TIME);
@@ -218,13 +222,13 @@ bool SdSpiCard::begin(SdSpiDriver *spi, uint8_t csPin, uint32_t clockSpeed) {
     }
     spiStop();
     //if initialization succeeds, make sure error code is clear
-    setSDErrorCode(0);
+    spiSetSDErrorCode(0);
     return true;
 
 fail:
     spiStop();
     //if initialization fails, send error code 1 to Clear Core
-    setSDErrorCode(1);
+    spiSetSDErrorCode(1);
     return false;
 }
 //------------------------------------------------------------------------------
@@ -258,6 +262,33 @@ uint8_t SdSpiCard::cardCommand(uint8_t cmd, uint32_t arg) {
     for (uint8_t i = 0; ((m_status = spiReceive()) & 0X80) && i < 10; i++) {
     }
     return m_status;
+}
+//------------------------------------------------------------------------------
+// send command and return zero for OK.
+uint8_t SdSpiCard::cardCommandASync(uint8_t cmd, uint32_t arg) {
+    // select card
+    if (!m_spiActive) {
+        spiStart();
+    }
+    // send command
+    spiSend(cmd | 0x40);
+
+    // send argument
+    uint8_t *pa = reinterpret_cast<uint8_t *>(&arg);
+    for (int8_t i = 3; i >= 0; i--) {
+        spiSend(pa[i]);
+    }
+    // send CRC - correct for CMD0 with arg zero or CMD8 with arg 0X1AA
+    spiSend(cmd == CMD0 ? 0X95 : 0X87);
+
+    // discard first fill byte to avoid MISO pull-up problem.
+    spiReceive();
+
+    // there are 1-8 fill bytes before response.  fill bytes should be 0XFF.
+    for (uint8_t i = 0; i < 10; i++) {
+        spiReceive();
+    }
+    return 0;
 }
 //------------------------------------------------------------------------------
 uint32_t SdSpiCard::cardCapacity() {
@@ -360,6 +391,27 @@ fail:
     return false;
 }
 //------------------------------------------------------------------------------
+bool SdSpiCard::readBlockASync(uint32_t blockNumber, uint8_t *dst) {
+    SD_TRACE("RB", blockNumber);
+    // use address if not SDHC card
+    if (type() != SD_CARD_TYPE_SDHC) {
+        blockNumber <<= 9;
+    }
+    if (cardCommand(CMD17, blockNumber)) {
+        error(SD_CARD_ERROR_CMD17);
+        goto fail;
+    }
+    if (!readData(dst, 512)) {
+        goto fail;
+    }
+    spiStop();
+    return true;
+
+    fail:
+    spiStop();
+    return false;
+}
+//------------------------------------------------------------------------------
 bool SdSpiCard::readBlocks(uint32_t block, uint8_t *dst, size_t count) {
     if (!readStart(block)) {
         return false;
@@ -369,7 +421,42 @@ bool SdSpiCard::readBlocks(uint32_t block, uint8_t *dst, size_t count) {
             return false;
         }
     }
+
     return readStop();
+}
+//------------------------------------------------------------------------------
+bool SdSpiCard::readBlocksASync(uint32_t block, uint8_t *dst, size_t count) {
+    if (!readStart(block)) {
+        return false;
+    }
+    DBG_BEGIN_TIME(DBG_WAIT_READ);
+    // wait for start block token
+    uint16_t t0 = curTimeMS();
+    while ((m_status = spiReceive()) == 0XFF) {
+        if (isTimedOut(t0, SD_READ_TIMEOUT)) {
+           error(SD_CARD_ERROR_READ_TIMEOUT);
+           goto fail;
+        }
+    }
+    DBG_END_TIME(DBG_WAIT_READ);
+    if (m_status != DATA_START_BLOCK) {
+        error(SD_CARD_ERROR_READ);
+        goto fail;
+    }
+    // transfer data
+    SdCard.sendBlockASync(dst,count);
+
+    while(!SdCard.getSDBlockTransferComplete()){
+        Delay_ms(1);
+        continue;
+    }
+
+
+    return readStop();
+
+fail:
+    spiStop();
+    return false;
 }
 //------------------------------------------------------------------------------
 bool SdSpiCard::readData(uint8_t *dst) {
@@ -534,20 +621,20 @@ bool SdSpiCard::writeBlock(uint32_t blockNumber, const uint8_t *src) {
     }
 
 
-#if CHECK_FLASH_PROGRAMMING
-    // wait for flash programming to complete
-    DBG_BEGIN_TIME(DBG_WRITE_FLASH);
-    if (!waitNotBusy(SD_WRITE_TIMEOUT)) {
-        error(SD_CARD_ERROR_FLASH_PROGRAMMING);
-        goto fail;
-    }
-    DBG_END_TIME(DBG_WRITE_FLASH);
-    // response is r2 so get and check two bytes for nonzero
-    if (cardCommand(CMD13, 0) || spiReceive()) {
-        error(SD_CARD_ERROR_CMD13);
-        goto fail;
-    }
-#endif  // CHECK_PROGRAMMING
+// #if CHECK_FLASH_PROGRAMMING
+//     // wait for flash programming to complete
+//     DBG_BEGIN_TIME(DBG_WRITE_FLASH);
+//     if (!waitNotBusy(SD_WRITE_TIMEOUT)) {
+//         error(SD_CARD_ERROR_FLASH_PROGRAMMING);
+//         goto fail;
+//     }
+//     DBG_END_TIME(DBG_WRITE_FLASH);
+//     // response is r2 so get and check two bytes for nonzero
+//     if (cardCommand(CMD13, 0) || spiReceive()) {
+//         error(SD_CARD_ERROR_CMD13);
+//         goto fail;
+//     }
+// #endif  // CHECK_PROGRAMMING
 
     spiStop();
     return true;

@@ -31,7 +31,6 @@
 #include <stddef.h>
 #include "SysCall.h"
 #include "SdInfo.h"
-#include "ClearCoreRef.h"
 #include "../FatLib/BaseBlockDriver.h"
 #include "../SpiDriver/SdSpiDriver.h"
 //==============================================================================
@@ -117,6 +116,7 @@ public:
      * the value false is returned for failure.
      */
     bool readBlock(uint32_t lba, uint8_t *dst);
+    bool readBlockASync(uint32_t lba, uint8_t *dst);
     /**
      * Read multiple 512 byte blocks from an SD card.
      *
@@ -127,6 +127,7 @@ public:
      * the value false is returned for failure.
      */
     bool readBlocks(uint32_t lba, uint8_t *dst, size_t nb);
+    bool readBlocksASync(uint32_t block, uint8_t *dst, size_t count);
     /**
      * Read a card's CID register. The CID contains card identification
      * information such as Manufacturer ID, Product name, Product serial
@@ -257,6 +258,13 @@ public:
     /** Set CS high and deactivate the card. */
     void spiStop();
 
+    bool spiGetSDTransferComplete(){
+        return m_spiDriver->getSDTransferComplete();
+    }
+    void spiSetSDErrorCode(uint16_t errorCode){
+        m_spiDriver->setSDErrorCode(errorCode);
+    }
+
 private:
     // private functions
     uint8_t cardAcmd(uint8_t cmd, uint32_t arg) {
@@ -264,8 +272,10 @@ private:
         return cardCommand(cmd, arg);
     }
     uint8_t cardCommand(uint8_t cmd, uint32_t arg);
+    uint8_t cardCommandASync(uint8_t cmd, uint32_t arg);
     bool isTimedOut(uint16_t startMS, uint16_t timeoutMS);
     bool readData(uint8_t *dst, size_t count);
+    bool readDataInitialize(uint8_t *dst, size_t count);
     bool readRegister(uint8_t cmd, void *buf);
 
     void type(uint8_t value) {

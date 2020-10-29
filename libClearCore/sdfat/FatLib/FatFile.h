@@ -660,6 +660,7 @@ public:
      * or an I/O error occurred.
      */
     int read(void *buf, size_t nbyte);
+    int readASync(void *buf, size_t nbyte);
     /** Read the next directory entry from a directory file.
      *
      * \param[out] dir The dir_t struct that will receive the data.
