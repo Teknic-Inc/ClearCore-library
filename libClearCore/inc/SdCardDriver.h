@@ -95,7 +95,7 @@ namespace ClearCore {
                      bufCount--;
                      dstBuf += 512;
                      srcBuf += 512;
-                     SDReadByte = 0x0;
+                     SDReadByte[9] = 0x0;
                      if(bufCount == 0x0){
                          currentState = SDState::FINISHED;
                      }
@@ -105,11 +105,11 @@ namespace ClearCore {
                         break;
                     case PROCESSING:
                         if(SDTransferComplete){
-                            if(SDReadByte==0xFE){
+                            if(SDReadByte[9]==0xFE){
                                 currentState = SDState::INITIALIZING;
                             }
                             else{
-                                SpiTransferDataAsync(&SDWriteByte,&SDReadByte,0x1);
+                                SpiTransferDataAsync(SDWriteByte,SDReadByte,10);
                                 
                             }
                         }
@@ -178,8 +178,8 @@ namespace ClearCore {
         //Status currentStatus = TRANSFER_DONE;
         SDState currentState;
         //The single byte variables used for asynchronous transfer
-        uint8_t SDReadByte;
-        uint8_t SDWriteByte;
+        uint8_t SDReadByte[10];
+        uint8_t SDWriteByte[10];
         //The multi-byte pointers used for asynchronous transfer
         uint8_t *dstBuf;
         uint8_t *srcBuf;

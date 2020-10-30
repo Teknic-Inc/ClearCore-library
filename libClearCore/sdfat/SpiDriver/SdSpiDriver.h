@@ -113,7 +113,6 @@ public:
             SdCard.Refresh();
             while (!SdCard.getSDTransferComplete()) {
                 //SPI transfer is blocked here
-                Delay_ms(1);
                 continue;
             }
         }
