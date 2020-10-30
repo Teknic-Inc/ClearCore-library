@@ -1,15 +1,15 @@
 /*
- * Title: SDCardWAVPlayTest
+ * Title: SDCardReadWriteTest
  *
  * Objective:
- *    This example demonstrates how to play .wav files from the SD card
+ *    This example demonstrates how to use the reading and writing functionality
+ *    of the ClearCore SD card reader.
  *
  * Description:
- *    This example plays a "Ring01.wav" file from the SD card through the IO5 connector.
+ *    This example reads from and writes to a .txt file
  *
  * Requirements:
- * ** A USB serial connection to the a ClearCore, A micro SD card inserted into the ClearCore's SD card reader, 
- * ** a passive speaker connected to IO5, and a WAV file named "Ring01.wav" loaded on to the micro SD card.
+ * ** A USB serial connection to the a ClearCore, An SD card inserted into the ClearCore's SD card reader
  *
  * Links:
  * ** ClearCore Documentation: https://teknic-inc.github.io/ClearCore-library/
@@ -22,20 +22,28 @@
 
 #include "ClearCore.h"
 #include "SdFat.h"
+#include "FatFile.h"
 
 #define SerialPort ConnectorUsb
 
 // SD chip select pin
 const uint8_t chipSelect = CLEARCORE_PIN_INVALID;
 
+// File size in MB where MB = 1,000,000 bytes.
+const uint32_t FILE_SIZE_MB = 5;
+
 //==============================================================================
 // End of configuration constants.
 //------------------------------------------------------------------------------
 
+// test file
+FatFile file;
+
 int main() {
 	//Set up serial communication at a baud rate of 9600 bps then wait up to
 	//5 seconds for a port to open.
-	//ConnectorUsb communication is not required for this example to run.
+	//ConnectorUsb communication is not required for this example to run, however the
+	//example will appear to do nothing without serial output.
 	ConnectorUsb.Mode(Connector::USB_CDC);
 	ConnectorUsb.Speed(9600);
 	uint32_t timeout = 5000;
@@ -49,6 +57,11 @@ int main() {
 
 	//Initialize SD variables:
 	SdFat SD;
+	FatFile myFile;
+    uint8_t buf[1024];
+    for(int i = 0; i<sizeof(buf);i++){
+        buf[i] = 0;
+    }
 	
 	if (!SD.begin()) {
 		SerialPort.SendLine("initialization failed!");
@@ -56,25 +69,26 @@ int main() {
 	}
 	SerialPort.SendLine("initialization done.");
 
-	//Once the SD card is initialized we can play any 8-bit or 16-bit .wav
-	// file already loaded on to the SD card:
-	//SD.playFile("Ring01.wav",50,ConnectorIO5);
-	//Connectors IO4 and IO5 are the two connectors able to drive a speaker
-    // 	SD.playFile("Windows XP Critical Stop.wav",24,ConnectorIO5);
-    // 	SD.playFile("Windows XP Ding.wav",24,ConnectorIO5);
-    // 	SD.playFile("Windows XP Error.wav",24,ConnectorIO5);
-    // 	SD.playFile("Windows XP Exclamation.wav",24,ConnectorIO5);
-    // 	SD.playFile("Windows XP Hardware Fail.wav",24,ConnectorIO5);
-    // 	SD.playFile("Windows XP Hardware Insert.wav",24,ConnectorIO5);
-    // 	SD.playFile("Windows XP Hardware Remove.wav",24,ConnectorIO5);
-    // 	SD.playFile("Windows XP Logoff Sound.wav",24,ConnectorIO5);
-    // 	SD.playFile("Windows XP Logon Sound.wav",24,ConnectorIO5);
-    // 	SD.playFile("Windows XP Shutdown.wav",24,ConnectorIO5);
-    // 	SD.playFile("Windows XP Shutdown_48.wav",24,ConnectorIO5);
-    // 	SD.playFile("Windows XP Startup.wav",50,ConnectorIO5);
-    // 	SD.playFile("Windows XP Startup_48.wav",50,ConnectorIO5);
-    // 	SD.playFile("Donald Trumps America.wav",50,ConnectorIO5);
-      SD.playFile("starlit sands.wav",30,ConnectorIO5);
+	// open the file. note that only one file can be open at a time,
+	// so you have to close this one before opening another.
+
+	// re-open the file for reading:
+	myFile.open("TEST.txt");
+	if (myFile.isOpen()) {
+		SerialPort.SendLine("TEST.txt:");
+
+		// read from the file until there's nothing else in it:
+            myFile.readASync(buf,sizeof(buf));
+            Delay_ms(1000);
+            for(int i = 0; i<sizeof(buf);i++){
+                SerialPort.Send((char)buf[i]);
+            }
+		// close the file:
+		myFile.close();
+		} else {
+		// if the file didn't open, print an error:
+		SerialPort.SendLine("error opening test.txt");
+	}
 	return 0;
 
 }

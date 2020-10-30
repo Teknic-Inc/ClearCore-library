@@ -446,12 +446,11 @@ bool SdSpiCard::readBlocksASync(uint32_t block, uint8_t *dst, size_t count) {
     // transfer data
     SdCard.sendBlockASync(dst,count);
 
-    while(!SdCard.getSDBlockTransferComplete()){
-        Delay_ms(1);
-        continue;
-    }
-
-
+//     while(!SdCard.getSDBlockTransferComplete()){
+//         Delay_ms(1);
+//         continue;
+//     }
+    Delay_ms(150);
     return readStop();
 
 fail:

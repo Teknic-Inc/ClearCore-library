@@ -94,6 +94,7 @@ namespace ClearCore {
                      SpiTransferDataAsync(srcBuf,dstBuf,512);
                      bufCount--;
                      dstBuf += 512;
+                     srcBuf += 512;
                      SDReadByte = 0x0;
                      if(bufCount == 0x0){
                          currentState = SDState::FINISHED;
@@ -104,7 +105,6 @@ namespace ClearCore {
                         break;
                     case PROCESSING:
                         if(SDTransferComplete){
-                            SpiTransferDataAsync(&SDWriteByte,&SDReadByte,0x1);
                             if(SDReadByte==0xFE){
                                 currentState = SDState::INITIALIZING;
                             }
@@ -117,29 +117,35 @@ namespace ClearCore {
                     case FINISHED:
                         if(SDTransferComplete){
                             SDBlockTransferComplete = true;
+                            dstBuf = NULL;
+                            srcBuf = NULL;
                             currentState = SDState::IDLE;
                         }
                         break;
                     case IDLE:
+                        if(dstBuf != NULL && srcBuf!=NULL && bufCount != 0){
+                            currentState = INITIALIZING;
+                        }
+                        break;
                     default:
                         break;
                 }
   
         }
 
-        void sendBlockASync(uint8_t *buf, size_t count){
-            for (size_t i = 0; i < count; i++) {
+        void sendBlockASync(uint8_t *buf, size_t blockCount){
+            for (size_t i = 0; i < blockCount*512; i++) {
                 buf[i] = 0xFF;
             }
             dstBuf = buf;
-            srcBuf = reinterpret_cast<const uint8_t *>(buf);
-            bufCount = count;
+            srcBuf = buf;
+            bufCount = blockCount;
             SDBlockTransferComplete = false;
-            currentState = SDState::INITIALIZING;
         }
 
         void receiveBlockASync(const uint8_t *buf, size_t count){
-            srcBuf = buf;
+            //TODO AW srcbuf type changed
+            //srcBuf = buf;
             dstBuf = NULL;
             bufCount = count;
             SDBlockTransferComplete = false;
@@ -152,8 +158,8 @@ namespace ClearCore {
     private:
         uint8_t m_errorCode;
         //flag accessed by the SDfat library to check if transfered SD data is done
-        bool SDTransferComplete = false;
-        bool SDBlockTransferComplete = true;
+        volatile bool SDTransferComplete = false;
+        volatile bool SDBlockTransferComplete = true;
 //         typedef enum {
 //             TRANSFER_PENDING = 0,
 //             TRANSFER_STARTED = 1,
@@ -173,10 +179,10 @@ namespace ClearCore {
         SDState currentState;
         //The single byte variables used for asynchronous transfer
         uint8_t SDReadByte;
-        uint8_t SDWriteByte = 0xFF;
+        uint8_t SDWriteByte;
         //The multi-byte pointers used for asynchronous transfer
         uint8_t *dstBuf;
-        const uint8_t *srcBuf;
+        uint8_t *srcBuf;
         //size of the multi-byte buffers
         size_t bufCount;
 

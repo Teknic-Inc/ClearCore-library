@@ -74,7 +74,7 @@ void ClearCoreTMRpcm::Play(const char *filename) {
                 m_playDone = false;
             }
             if (fileLoc == soundBuff) {     //play sample buffer 1, load sample buffer2
-                sFile.read(SDsamples2, sizeof(SDsamples2));
+                sFile.readASync(SDsamples2, sizeof(SDsamples2));
                 while (!m_playDone) {
                     continue;
                 }
@@ -83,7 +83,7 @@ void ClearCoreTMRpcm::Play(const char *filename) {
 
             }
             if (fileLoc == soundBuff * 2) { //play sample buffer 2, load sample buffer1
-                sFile.read(SDsamples, soundBuff);
+                sFile.readASync(SDsamples, soundBuff);
                 while (!m_playDone) {
                     continue;
                 }

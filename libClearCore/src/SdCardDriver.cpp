@@ -47,6 +47,9 @@ SdCardDriver::SdCardDriver(const PeripheralRoute *misoInfo,
     SpiClock(SCK_LOW, LEAD_SAMPLE);
     PortOpen();
     currentState = IDLE;
+    dstBuf = NULL;
+    srcBuf = NULL;
+    bufCount = 0;
 }
 
 
