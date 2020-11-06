@@ -379,12 +379,6 @@
     <Compile Include="sdfat\SdFat.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="sdfat\SpiDriver\SdSpiBaseDriver.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="sdfat\SpiDriver\SdSpiDriver.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="sdfat\SysCall.h">
       <SubType>compile</SubType>
     </Compile>
@@ -812,7 +806,6 @@
     <Folder Include="sdfat\" />
     <Folder Include="sdfat\FatLib\" />
     <Folder Include="sdfat\SdCard\" />
-    <Folder Include="sdfat\SpiDriver\" />
     <Folder Include="usb" />
     <Folder Include="src\" />
     <Content Include="src\**\*.*" />

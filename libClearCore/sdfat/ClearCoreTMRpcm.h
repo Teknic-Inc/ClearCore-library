@@ -15,15 +15,14 @@
 // Not sure why, but the interrupt function would not see the function unless
 // I declared the variable this way...
 extern "C" {
-    void stopPlaybackTemp();
+    void continuePlayback();
+
 }
 
 // Define what HBridge output to use (either IO4 or IO5)
 
 class ClearCoreTMRpcm {
 public:
-    int soundBuff;
-
     ClearCoreTMRpcm(int volume = 40, DigitalInOutHBridge audioOut = ConnectorIO5);
     void Play(const char *filename);
     void StopPlayback();
@@ -31,8 +30,9 @@ public:
 
 private:
     const uint16_t WAVE_HEADER_LENGTH = 44;
+    FatFile wavFile;
 
-    void ParseHeader(FatFile &theFile);
+    void ParseHeader(FatFile *theFile);
     void ResumePlayback(uint8_t *data, int length);
     void StartPlayback(uint8_t *data, int length);
 };

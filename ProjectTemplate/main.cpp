@@ -59,7 +59,7 @@ int main() {
 	SdFat SD;
 	FatFile myFile;
     uint8_t buf[1024];
-    for(int i = 0; i<sizeof(buf);i++){
+    for(size_t i = 0; i<sizeof(buf);i++){
         buf[i] = 0;
     }
 	
@@ -80,7 +80,7 @@ int main() {
 		// read from the file until there's nothing else in it:
             myFile.readASync(buf,sizeof(buf));
             Delay_ms(1000);
-            for(int i = 0; i<sizeof(buf);i++){
+            for(size_t i = 0; i<sizeof(buf);i++){
                 SerialPort.Send((char)buf[i]);
             }
 		// close the file:

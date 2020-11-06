@@ -32,7 +32,6 @@
 #include "SysCall.h"
 #include "SdInfo.h"
 #include "../FatLib/BaseBlockDriver.h"
-#include "../SpiDriver/SdSpiDriver.h"
 //==============================================================================
 /**
  * \class SdSpiCard
@@ -43,12 +42,11 @@ public:
     /** Construct an instance of SdSpiCard. */
     SdSpiCard() : m_errorCode(SD_CARD_ERROR_INIT_NOT_CALLED), m_type(0) {}
     /** Initialize the SD card.
-     * \param[in] spi SPI driver for card.
      * \param[in] csPin card chip select pin.
      * \param[in] spiSettings SPI speed, mode, and bit order.
      * \return true for success else false.
      */
-    bool begin(SdSpiDriver *spi, uint8_t csPin, uint32_t clockSpeed);
+    bool begin(uint32_t clockSpeed);
     /**
      * Determine the size of an SD flash memory card.
      *
@@ -116,7 +114,6 @@ public:
      * the value false is returned for failure.
      */
     bool readBlock(uint32_t lba, uint8_t *dst);
-    bool readBlockASync(uint32_t lba, uint8_t *dst);
     /**
      * Read multiple 512 byte blocks from an SD card.
      *
@@ -127,7 +124,16 @@ public:
      * the value false is returned for failure.
      */
     bool readBlocks(uint32_t lba, uint8_t *dst, size_t nb);
-    bool readBlocksASync(uint32_t block, uint8_t *dst, size_t count);
+     /**
+     * Read multiple 512 byte blocks from an SD card Asynchronously.
+     *
+     * \param[in] block Logical block to be read.
+     * \param[in] dst destination buffer to read data into
+     * \param[in] count number of blocks to be read into the buffer
+     * \param[in] offset number of bytes the data is offset by
+     * \param[out] dst pointer to data read from SD card
+     */
+    void readBlocksASync(uint32_t block, uint8_t *dst, size_t count, uint16_t offset);
     /**
      * Read a card's CID register. The CID contains card identification
      * information such as Manufacturer ID, Product name, Product serial
@@ -151,6 +157,14 @@ public:
     bool readCSD(csd_t *csd) {
         return readRegister(CMD9, csd);
     }
+        /** Return the status of an asynchronous read
+     *
+     * \param[out] bool, status of SPI transfer
+     *
+     * \return The value true when no transfer, false
+     * for transfer in progress
+     */
+    bool aSyncDataCheck();
     /** Read one data block in a multiple block read sequence
      *
      * \param[out] dst Pointer to the location for the data to be read.
@@ -257,13 +271,12 @@ public:
     void spiStart();
     /** Set CS high and deactivate the card. */
     void spiStop();
-
-    bool spiGetSDTransferComplete(){
-        return m_spiDriver->getSDTransferComplete();
-    }
-    void spiSetSDErrorCode(uint16_t errorCode){
-        m_spiDriver->setSDErrorCode(errorCode);
-    }
+    /** Activate SPI hardware. */
+    void activate();
+    /** Deactivate SPI hardware. */
+    void deactivate();
+    /** Set SD Card Error Code on Clear Core*/
+    void SetSDErrorCode(uint16_t errorCode);
 
 private:
     // private functions
@@ -272,7 +285,6 @@ private:
         return cardCommand(cmd, arg);
     }
     uint8_t cardCommand(uint8_t cmd, uint32_t arg);
-    uint8_t cardCommandASync(uint8_t cmd, uint32_t arg);
     bool isTimedOut(uint16_t startMS, uint16_t timeoutMS);
     bool readData(uint8_t *dst, size_t count);
     bool readDataInitialize(uint8_t *dst, size_t count);
@@ -285,34 +297,7 @@ private:
     bool waitNotBusy(uint16_t timeoutMS);
     bool writeData(uint8_t token, const uint8_t *src);
 
-    //---------------------------------------------------------------------------
-    // functions defined in SdSpiDriver.h
-    void spiActivate() {
-        m_spiDriver->activate();
-    }
-    void spiDeactivate() {
-        m_spiDriver->deactivate();
-    }
-    uint8_t spiReceive() {
-        return m_spiDriver->receive();
-    }
-    uint8_t spiReceive(uint8_t *buf, size_t n) {
-        return  m_spiDriver->receive(buf, n);
-    }
-    void spiSend(uint8_t data) {
-        m_spiDriver->send(data);
-    }
-    void spiSend(const uint8_t *buf, size_t n) {
-        m_spiDriver->send(buf, n);
-    }
-    void spiSelect() {
-        m_spiDriver->select();
-    }
-    void spiUnselect() {
-        m_spiDriver->unselect();
-    }
     uint8_t m_errorCode;
-    SdSpiDriver *m_spiDriver;
     bool    m_spiActive;
     uint8_t m_status;
     uint8_t m_type;

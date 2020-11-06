@@ -6,57 +6,56 @@ Released into the public domain.*/
 #include <stdint.h>
 #include "FatFile.h"
 
+#define BUF_SIZE 8192
+
 
 volatile bool m_reallyDone = false;
-volatile bool m_playDone = true;
+volatile bool m_switchSample = true;
 volatile uint16_t m_sample;
+uint8_t SDsamples[BUF_SIZE];
+uint8_t SDsamples2[BUF_SIZE];
 uint32_t m_frequencyHz = 16000;
 int m_soundDataLength = 0;
 uint8_t *m_soundData = 0;
 uint8_t m_volume = 40;
 uint32_t m_endOfDataPosn = 0;
 bool sixteenBitFile = false;
+FatFile *sFile;
 DigitalInOutHBridge g_wav_speaker = ConnectorIO5;
 DigitalInOutHBridge g_wav_speaker2 = ConnectorIO4;
-
-const size_t BUF_SIZE = 8192;
-
 
 extern "C" void TCC2_0_Handler(void) __attribute__((alias("PeriodicInterrupt")));
 
 ClearCoreTMRpcm::ClearCoreTMRpcm(int volume, DigitalInOutHBridge audioOut) {
-    soundBuff = BUF_SIZE;
     m_volume = (uint8_t) volume;
     g_wav_speaker = audioOut;
+    sFile = &wavFile;
 }
 
 bool ClearCoreTMRpcm::PlaybackFinished() {
-    return m_playDone && m_reallyDone;
+    if(m_reallyDone){
+        if(sFile->readWriteComplete()&&sFile->close()){
+            ClearCore::ConnectorUsb.SendLine("Playback Finished");
+            m_reallyDone = false;
+            return true;
+        }
+    }
+    return false;
 }
 
 void ClearCoreTMRpcm::Play(const char *filename) {
-    FatFile sFile;
-    uint8_t fileReadRetry = 0;
-    bool fileFound = false;
     //set connector to wave output mode
     g_wav_speaker.Mode(Connector::OUTPUT_WAVE);
     ConnectorIO4.Mode(Connector::OUTPUT_WAVE);
 
-    while (!fileFound && fileReadRetry < 3) {
-        sFile.open(filename);
-        if (sFile.fileSize() > 0) {
-            fileFound = true;
-        }
-        else {
-            fileReadRetry++;
-        }
+
+    if(!sFile->open(filename)){
+        ClearCore::ConnectorUsb.SendLine("SD File Open Fail");
+        return;
     }
 
-    if (sFile.isOpen()) {
-        uint8_t SDsamples[BUF_SIZE];
-        uint8_t SDsamples2[BUF_SIZE];
+    if (sFile->isOpen()) {
 
-        int fileLoc = 0;
         ClearCore::ConnectorUsb.SendLine("File Open!");
 
         // Read the wave format from the file header
@@ -66,41 +65,13 @@ void ClearCoreTMRpcm::Play(const char *filename) {
         //Read the specified file using two buffers. One buffer loads and starts playback
         //Playback is called on timer driven interrupts, so we are clear to buffer more data
         //into a second buffer while the file starts playing.
-
-        while (sFile.available() && (sFile.curPosition() < m_endOfDataPosn)) {
-            if (fileLoc == 0) {     //Initial case
-                sFile.read(SDsamples, sizeof(SDsamples));
-                StartPlayback(SDsamples, soundBuff);
-                m_playDone = false;
-            }
-            if (fileLoc == soundBuff) {     //play sample buffer 1, load sample buffer2
-                sFile.readASync(SDsamples2, sizeof(SDsamples2));
-                while (!m_playDone) {
-                    continue;
-                }
-                m_playDone = false;
-                ResumePlayback(SDsamples2, soundBuff);
-
-            }
-            if (fileLoc == soundBuff * 2) { //play sample buffer 2, load sample buffer1
-                sFile.readASync(SDsamples, soundBuff);
-                while (!m_playDone) {
-                    continue;
-                }
-                m_playDone = false;
-                ResumePlayback(SDsamples, soundBuff);
-                fileLoc = 0;
-            }
-
-            fileLoc += soundBuff;
-
-        }
-        sFile.close();
+        m_switchSample = true;
+        sFile->read(SDsamples, BUF_SIZE);
+        StartPlayback(SDsamples, BUF_SIZE);
     }
-    else {
+    else{
         ClearCore::ConnectorUsb.SendLine("SD Read Fail");
     }
-    StopPlayback();
 }
 
 
@@ -111,7 +82,7 @@ extern "C" void PeriodicInterrupt(void) {
     // Perform periodic processing here
     if (m_sample >= m_soundDataLength) {
         //g_wav_speaker.State(0);
-        stopPlaybackTemp();
+        continuePlayback();
     }
     else if (sixteenBitFile) {
         g_wav_speaker.State((int16_t)((uint16_t)m_soundData[m_sample] + ((uint16_t)m_soundData[m_sample + 1] << 8)) >> m_volume);
@@ -132,7 +103,6 @@ extern "C" void PeriodicInterrupt(void) {
 
 void ClearCoreTMRpcm::StartPlayback(uint8_t *data, int length) {
     ClearCore::ConnectorUsb.SendLine("Start Playback");
-    m_soundData = data;
     m_soundDataLength = length;
 
     // Enable the TCC2 peripheral
@@ -193,26 +163,27 @@ void ClearCoreTMRpcm::StartPlayback(uint8_t *data, int length) {
     NVIC_SetPriority(TCC2_0_IRQn, 0);
     NVIC_EnableIRQ(TCC2_0_IRQn);
 
-    m_sample = 0;
+    m_soundDataLength = BUF_SIZE;
+    m_sample = BUF_SIZE;
 }
 
-uint32_t ReadLE32(FatFile &theFile) {
+uint32_t ReadLE32(FatFile *theFile) {
     uint8_t buf[4];
     uint32_t value = 0;
-    theFile.read(buf, sizeof(buf));
+    theFile->read(buf, sizeof(buf));
     for (int i = 0; i < 4; i++) {
         value += (uint32_t)buf[i] << (i * 8);
     }
     return value;
 }
 
-void ClearCoreTMRpcm::ParseHeader(FatFile &theFile) {
+void ClearCoreTMRpcm::ParseHeader(FatFile *theFile) {
     uint32_t sampleRate = 0;
     uint32_t marker;
     uint32_t sampleBits;
     uint32_t chunkSize;
 
-    theFile.seekSet(24);
+    theFile->seekSet(24);
     // SampleRate is bytes 24-27, little endian, hex
     sampleRate = ReadLE32(theFile);
 
@@ -223,7 +194,7 @@ void ClearCoreTMRpcm::ParseHeader(FatFile &theFile) {
     ClearCore::ConnectorUsb.SendLine("  0x");
 
     //get Bits per Sample
-    theFile.seekSet(32);
+    theFile->seekSet(32);
     sampleBits = ReadLE32(theFile);
     //get 16 MSB alone
     sampleBits = sampleBits >> 16;
@@ -244,19 +215,18 @@ void ClearCoreTMRpcm::ParseHeader(FatFile &theFile) {
     marker = ReadLE32(theFile);
     chunkSize = ReadLE32(theFile);
 
-    ClearCore::ConnectorUsb.Send(theFile.curPosition());
+    ClearCore::ConnectorUsb.Send(theFile->curPosition());
     ClearCore::ConnectorUsb.Send(": Marker: 0x");
     ClearCore::ConnectorUsb.Send(marker);
     ClearCore::ConnectorUsb.Send(" Size: 0x");
     ClearCore::ConnectorUsb.SendLine(chunkSize);
-    m_endOfDataPosn = theFile.curPosition() + chunkSize;
+    m_endOfDataPosn = theFile->curPosition() + chunkSize;
 
 
 }
 
 void ClearCoreTMRpcm::StopPlayback() {
     ClearCore::ConnectorUsb.SendLine("Stop Playback");
-    m_playDone = true;
     m_reallyDone = true;
     // Disable playback per-m_sample interrupt.
     g_wav_speaker.State(0);
@@ -270,7 +240,40 @@ void ClearCoreTMRpcm::ResumePlayback(uint8_t *data, int length) {
     m_sample = 0;
 }
 
-void stopPlaybackTemp() {
+void continuePlayback() {
     //ClearCore::ConnectorUsb.SendLine("Stop Playback Temp");
-    m_playDone = true;
+    if(sFile->available() && (sFile->curPosition() < (m_endOfDataPosn))) {
+        size_t nbyte = BUF_SIZE;
+        uint32_t temp = sFile->curPosition() + BUF_SIZE;
+        //Check to see if less than one buffer is left
+        if(temp > m_endOfDataPosn){
+            //read the rest of the file from current position to end position
+            nbyte = m_endOfDataPosn - sFile->curPosition();
+        }
+        if (m_switchSample) {     //play sample buffer 1, load sample buffer2
+            if(sFile->readWriteComplete()) {
+                sFile->readASync(SDsamples2, nbyte);
+                m_soundData = SDsamples;
+                m_sample = 0;
+                m_switchSample = !m_switchSample;
+            }
+            return;
+        }
+        else { //play sample buffer 2, load sample buffer1
+            if(sFile->readWriteComplete()) {
+                sFile->readASync(SDsamples, nbyte);
+                m_soundData = SDsamples2;
+                m_sample = 0;
+                m_switchSample = !m_switchSample;
+            }
+            return;
+        }
+    }
+    else{
+        m_reallyDone = true;
+        // Disable playback per-m_sample interrupt.
+        g_wav_speaker.State(0);
+        NVIC_DisableIRQ(TCC2_0_IRQn);
+        
+    }
 }

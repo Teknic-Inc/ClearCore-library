@@ -97,8 +97,8 @@ public:
      * \param[in] spiSettings SPI speed, mode, and bit order.
      * \return true for success else false.
      */
-    bool begin(uint8_t csPin = CLEARCORE_PIN_INVALID, uint32_t clockSpeed = SPI_FULL_SPEED) {
-        if(m_card.begin(&m_spi, csPin, clockSpeed) &&
+    bool begin(uint32_t clockSpeed = SPI_FULL_SPEED) {
+        if(m_card.begin(clockSpeed) &&
             SdFileSystem::begin()){
             return true;
         }
@@ -114,8 +114,8 @@ public:
      * \param[in] settings SPI speed, mode, and bit order.
      * \return true for success else false.
      */
-    bool cardBegin(uint8_t csPin = CLEARCORE_PIN_INVALID, uint32_t clockSpeed = SPI_FULL_SPEED) {
-        return m_card.begin(&m_spi, csPin, clockSpeed);
+    bool cardBegin(uint32_t clockSpeed = SPI_FULL_SPEED) {
+        return m_card.begin(clockSpeed);
     }
     /** Initialize file system for diagnostic use only.
      * \return true for success else false.
@@ -134,51 +134,8 @@ public:
     void playFile(const char *filename, int volume = 40, DigitalInOutHBridge audioOut = ConnectorIO5) {
         ClearCoreTMRpcm player(volume, audioOut);
         player.Play(filename);
-    }
-
-private:
-    SdFatSpiDriver m_spi;
-};
-//=============================================================================
-#if ENABLE_EXTENDED_TRANSFER_CLASS || defined(DOXYGEN)
-/**
- * \class SdFatEX
- * \brief SdFat class with extended SD I/O.
- */
-class SdFatEX : public SdFileSystem<SdSpiCardEX> {
-public:
-    /** Initialize SD card and file system.
-    *
-    * \param[in] csPin SD card chip select pin.
-    * \param[in] spiSettings SPI speed, mode, and bit order.
-    * \return true for success else false.
-    */
-    bool begin(uint8_t csPin = CLEARCORE_PIN_INVALID, uint32_t clockSpeed = SPI_FULL_SPEED) {
-        return m_card.begin(&m_spi, csPin, clockSpeed) &&
-               SdFileSystem::begin();
-    }
-
-private:
-    SdFatSpiDriver m_spi;
+        while(!player.PlaybackFinished()){continue;}
+    }    
 };
 
-#endif  // ENABLE_EXTENDED_TRANSFER_CLASS || defined(DOXYGEN)
-//=============================================================================
-/**
- * \class Sd2Card
- * \brief Raw access to SD and SDHC card using default SPI library.
- */
-class Sd2Card : public SdSpiCard {
-public:
-    /** Initialize the SD card.
-     * \param[in] csPin SD chip select pin.
-     * \param[in] settings SPI speed, mode, and bit order.
-     * \return true for success else false.
-     */
-    bool begin(uint8_t csPin = CLEARCORE_PIN_INVALID, uint32_t clockSpeed = SD_SCK_MHZ(50)) {
-        return SdSpiCard::begin(&m_spi, csPin, clockSpeed);
-    }
-private:
-    SdFatSpiDriver m_spi;
-};
 #endif  // SdFat_h
