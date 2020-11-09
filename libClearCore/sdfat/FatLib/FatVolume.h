@@ -33,21 +33,6 @@
 #include "FatStructs.h"
 #include "BlockDriver.h"
 //------------------------------------------------------------------------------
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-/** Macro for debug. */
-#define DEBUG_MODE 0
-#if DEBUG_MODE
-#define DBG_FAIL_MACRO Serial.print(F(__FILE__)); Serial.println(__LINE__);
-#define DBG_PRINT_IF(b) if (b) {Serial.println(F(#b)); DBG_FAIL_MACRO;}
-#define DBG_HALT_IF(b) if (b) {Serial.println(F(#b));\
-                               DBG_FAIL_MACRO; while (1);}
-#else  // DEBUG_MODE
-#define DBG_FAIL_MACRO
-#define DBG_PRINT_IF(b)
-#define DBG_HALT_IF(b)
-#endif  // DEBUG_MODE
-#endif  // DOXYGEN_SHOULD_SKIP_THIS
-//------------------------------------------------------------------------------
 /**
  * \class CharWriter
  * \brief Character output - often serial port.
@@ -325,6 +310,9 @@ private:
     }
     bool getSDTransferComplete(){
         return m_blockDev->aSyncDataCheck();
+    }
+    bool cardIsBusy(){
+        return m_blockDev->isBusy();
     }
 
 // block caches

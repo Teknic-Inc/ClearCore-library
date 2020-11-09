@@ -34,7 +34,7 @@ private:
 
     void ParseHeader(FatFile *theFile);
     void ResumePlayback(uint8_t *data, int length);
-    void StartPlayback(uint8_t *data, int length);
+    void StartPlayback(int length);
 };
 
 #endif

@@ -141,36 +141,29 @@ bool FatFile::getName(char *name, size_t size) {
     FatFile dirFile;
     ldir_t *ldir;
     if (!isOpen() || size < 13) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     if (!isLFN()) {
         return getSFN(name);
     }
     if (!dirFile.openCluster(this)) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     for (uint8_t ord = 1; ord <= m_lfnOrd; ord++) {
         if (!dirFile.seekSet(32UL * (m_dirIndex - ord))) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         ldir = reinterpret_cast<ldir_t *>(dirFile.readDirCache());
         if (!ldir) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         if (ldir->attr != DIR_ATT_LONG_NAME) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         if (ord != (ldir->ord & 0X1F)) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         if (!lfnGetName(ldir, name, size)) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         if (ldir->ord & LDIR_ORD_LAST_LONG_ENTRY) {
@@ -178,7 +171,6 @@ bool FatFile::getName(char *name, size_t size) {
         }
     }
     // Fall into fail.
-    DBG_FAIL_MACRO;
 
 fail:
     name[0] = 0;
@@ -325,7 +317,6 @@ bool FatFile::open(FatFile *dirFile, fname_t *fname, oflag_t oflag) {
     size_t len = fname->len;
 
     if (!dirFile || !dirFile->isDir() || isOpen()) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     // Number of directory entries needed.
@@ -337,7 +328,6 @@ bool FatFile::open(FatFile *dirFile, fname_t *fname, oflag_t oflag) {
         dir = dirFile->readDirCache(true);
         if (!dir) {
             if (dirFile->getError()) {
-                DBG_FAIL_MACRO;
                 goto fail;
             }
             // At EOF
@@ -403,7 +393,6 @@ bool FatFile::open(FatFile *dirFile, fname_t *fname, oflag_t oflag) {
                 if (1 == ord && lfnChecksum(dir->name) == chksum) {
                     goto found;
                 }
-                DBG_FAIL_MACRO;
                 goto fail;
             }
             if (!memcmp(dir->name, fname->sfn, sizeof(fname->sfn))) {
@@ -421,7 +410,6 @@ bool FatFile::open(FatFile *dirFile, fname_t *fname, oflag_t oflag) {
 found:
     // Don't open if create only.
     if (oflag & O_EXCL) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     goto open;
@@ -429,7 +417,6 @@ found:
 create:
     // don't create unless O_CREAT and write mode.
     if (!(oflag & O_CREAT) || !isWriteMode(oflag)) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     // If at EOF start in next cluster.
@@ -441,7 +428,6 @@ create:
         dir = dirFile->readDirCache();
         if (!dir) {
             if (dirFile->getError()) {
-                DBG_FAIL_MACRO;
                 goto fail;
             }
             // EOF if no error.
@@ -452,7 +438,6 @@ create:
     while (freeFound < freeNeed) {
         // Will fail if FAT16 root.
         if (!dirFile->addDirCluster()) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         // Done if more than one block per cluster.  Max freeNeed is 21.
@@ -467,14 +452,12 @@ create:
         }
     }
     if (!dirFile->seekSet(32UL * freeIndex)) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     lfnOrd = freeNeed - 1;
     for (uint8_t ord = lfnOrd ; ord ; ord--) {
         ldir = reinterpret_cast<ldir_t *>(dirFile->readDirCache());
         if (!ldir) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         dirFile->m_vol->cacheDirty();
@@ -488,7 +471,6 @@ create:
     curIndex = dirFile->m_curPosition / 32;
     dir = dirFile->readDirCache();
     if (!dir) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     // initialize as empty file
@@ -518,7 +500,6 @@ create:
 open:
     // open entry in cache.
     if (!openCachedEntry(dirFile, curIndex, oflag, lfnOrd)) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     return true;
@@ -537,18 +518,15 @@ bool FatFile::remove() {
 
     // Cant' remove not open for write.
     if (!isFile() || !(m_flags & F_WRITE)) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     // Free any clusters.
     if (m_firstCluster && !m_vol->freeChain(m_firstCluster)) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     // Cache directory entry.
     dir = cacheDirEntry(FatCache::CACHE_FOR_WRITE);
     if (!dir) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     chksum = lfnChecksum(dir->name);
@@ -561,7 +539,6 @@ bool FatFile::remove() {
 
     // Write entry to device.
     if (!m_vol->cacheSync()) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     if (!isLFN()) {
@@ -569,23 +546,19 @@ bool FatFile::remove() {
         return true;
     }
     if (!dirFile.openCluster(this)) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     for (ord = 1; ord <= m_lfnOrd; ord++) {
         if (!dirFile.seekSet(32UL * (m_dirIndex - ord))) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         ldir = reinterpret_cast<ldir_t *>(dirFile.readDirCache());
         if (!ldir) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         if (ldir->attr != DIR_ATT_LONG_NAME ||
                 ord != (ldir->ord & 0X1F) ||
                 chksum != ldir->chksum) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         last = ldir->ord & LDIR_ORD_LAST_LONG_ENTRY;
@@ -593,14 +566,12 @@ bool FatFile::remove() {
         m_vol->cacheDirty();
         if (last) {
             if (!m_vol->cacheSync()) {
-                DBG_FAIL_MACRO;
                 goto fail;
             }
             return true;
         }
     }
     // Fall into fail.
-    DBG_FAIL_MACRO;
 
 fail:
     return false;
@@ -612,15 +583,11 @@ bool FatFile::lfnUniqueSfn(fname_t *fname) {
     dir_t *dir;
     uint16_t hex;
 
-    DBG_HALT_IF(!(fname->flags & FNAME_FLAG_LOST_CHARS));
-    DBG_HALT_IF(fname->sfn[pos] != '~' && fname->sfn[pos + 1] != '1');
-
     for (uint8_t seq = 2; seq < 100; seq++) {
         if (seq < FIRST_HASH_SEQ) {
             fname->sfn[pos + 1] = '0' + seq;
         }
         else {
-            DBG_PRINT_IF(seq > FIRST_HASH_SEQ);
             hex = Bernstein(seq + fname->len, fname->lfn, fname->len);
             if (pos > 3) {
                 // Make space in name for ~HHHH.
@@ -641,7 +608,6 @@ bool FatFile::lfnUniqueSfn(fname_t *fname) {
                     // At EOF and name not found if no error.
                     goto done;
                 }
-                DBG_FAIL_MACRO;
                 goto fail;
             }
             if (dir->name[0] == DIR_NAME_FREE) {
@@ -654,7 +620,6 @@ bool FatFile::lfnUniqueSfn(fname_t *fname) {
         }
     }
     // fall inti fail - too many tries.
-    DBG_FAIL_MACRO;
 
 fail:
     return false;

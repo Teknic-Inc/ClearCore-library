@@ -99,7 +99,6 @@ void FatFile::dmpFile(print_t *pr, uint32_t pos, size_t n) {
 bool FatFile::ls(print_t *pr, uint8_t flags, uint8_t indent) {
     FatFile file;
     if (!isDir() || getError()) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     rewind();
@@ -125,7 +124,6 @@ bool FatFile::ls(print_t *pr, uint8_t flags, uint8_t indent) {
             pr->write('\n');
             if ((flags & LS_R) && file.isDir()) {
                 if (!file.ls(pr, flags, indent + 2)) {
-                    DBG_FAIL_MACRO;
                     goto fail;
                 }
             }
@@ -133,7 +131,6 @@ bool FatFile::ls(print_t *pr, uint8_t flags, uint8_t indent) {
         file.close();
     }
     if (getError()) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     return true;
@@ -145,7 +142,6 @@ fail:
 bool FatFile::printCreateDateTime(print_t *pr) {
     dir_t dir;
     if (!dirEntry(&dir)) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     printFatDate(pr, dir.creationDate);
@@ -244,7 +240,6 @@ int FatFile::printField(int32_t value, char term) {
 bool FatFile::printModifyDateTime(print_t *pr) {
     dir_t dir;
     if (!dirEntry(&dir)) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     printFatDate(pr, dir.lastWriteDate);

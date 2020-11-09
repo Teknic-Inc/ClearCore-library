@@ -24,6 +24,7 @@
  */
 #include "SdSpiCard.h"
 #include "SdCardDriver.h"
+#include "ClearCore.h"
 
  namespace ClearCore {
      extern SdCardDriver SdCard;

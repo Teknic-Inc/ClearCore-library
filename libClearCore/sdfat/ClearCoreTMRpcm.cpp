@@ -67,7 +67,7 @@ void ClearCoreTMRpcm::Play(const char *filename) {
         //into a second buffer while the file starts playing.
         m_switchSample = true;
         sFile->read(SDsamples, BUF_SIZE);
-        StartPlayback(SDsamples, BUF_SIZE);
+        StartPlayback(BUF_SIZE);
     }
     else{
         ClearCore::ConnectorUsb.SendLine("SD Read Fail");
@@ -101,7 +101,7 @@ extern "C" void PeriodicInterrupt(void) {
 
 
 
-void ClearCoreTMRpcm::StartPlayback(uint8_t *data, int length) {
+void ClearCoreTMRpcm::StartPlayback(int length) {
     ClearCore::ConnectorUsb.SendLine("Start Playback");
     m_soundDataLength = length;
 

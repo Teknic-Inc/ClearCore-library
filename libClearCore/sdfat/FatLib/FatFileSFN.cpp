@@ -28,7 +28,6 @@
 bool FatFile::getSFN(char *name) {
     dir_t *dir;
     if (!isOpen()) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     if (isRoot()) {
@@ -39,7 +38,6 @@ bool FatFile::getSFN(char *name) {
     // cache entry
     dir = cacheDirEntry(FatCache::CACHE_FOR_READ);
     if (!dir) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     // format name
@@ -53,7 +51,6 @@ fail:
 size_t FatFile::printSFN(print_t *pr) {
     char name[13];
     if (!getSFN(name)) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     return pr->write(name);

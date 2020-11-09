@@ -28,12 +28,10 @@
 cache_t *FatCache::read(uint32_t lbn, uint8_t option) {
     if (m_lbn != lbn) {
         if (!sync()) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         if (!(option & CACHE_OPTION_NO_READ)) {
             if (!m_vol->readBlock(lbn, m_block.data)) {
-                DBG_FAIL_MACRO;
                 goto fail;
             }
         }
@@ -51,14 +49,12 @@ fail:
 bool FatCache::sync() {
     if (m_status & CACHE_STATUS_DIRTY) {
         if (!m_vol->writeBlock(m_lbn, m_block.data)) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         // mirror second FAT
         if (m_status & CACHE_STATUS_MIRROR_FAT) {
             uint32_t lbn = m_lbn + m_vol->blocksPerFat();
             if (!m_vol->writeBlock(lbn, m_block.data)) {
-                DBG_FAIL_MACRO;
                 goto fail;
             }
         }
@@ -87,7 +83,6 @@ bool FatVolume::allocateCluster(uint32_t current, uint32_t *next) {
         if (find > m_lastCluster) {
             if (setStart) {
                 // Can't find space, checked all clusters.
-                DBG_FAIL_MACRO;
                 goto fail;
             }
             find = m_allocSearchStart;
@@ -96,13 +91,11 @@ bool FatVolume::allocateCluster(uint32_t current, uint32_t *next) {
         }
         if (find == current) {
             // Can't find space, already searched clusters after current.
-            DBG_FAIL_MACRO;
             goto fail;
         }
         uint32_t f;
         int8_t fg = fatGet(find, &f);
         if (fg < 0) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         if (fg && f == 0) {
@@ -114,13 +107,11 @@ bool FatVolume::allocateCluster(uint32_t current, uint32_t *next) {
     }
     // Mark end of chain.
     if (!fatPutEOC(find)) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     if (current) {
         // Link clusters.
         if (!fatPut(current, find)) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
     }
@@ -155,18 +146,15 @@ bool FatVolume::allocContiguous(uint32_t count,
     while (1) {
         if (endCluster > m_lastCluster) {
             // Can't find space.
-            DBG_FAIL_MACRO;
             goto fail;
         }
         uint32_t f;
         int8_t fg = fatGet(endCluster, &f);
         if (fg < 0) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         if (f || fg == 0) {
             if (startCluster) {
-                DBG_FAIL_MACRO;
                 goto fail;
             }
             // don't update search start if unallocated clusters before endCluster.
@@ -188,13 +176,11 @@ bool FatVolume::allocContiguous(uint32_t count,
     }
     // mark end of chain
     if (!fatPutEOC(endCluster)) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     // link clusters
     while (endCluster > bgnCluster) {
         if (!fatPut(endCluster - 1, endCluster)) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         endCluster--;
@@ -222,7 +208,6 @@ int8_t FatVolume::fatGet(uint32_t cluster, uint32_t *value) {
 
     // error if reserved cluster of beyond FAT
     if (cluster < 2 || cluster > m_lastCluster) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
 
@@ -230,7 +215,6 @@ int8_t FatVolume::fatGet(uint32_t cluster, uint32_t *value) {
         lba = m_fatStartBlock + (cluster >> 7);
         pc = cacheFetchFat(lba, FatCache::CACHE_FOR_READ);
         if (!pc) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         next = pc->fat32[cluster & 0X7F] & FAT32MASK;
@@ -240,14 +224,12 @@ int8_t FatVolume::fatGet(uint32_t cluster, uint32_t *value) {
         lba = m_fatStartBlock + ((cluster >> 8) & 0XFF);
         pc = cacheFetchFat(lba, FatCache::CACHE_FOR_READ);
         if (!pc) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         next = pc->fat16[cluster & 0XFF];
         goto done;
     }
     else {
-        DBG_FAIL_MACRO;
         goto fail;
     }
 done:
@@ -268,7 +250,6 @@ bool FatVolume::fatPut(uint32_t cluster, uint32_t value) {
 
     // error if reserved cluster of beyond FAT
     if (cluster < 2 || cluster > m_lastCluster) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
 
@@ -276,7 +257,6 @@ bool FatVolume::fatPut(uint32_t cluster, uint32_t value) {
         lba = m_fatStartBlock + (cluster >> 7);
         pc = cacheFetchFat(lba, FatCache::CACHE_FOR_WRITE);
         if (!pc) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         pc->fat32[cluster & 0X7F] = value;
@@ -287,14 +267,12 @@ bool FatVolume::fatPut(uint32_t cluster, uint32_t value) {
         lba = m_fatStartBlock + ((cluster >> 8) & 0XFF);
         pc = cacheFetchFat(lba, FatCache::CACHE_FOR_WRITE);
         if (!pc) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         pc->fat16[cluster & 0XFF] = value;
         return true;
     }
     else {
-        DBG_FAIL_MACRO;
         goto fail;
     }
 
@@ -309,12 +287,10 @@ bool FatVolume::freeChain(uint32_t cluster) {
     do {
         fg = fatGet(cluster, &next);
         if (fg < 0) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         // free cluster
         if (!fatPut(cluster, 0)) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         // Add one to count of free clusters.
@@ -344,7 +320,6 @@ int32_t FatVolume::freeClusterCount() {
         while (todo) {
             cache_t *pc = cacheFetchFat(lba++, FatCache::CACHE_FOR_READ);
             if (!pc) {
-                DBG_FAIL_MACRO;
                 goto fail;
             }
             n = fatType() == 16 ? 256 : 128;
@@ -370,7 +345,6 @@ int32_t FatVolume::freeClusterCount() {
     }
     else {
         // invalid FAT type
-        DBG_FAIL_MACRO;
         goto fail;
     }
     setFreeClusterCount(free);
@@ -394,25 +368,21 @@ bool FatVolume::init(uint8_t part) {
     // if part > 0 assume mbr volume with partition table
     if (part) {
         if (part > 4) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         pc = cacheFetchData(0, FatCache::CACHE_FOR_READ);
         if (!pc) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
         part_t *p = &pc->mbr.part[part - 1];
         if ((p->boot & 0X7F) != 0 || p->firstSector == 0) {
             // not a valid partition
-            DBG_FAIL_MACRO;
             goto fail;
         }
         volumeStartBlock = p->firstSector;
     }
     pc = cacheFetchData(volumeStartBlock, FatCache::CACHE_FOR_READ);
     if (!pc) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     fbs = &(pc->fbs32);
@@ -420,7 +390,6 @@ bool FatVolume::init(uint8_t part) {
             fbs->fatCount != 2 ||
             fbs->reservedSectorCount == 0) {
         // not valid FAT volume
-        DBG_FAIL_MACRO;
         goto fail;
     }
     m_blocksPerCluster = fbs->sectorsPerCluster;
@@ -429,7 +398,6 @@ bool FatVolume::init(uint8_t part) {
     m_clusterSizeShift = 0;
     for (tmp = 1; m_blocksPerCluster != tmp; tmp <<= 1, m_clusterSizeShift++) {
         if (tmp == 0) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
     }
@@ -461,7 +429,6 @@ bool FatVolume::init(uint8_t part) {
     // FAT type is determined by cluster count
     if (clusterCount < 4085) {
         m_fatType = 12;
-        DBG_FAIL_MACRO;
         goto fail;
     }
     else if (clusterCount < 65525) {
@@ -482,12 +449,10 @@ bool FatVolume::wipe(print_t *pr) {
     uint16_t count;
     uint32_t lbn;
     if (!fatType()) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     cache = cacheClear();
     if (!cache) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     memset(cache->data, 0, 512);
@@ -502,7 +467,6 @@ bool FatVolume::wipe(print_t *pr) {
     }
     for (uint32_t n = 0; n < count; n++) {
         if (!writeBlock(lbn + n, cache->data)) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
     }
@@ -514,7 +478,6 @@ bool FatVolume::wipe(print_t *pr) {
             pr->write('.');
         }
         if (!writeBlock(lbn + nb, cache->data)) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
     }
@@ -528,18 +491,15 @@ bool FatVolume::wipe(print_t *pr) {
         cache->fat16[1] = 0XFFFF;
     }
     else {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     if (!writeBlock(m_fatStartBlock, cache->data) ||
             !writeBlock(m_fatStartBlock + m_blocksPerFat, cache->data)) {
-        DBG_FAIL_MACRO;
         goto fail;
     }
     if (fatType() == 32) {
         // Reserve root cluster.
         if (!fatPutEOC(m_rootDirStart) || !cacheSync()) {
-            DBG_FAIL_MACRO;
             goto fail;
         }
     }
