@@ -814,7 +814,6 @@ int FatFile::readASync(void *buf, size_t nbyte) {
      uint8_t *dst = reinterpret_cast<uint8_t *>(buf);
      uint16_t offset;
      uint32_t block;  // raw device block number
-     size_t nb = nbyte>> 9; //number of blocks to read
 
      // error if not open for read
      if (!isOpen() || !(m_flags & F_READ)) {
@@ -830,39 +829,34 @@ int FatFile::readASync(void *buf, size_t nbyte) {
      }
      offset = m_curPosition & 0X1FF;  // offset in block
      blockOfCluster = m_vol->blockOfCluster(m_curPosition);
-     if(m_curPosition< 512){ //Initialize if less than one block in called
+     if(m_curPosition == 0){ //Initialize if at the beginning of a file
          while(m_vol->cardIsBusy()){
             continue;
          }
-         if (blockOfCluster == 0 && m_curPosition == 0) {
+         if (blockOfCluster == 0) {
             // use first cluster in file
             m_curCluster = isRoot32() ? m_vol->rootDirStart() : m_firstCluster;
          }
          else {
              // get next cluster from FAT
              fg = m_vol->fatGet(m_curCluster, &m_curCluster);
-             if (fg < 0) {
+             if (fg < 0 || (fg == 0 && !isDir())) {
                  goto fail;
              }
-             if (fg == 0) {
-                 if (!isDir()) {
-                     goto fail;
-                 }
-             }
          }
-     block = m_vol->clusterFirstBlock(m_curCluster) + blockOfCluster;
      }
      else{
-        if (blockOfCluster == 0) {
+        //TODO AW make the minimum async read larger than 100
+        if (blockOfCluster == 0 && (m_curPosition % 512)<100) {
             // start of new cluster
             // increment current cluster
             m_curCluster++;
         }
-        block = m_vol->clusterFirstBlock(m_curCluster) + blockOfCluster;
             
      }
+     block = m_vol->clusterFirstBlock(m_curCluster) + blockOfCluster;
      // read block to cache and copy data to dst buffer
-     m_vol->readBlocksASync(block,dst,nb,offset);
+     m_vol->readBlocksASync(block,dst,nbyte,offset);
      m_curPosition += nbyte;
  
      return nbyte;

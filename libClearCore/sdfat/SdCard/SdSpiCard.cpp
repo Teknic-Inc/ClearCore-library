@@ -257,13 +257,13 @@ bool SdSpiCard::readBlocks(uint32_t block, uint8_t *dst, size_t count) {
     return readStop();
 }
 //------------------------------------------------------------------------------
-void SdSpiCard::readBlocksASync(uint32_t block, uint8_t *dst, size_t count, uint16_t offset) {
+void SdSpiCard::readBlocksASync(uint32_t block, uint8_t *dst, size_t byteCount, uint16_t offset) {
     spiStart();
     if (type() != SD_CARD_TYPE_SDHC) {
         block <<= 9;
     }
     // transfer data
-    SdCard.receiveBlocksASync(block, dst, count, offset);
+    SdCard.receiveBlocksASync(block, dst, byteCount, offset);
     return;
 }
 //------------------------------------------------------------------------------

@@ -133,7 +133,7 @@ public:
      * \param[in] offset number of bytes the data is offset by
      * \param[out] dst pointer to data read from SD card
      */
-    void readBlocksASync(uint32_t block, uint8_t *dst, size_t count, uint16_t offset);
+    void readBlocksASync(uint32_t block, uint8_t *dst, size_t byteCount, uint16_t offset);
     /**
      * Read a card's CID register. The CID contains card identification
      * information such as Manufacturer ID, Product name, Product serial

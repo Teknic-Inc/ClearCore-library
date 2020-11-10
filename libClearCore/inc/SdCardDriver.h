@@ -99,6 +99,7 @@ namespace ClearCore {
                         if(SDTransferComplete){
                             if(SDReadByte[9] == 0x00){
                                 SpiTransferDataAsync(SDBeginCommandByte,SDReadByte,7);
+                                //set unused Read Byte for use as flag
                                 SDReadByte[9] = 0xFF;
                                 break;
                             }
@@ -107,28 +108,25 @@ namespace ClearCore {
                                 break;
                             }
                             else{
+                                //send read commands until ready flag is received
                                 SpiTransferDataAsync(SDWriteByte,SDReadByte,2);
                             }
                         }
                         break;
                     case SENDBLOCK:
-                        bufCount--;
-                        if(bufCount == 0x0){
-                            if(bufOffset>0){
-                                //if last block use offsetData
-                                SpiTransferDataAsync(offsetData,offsetData,512);
-                            }
-                            SDReadByte[9] = 0x0;
+                       //transfer a whole block
+                       SpiTransferDataAsync(offsetData,dataReadBuffer,512);
+                       dataReadBuffer += 512;
+                       bufCount--;
+                       SDReadByte[9] = 0x0;
+                       if(bufCount == 0x0){
+                            //if last block use offsetData
+                            /*SpiTransferDataAsync(offsetData,dataReadBuffer,512);*/
                             currentState = SDState::SENDCOMMAND;
                             break;
-                        }
-                       //transfer a whole block
-                       SpiTransferDataAsync(srcBuf,dstBuf,512);
-                       dstBuf += 512;
-                       srcBuf += 512;
-                       SDReadByte[9] = 0x0;
+                       }
                        currentState = PROCESSING;
-                        break;
+                       break;
                     case PROCESSING:
                         if(SDTransferComplete){
                             if(SDReadByte[9]==0xFE){
@@ -153,22 +151,20 @@ namespace ClearCore {
                         break;      
                     case FINISHED:
                         if(SDTransferComplete){
-                            if(bufOffset>0){
-                                dstBuf -= bufSize;
-                                //only shift buffer by offset if there is an offset
-                                memmove(dstBuf,(dstBuf+bufOffset),(bufSize-bufOffset));
-                                memcpy(dstBuf+bufSize-bufOffset,offsetData,bufOffset);
-                            }
+                            //decrement data read buffer by the nu
+                            dataReadBuffer -= (((bufSize+bufOffset)>>9)+1)*512;
+                            memcpy(dstBuf,dataReadBuffer+bufOffset,bufSize);
                                                         
                             dstBuf = NULL;
-                            srcBuf = NULL;
+                            delete [] dataReadBuffer;
+                            dataReadBuffer = NULL;
                             SDBlockTransferComplete = true;
                             SpiSsMode(SerialBase::CtrlLineModes::LINE_OFF);
                             currentState = SDState::IDLE;
                         } 
                         break;
                     case IDLE:
-                        if(dstBuf != NULL && srcBuf!=NULL && bufCount != 0){
+                        if(dstBuf != NULL && bufCount != 0){
                             currentState = INITIALIZING;
                         }
                         break;
@@ -178,17 +174,10 @@ namespace ClearCore {
   
         }
 
-        void receiveBlocksASync(uint32_t block, uint8_t *buf, size_t blockCount, uint16_t offset){
-            for (size_t i = 0; i < blockCount*512; i++) {
-                buf[i] = 0xFF;
-            }
+        void receiveBlocksASync(uint32_t block, uint8_t *buf, size_t byteCount, uint16_t offset){
             
             dstBuf = buf;
-            srcBuf = buf;
-            //Initialize offset data buffer
-            for(int i = 0; i < 512; i++){
-                offsetData[i] = 0xFF;
-            }
+            dataReadBuffer = new uint8_t[byteCount + 1024];
             bufOffset = offset;
             //Set SDBeginCommand:
             // send command
@@ -224,8 +213,8 @@ namespace ClearCore {
 
             // discard first fill byte to avoid MISO pull-up problem.
             SDEndCommandByte[8] = 0xFF;
-            bufCount = blockCount + 1;
-            bufSize = blockCount * 512;
+            bufCount = ((byteCount+offset)>>9)+1;
+            bufSize = byteCount;
             SDReadByte[9] = 0x00;
             SDBlockTransferComplete = false;
         }
@@ -273,6 +262,7 @@ namespace ClearCore {
         //offset data handlers:
         uint16_t bufOffset;
         uint8_t offsetData[512];
+        uint8_t *dataReadBuffer;
 
 
 

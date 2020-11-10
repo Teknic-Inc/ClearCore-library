@@ -343,6 +343,7 @@ namespace ClearCore {
 
         InputMgr.UpdateEnd();
         EncoderIn.Update();
+        SdCard.Refresh();
 
 
         // Update subsystems in the background
@@ -364,7 +365,7 @@ namespace ClearCore {
         CcioMgr.RefreshSlow();
 
         //SD Card Data Transfer Check
-        SdCard.Refresh();
+        /*SdCard.Refresh();*/
 
         for (uint8_t iMotor = 0; iMotor < MOTOR_CON_CNT; iMotor++) {
             MotorConnectors[iMotor]->RefreshSlow();

@@ -50,6 +50,10 @@ SdCardDriver::SdCardDriver(const PeripheralRoute *misoInfo,
     dstBuf = NULL;
     srcBuf = NULL;
     bufCount = 0;
+    //Initialize offset data buffer
+    for(int i = 0; i < 512; i++){
+        offsetData[i] = 0xFF;
+    }
     for(int i = 0;i<10;i++){
         SDWriteByte[i] = 0xFF;
     }
