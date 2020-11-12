@@ -29,7 +29,7 @@
  * \brief SdFat class
  */
 #include "SysCall.h"
-#include "ClearCoreTMRpcm.h"
+//#include "WavPlayer.h"
 #include "BlockDriver.h"
 #include "FatLib/FatLib.h"
 //------------------------------------------------------------------------------
@@ -124,18 +124,18 @@ public:
         return FatFileSystem::begin(card());
     }
 
-    /** Initialize and play WAV file using ClearCoreTMRpcm
+    /** Initialize and play WAV file using WavPlayer
      *  Make sure to initialize the SD card before playing a file
      *
      * \param[in] char* filename, name of file to open
      * \param[in] int volume, value from 0 to 100 that controls the volume of the WAV file playback
      * \param[in] DigitalInOutHBridge audioOut, specify the connector to play audio out of (IO4 to IO5)
      */
-    void playFile(const char *filename, int volume = 40, DigitalInOutHBridge audioOut = ConnectorIO5) {
-        ClearCoreTMRpcm player(volume, audioOut);
-        player.Play(filename);
-        while(!player.PlaybackFinished()){continue;}
-    }    
+//     void playFile(const char *filename, int volume = 40, DigitalInOutHBridge audioOut = ConnectorIO5) {
+//         WavPlayer player(volume, audioOut);
+//         player.Play(filename);
+//         while(!player.PlaybackFinished()){continue;}
+//     }    
 };
 
 #endif  // SdFat_h

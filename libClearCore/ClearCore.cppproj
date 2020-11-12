@@ -322,13 +322,13 @@
     <Compile Include="inc\EncoderInput.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="inc\SDManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\WavPlayer.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="sdfat\BlockDriver.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="sdfat\ClearCoreTMRpcm.cpp">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="sdfat\ClearCoreTMRpcm.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="sdfat\FatLib\BaseBlockDriver.h">
@@ -383,6 +383,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\EncoderInput.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\SDManager.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\WavPlayer.cpp">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="usb\class\cdc\device\cdcdf_acm.c">

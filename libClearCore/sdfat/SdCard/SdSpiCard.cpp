@@ -26,9 +26,9 @@
 #include "SdCardDriver.h"
 #include "ClearCore.h"
 
- namespace ClearCore {
-     extern SdCardDriver SdCard;
- }
+namespace ClearCore{
+    extern SdCardDriver SdCard;
+}
 //==============================================================================
 // debug trace macro
 #define SD_TRACE(m, b)

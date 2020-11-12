@@ -87,7 +87,6 @@ fail:
 }
 //------------------------------------------------------------------------------
 bool FatFile::close() {
-    //TODO AW move to FileSystem
     bool rtn = sync();
     m_attr = FILE_ATTR_CLOSED;
     return rtn;
@@ -1501,3 +1500,4 @@ fail:
     m_error |= WRITE_ERROR;
     return -1;
 }
+

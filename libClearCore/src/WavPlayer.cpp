@@ -1,62 +1,61 @@
-/*Library by TMRh20 2012
-Released into the public domain.*/
+/*
+ * Copyright (c) 2020 Teknic, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+#include "WavPlayer.h"
 
-#include "ClearCore.h"
-#include "ClearCoreTMRpcm.h"
-#include <stdint.h>
-#include "FatFile.h"
-
+namespace ClearCore{
 #define BUF_SIZE 8192
-
-
-volatile bool m_reallyDone = false;
-volatile bool m_switchSample = true;
-volatile uint16_t m_sample;
 uint8_t SDsamples[BUF_SIZE];
 uint8_t SDsamples2[BUF_SIZE];
-uint32_t m_frequencyHz = 16000;
+volatile bool m_playbackDone = false;
+volatile bool m_switchSample = true;
+volatile uint16_t m_sample;
 int m_soundDataLength = 0;
 uint8_t *m_soundData = 0;
 uint8_t m_volume = 40;
 uint32_t m_endOfDataPosn = 0;
 bool sixteenBitFile = false;
 FatFile *sFile;
-DigitalInOutHBridge g_wav_speaker = ConnectorIO5;
-DigitalInOutHBridge g_wav_speaker2 = ConnectorIO4;
+DigitalInOutHBridge g_wav_speaker;
 
 extern "C" void TCC2_0_Handler(void) __attribute__((alias("PeriodicInterrupt")));
 
-ClearCoreTMRpcm::ClearCoreTMRpcm(int volume, DigitalInOutHBridge audioOut) {
-    m_volume = (uint8_t) volume;
-    g_wav_speaker = audioOut;
+WavPlayer::WavPlayer() {
     sFile = &wavFile;
 }
 
-bool ClearCoreTMRpcm::PlaybackFinished() {
-    if(m_reallyDone){
-        if(sFile->readWriteComplete()&&sFile->close()){
-            ClearCore::ConnectorUsb.SendLine("Playback Finished");
-            m_reallyDone = false;
-            return true;
-        }
-    }
-    return false;
-}
-
-void ClearCoreTMRpcm::Play(const char *filename) {
+void WavPlayer::Play(int volume, DigitalInOutHBridge audioOut, const char *filename) {
     //set connector to wave output mode
+    g_wav_speaker = audioOut;
     g_wav_speaker.Mode(Connector::OUTPUT_WAVE);
-    ConnectorIO4.Mode(Connector::OUTPUT_WAVE);
-
+    m_volume = (uint8_t) volume;
 
     if(!sFile->open(filename)){
-        ClearCore::ConnectorUsb.SendLine("SD File Open Fail");
+/*        ConnectorUsb.SendLine("SD File Open Fail");*/
         return;
     }
 
     if (sFile->isOpen()) {
 
-        ClearCore::ConnectorUsb.SendLine("File Open!");
+/*        ClearCore::ConnectorUsb.SendLine("File Open!");*/
 
         // Read the wave format from the file header
         ParseHeader(sFile);
@@ -70,7 +69,7 @@ void ClearCoreTMRpcm::Play(const char *filename) {
         StartPlayback(BUF_SIZE);
     }
     else{
-        ClearCore::ConnectorUsb.SendLine("SD Read Fail");
+/*        ClearCore::ConnectorUsb.SendLine("SD Read Fail");*/
     }
 }
 
@@ -86,12 +85,12 @@ extern "C" void PeriodicInterrupt(void) {
     }
     else if (sixteenBitFile) {
         g_wav_speaker.State((int16_t)((uint16_t)m_soundData[m_sample] + ((uint16_t)m_soundData[m_sample + 1] << 8)) >> m_volume);
-        ConnectorIO4.State((int16_t)((uint16_t)m_soundData[m_sample + 2] + ((uint16_t)m_soundData[m_sample + 3] << 8)) >> m_volume);
+        //ConnectorIO4.State((int16_t)((uint16_t)m_soundData[m_sample + 2] + ((uint16_t)m_soundData[m_sample + 3] << 8)) >> m_volume);
         m_sample += 4;
     }
     else {
         g_wav_speaker.State(((int16_t)m_soundData[m_sample]) * m_volume);
-        ConnectorIO4.State(((int16_t)m_soundData[m_sample + 1]) * m_volume);
+        //ConnectorIO4.State(((int16_t)m_soundData[m_sample + 1]) * m_volume);
         m_sample += 2;
     }
 
@@ -101,8 +100,8 @@ extern "C" void PeriodicInterrupt(void) {
 
 
 
-void ClearCoreTMRpcm::StartPlayback(int length) {
-    ClearCore::ConnectorUsb.SendLine("Start Playback");
+void WavPlayer::StartPlayback(int length) {
+/*    ClearCore::ConnectorUsb.SendLine("Start Playback");*/
     m_soundDataLength = length;
 
     // Enable the TCC2 peripheral
@@ -130,7 +129,7 @@ void ClearCoreTMRpcm::StartPlayback(int length) {
     uint32_t period = (CPU_CLK + m_frequencyHz / 2) / m_frequencyHz;
     uint8_t prescale;
     // Make sure period is >= 1
-    period = max(period, 1U);
+    period = ((period) > (1U) ? (period) : (1U));
 
     // Prescale values 0-4 map to prescale divisors of 1-16,
     // dividing by 2 each increment
@@ -177,9 +176,9 @@ uint32_t ReadLE32(FatFile *theFile) {
     return value;
 }
 
-void ClearCoreTMRpcm::ParseHeader(FatFile *theFile) {
+void WavPlayer::ParseHeader(FatFile *theFile) {
     uint32_t sampleRate = 0;
-    uint32_t marker;
+    //uint32_t marker;
     uint32_t sampleBits;
     uint32_t chunkSize;
 
@@ -189,9 +188,9 @@ void ClearCoreTMRpcm::ParseHeader(FatFile *theFile) {
 
     // Set the new sample frequency
     m_frequencyHz = sampleRate;
-    ClearCore::ConnectorUsb.Send("Freq: ");
-    ClearCore::ConnectorUsb.Send(sampleRate);
-    ClearCore::ConnectorUsb.SendLine("  0x");
+//     ClearCore::ConnectorUsb.Send("Freq: ");
+//     ClearCore::ConnectorUsb.Send(sampleRate);
+//     ClearCore::ConnectorUsb.SendLine("  0x");
 
     //get Bits per Sample
     theFile->seekSet(32);
@@ -210,30 +209,49 @@ void ClearCoreTMRpcm::ParseHeader(FatFile *theFile) {
     else {
         sixteenBitFile = false;
     }
-    ClearCore::ConnectorUsb.Send("Bits per Sample: ");
-    ClearCore::ConnectorUsb.SendLine(sampleBits);
-    marker = ReadLE32(theFile);
+//     ClearCore::ConnectorUsb.Send("Bits per Sample: ");
+//     ClearCore::ConnectorUsb.SendLine(sampleBits);
+    /*marker = */ReadLE32(theFile);
     chunkSize = ReadLE32(theFile);
 
-    ClearCore::ConnectorUsb.Send(theFile->curPosition());
-    ClearCore::ConnectorUsb.Send(": Marker: 0x");
-    ClearCore::ConnectorUsb.Send(marker);
-    ClearCore::ConnectorUsb.Send(" Size: 0x");
-    ClearCore::ConnectorUsb.SendLine(chunkSize);
+//     ClearCore::ConnectorUsb.Send(theFile->curPosition());
+//     ClearCore::ConnectorUsb.Send(": Marker: 0x");
+//     ClearCore::ConnectorUsb.Send(marker);
+//     ClearCore::ConnectorUsb.Send(" Size: 0x");
+//     ClearCore::ConnectorUsb.SendLine(chunkSize);
     m_endOfDataPosn = theFile->curPosition() + chunkSize;
 
 
 }
 
-void ClearCoreTMRpcm::StopPlayback() {
-    ClearCore::ConnectorUsb.SendLine("Stop Playback");
-    m_reallyDone = true;
+void WavPlayer::StopPlayback() {
+/*    ClearCore::ConnectorUsb.SendLine("Stop Playback");*/
+    m_playbackDone = true;
     // Disable playback per-m_sample interrupt.
     g_wav_speaker.State(0);
     NVIC_DisableIRQ(TCC2_0_IRQn);
 }
 
-void ClearCoreTMRpcm::ResumePlayback(uint8_t *data, int length) {
+void WavPlayer::SetPlaybackVolume(int volume){
+    m_volume = (uint8_t) volume;
+}
+
+void WavPlayer::SetPlaybackConnector(DigitalInOutHBridge audioOut){
+    g_wav_speaker = audioOut;
+}
+
+bool WavPlayer::PlaybackFinished() {
+    if(m_playbackDone){
+        if(sFile->readWriteComplete()&&sFile->close()){
+            /*            ConnectorUsb.SendLine("Playback Finished");*/
+            m_playbackDone = false;
+            return true;
+        }
+    }
+    return false;
+}
+
+void WavPlayer::ResumePlayback(uint8_t *data, int length) {
     /*  ClearCore::ConnectorUsb.SendLine("Start Resume");*/
     m_soundData = data;
     m_soundDataLength = length;
@@ -270,10 +288,12 @@ void continuePlayback() {
         }
     }
     else{
-        m_reallyDone = true;
+        m_playbackDone = true;
         // Disable playback per-m_sample interrupt.
         g_wav_speaker.State(0);
         NVIC_DisableIRQ(TCC2_0_IRQn);
         
     }
 }
+
+} //ClearCore Namespace

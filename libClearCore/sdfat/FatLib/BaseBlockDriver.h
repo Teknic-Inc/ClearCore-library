@@ -25,6 +25,7 @@
 #ifndef BaseBlockDriver_h
 #define BaseBlockDriver_h
 #include <stdint.h>
+#include <stddef.h>
 /**
  * \class BaseBlockDriver
  * \brief Base block driver.

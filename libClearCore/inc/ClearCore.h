@@ -37,7 +37,7 @@
 #include "EncoderInput.h"
 #include "MotorDriver.h"
 #include "MotorManager.h"
-#include "SdCardDriver.h"
+#include "SDManager.h"
 #include "SerialDriver.h"
 #include "SerialUsb.h"
 #include "StatusManager.h"
@@ -110,7 +110,7 @@ extern StatusManager &StatusMgr;
 extern SysTiming &TimingMgr;
 
 /// SD card
-extern SdCardDriver SdCard;
+extern SDManager SDMgr;
 
 /// System manager
 extern SysManager SysMgr;

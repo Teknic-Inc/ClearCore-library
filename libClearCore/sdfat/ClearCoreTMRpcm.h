@@ -21,9 +21,9 @@ extern "C" {
 
 // Define what HBridge output to use (either IO4 or IO5)
 
-class ClearCoreTMRpcm {
+class WavPlayer {
 public:
-    ClearCoreTMRpcm(int volume = 40, DigitalInOutHBridge audioOut = ConnectorIO5);
+    WavPlayer(int volume = 40, DigitalInOutHBridge audioOut = ConnectorIO5);
     void Play(const char *filename);
     void StopPlayback();
     bool PlaybackFinished();
