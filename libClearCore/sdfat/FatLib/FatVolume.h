@@ -299,6 +299,9 @@ private:
     bool writeBlocks(uint32_t block, const uint8_t *src, size_t nb) {
         return m_blockDev->writeBlocks(block, src, nb);
     }
+    bool writeBlocksASync(uint32_t block, const uint8_t *src, size_t nb, uint16_t offset = 0) {
+        return m_blockDev->writeBlocksASync(block, src, nb, offset);
+    }
     void setFreeClusterCount(int32_t value) {
         (void)value;
     }

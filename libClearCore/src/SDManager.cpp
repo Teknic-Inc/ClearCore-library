@@ -36,19 +36,26 @@ SDManager::SDManager(){}
         return SDLibrary.begin();  
     }
 
-
-    int SDManager::Open(const char *fileName){
+    int SDManager::Open(const char *fileName, oflag_t oflag){
         int i = 0;
         while(i < MAX_FILE_SIZE){
             if(!ActiveFiles[i].isOpen()){
                 //TODO add file open flag options, defaults to RD_ONLY
-                ActiveFiles[i].open(fileName);
-                return i;
+                if(!ActiveFiles[i].open(fileName,oflag)){
+                    return i;
+                }
+                else{
+                    return -1;
+                }
             }
         }
         //array is full, default to error
         return -1;
 
+    }
+
+    bool SDManager::IsOpen(int fd){
+        return ActiveFiles[fd].isOpen();
     }
 
     bool SDManager::Close(int fd){
@@ -122,11 +129,15 @@ SDManager::SDManager(){}
     int SDManager::Write(int fd, void *srcBuf, size_t len, bool aSync){
         if(aSync){
             //asynchronous write has not yet been implemented
-            return ActiveFiles[fd].write(srcBuf,len);
+            return ActiveFiles[fd].writeASync(srcBuf,len);
         }
         else{
             return ActiveFiles[fd].write(srcBuf,len);
         }
+    }
+
+    int SDManager::StringWrite(int fd, const char *str){
+        return ActiveFiles[fd].write(str);
     }
 
     int SDManager::Size(int fd){

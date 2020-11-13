@@ -47,6 +47,19 @@ class SDManager {
 
 public:
 
+    #define O_RDONLY  0X00  ///< Open for reading only.
+    #define O_WRONLY  0X01  ///< Open for writing only.
+    #define O_RDWR    0X02  ///< Open for reading and writing.
+    #define O_AT_END  0X04  ///< Open at EOF.
+    #define O_APPEND  0X08  ///< Set append mode.
+    #define O_CREAT   0x10  ///< Create file if it does not exist.
+    #define O_TRUNC   0x20  ///< Truncate file to zero length.
+    #define O_EXCL    0x40  ///< Fail if the file exists.
+    #define O_SYNC    0x80  ///< Synchronized write I/O operations.
+
+    #define O_ACCMODE (O_RDONLY|O_WRONLY|O_RDWR)  ///< Mask for access mode.
+    typedef uint8_t oflag_t;
+
     typedef enum {
         REL_START,
         REL_END,
@@ -67,12 +80,24 @@ public:
 
         \param[in] name of file to be opened or created
 
-        \returns file index that is use with other SDManager functions
+        \param[in] oflag, binary flag to set settings of the file
 
-        \note creates a new file if a file with the given
-         name does not exist
+        \returns file index that is use with other SDManager functions,
+                 -1 for failure
+
+        \note oflags can be OR'd together to set multiple settings
+              i.e: O_WRONLY|O_AT_END|O_CREAT
     **/
-    int Open(const char *fileName);
+    int Open(const char *fileName, oflag_t oflag = O_RDONLY);
+
+    /**
+        \brief checks if a given file is open
+
+        \param[in] fd, index of file to be checked
+
+        \return true if open, false if closed
+    **/
+    bool IsOpen(int fd);
 
     /**
         \brief closes file on SD card
@@ -227,6 +252,17 @@ public:
         \return int number of bytes successfully written, -1 for failure
     **/
     int Write(int fd, void *srcBuf, size_t len, bool aSync = false);
+
+        /**
+        \brief writes a string to a specified file
+
+        \param[in] fd index of the file 
+
+        \param[in] str string constant to write
+
+        \return int number of bytes successfully written, -1 for failure
+    **/
+    int StringWrite(int fd, const char *str);
 
     /**
         \brief gives the size in bytes of a specified file

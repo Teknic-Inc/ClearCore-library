@@ -231,6 +231,18 @@ public:
      * the value false is returned for failure.
      */
     bool writeBlocks(uint32_t lba, const uint8_t *src, size_t nb);
+        /**
+     * Write multiple 512 byte blocks to an SD card without blocking foreground code.
+     *
+     * \param[in] lba Logical block to be written.
+     * \param[in] nb Number of blocks to be written.
+     * \param[in] src Pointer to the location of the data to be written.
+     * \param[in] offset byte offset of the first data block
+     * \return The value true is returned for success and
+     * the value false is returned for failure.
+     *\note: asynchronous functionality of async write currently is not implemented
+     */
+    bool writeBlocksASync(uint32_t lba, const uint8_t *src, size_t nb, uint16_t offset);
     /** Write one data block in a multiple block write sequence.
      * \param[in] src Pointer to the location of the data to be written.
      * \return The value true is returned for success and

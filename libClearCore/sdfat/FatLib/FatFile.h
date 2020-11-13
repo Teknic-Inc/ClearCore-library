@@ -660,6 +660,19 @@ public:
      * or an I/O error occurred.
      */
     int read(void *buf, size_t nbyte);
+   /** Read data asynchronously from a file starting at the current position.
+     *
+     * \param[out] buf Pointer to the location that will receive the data.
+     *
+     * \param[in] nbyte Maximum number of bytes to read.
+     *
+     * \return For success read() returns the number of bytes read.
+     * A value less than \a nbyte, including zero, will be returned
+     * if end of file is reached.
+     * If an error occurs, readASync() returns -1.  Possible errors include
+     * read() called before a file has been opened, corrupt file system,
+     * an I/O error occurred, or another async transfer was still running.
+     */
     int readASync(void *buf, size_t nbyte);
     /** Read the next directory entry from a directory file.
      *
@@ -904,6 +917,22 @@ public:
      *
      */
     int write(const void *buf, size_t nbyte);
+    /** Write data asynchronously to an open file.
+     *
+     * \note Data is moved to the cache but may not be written to the
+     * storage device until sync() is called.
+     *
+     * \param[in] buf Pointer to the location of the data to be written.
+     *
+     * \param[in] nbyte Number of bytes to write.
+     *
+     * \return For success writeASync() returns the number of bytes written, always
+     * \a nbyte.  If an error occurs, write() returns -1.  Possible errors
+     * include writeASync() is called before a file has been opened, write is called
+     * for a read-only file, device is full, a corrupt file system or an I/O error.
+     *
+     */
+    int writeASync(const void *buf, size_t nbyte);
 //------------------------------------------------------------------------------
 private:
     /** This file has not been opened. */
@@ -977,5 +1006,6 @@ private:
     uint32_t   m_dirBlock;         // block for this files directory entry
     uint32_t   m_fileSize;         // file size in bytes
     uint32_t   m_firstCluster;     // first cluster of file
+    uint32_t   m_prevBlock;        //previous block to check when the next cluster is entered
 };
 #endif  // FatFile_h

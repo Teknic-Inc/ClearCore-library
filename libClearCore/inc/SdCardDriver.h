@@ -35,6 +35,10 @@
 #include "PeripheralRoute.h"
 #include "SerialBase.h"
 
+#define SD_READ_COMMAND 0xFF
+#define SD_RESPONSE_ATTEMPTS 5
+#define SD_READY_FLAG 0x00
+#define SD_BLOCK_SIZE 512
 
 namespace ClearCore {
 
@@ -97,34 +101,37 @@ namespace ClearCore {
                 switch (currentState) {
                     case INITIALIZING:
                         if(SDTransferComplete){
-                            if(SDReadByte[9] == 0x00){
+                            if(SDReadByte[9] == SD_READY_FLAG){
                                 SpiTransferDataAsync(SDBeginCommandByte,SDReadByte,7);
                                 //set unused Read Byte for use as flag
-                                SDReadByte[9] = 0xFF;
-                                break;
+                                SDReadByte[9] = SD_READ_COMMAND;
+                                responseTimeOut = SD_RESPONSE_ATTEMPTS;
                             }
                             else if(SDReadByte[1]==0xFE){
                                 currentState = SENDBLOCK;
-                                break;
+                            }
+                            else if(responseTimeOut == 0){
+                                //if response from card takes too many cycles, end transfer
+                                currentState = SENDCOMMAND;
                             }
                             else{
                                 //send read commands until ready flag is received
                                 SpiTransferDataAsync(SDWriteByte,SDReadByte,2);
+                                responseTimeOut--;
                             }
                         }
                         break;
                     case SENDBLOCK:
                        //transfer a whole block
-                       SpiTransferDataAsync(offsetData,dataReadBuffer,512);
-                       dataReadBuffer += 512;
+                       SpiTransferDataAsync(sdWriteData,dataReadBuffer,SD_BLOCK_SIZE);
+                       dataReadBuffer += SD_BLOCK_SIZE;
                        bufCount--;
                        SDReadByte[9] = 0x0;
                        if(bufCount == 0x0){
-                            //if last block use offsetData
-                            /*SpiTransferDataAsync(offsetData,dataReadBuffer,512);*/
                             currentState = SDState::SENDCOMMAND;
                             break;
                        }
+                       responseTimeOut = SD_RESPONSE_ATTEMPTS;
                        currentState = PROCESSING;
                        break;
                     case PROCESSING:
@@ -132,17 +139,21 @@ namespace ClearCore {
                             if(SDReadByte[9]==0xFE){
                                 currentState = SDState::SENDBLOCK;
                             }
+                            else if(responseTimeOut == 0){
+                                //if response from card takes too many cycles, end transfer
+                                currentState = SENDCOMMAND;
+                            }
                             else{
                                 SpiTransferDataAsync(SDWriteByte,SDReadByte,10);
-                                
+                                responseTimeOut--;
                             }
                         }
                         break;
                     case SENDCOMMAND:
                         if(SDTransferComplete){
-                            if(SDReadByte[9] == 0x00){
+                            if(SDReadByte[9] == SD_READY_FLAG){
                                 SpiTransferDataAsync(SDEndCommandByte,SDReadByte,9);
-                                SDReadByte[9] = 0xFF;
+                                SDReadByte[9] = SD_READ_COMMAND;
                                 break;
                             }
                             SpiTransferDataAsync(SDWriteByte,SDReadByte,8);
@@ -152,7 +163,7 @@ namespace ClearCore {
                     case FINISHED:
                         if(SDTransferComplete){
                             //decrement data read buffer by the nu
-                            dataReadBuffer -= (((bufSize+bufOffset)>>9)+1)*512;
+                            dataReadBuffer -= (((bufSize+bufOffset)>>9)+1)*SD_BLOCK_SIZE;
                             memcpy(dstBuf,dataReadBuffer+bufOffset,bufSize);
                                                         
                             dstBuf = NULL;
@@ -177,13 +188,13 @@ namespace ClearCore {
         void receiveBlocksASync(uint32_t block, uint8_t *buf, size_t byteCount, uint16_t offset){
             
             dstBuf = buf;
-            dataReadBuffer = new uint8_t[byteCount + 1024];
+            dataReadBuffer = new uint8_t[byteCount + (SD_BLOCK_SIZE*2)];
             bufOffset = offset;
             //Set SDBeginCommand:
-            // send command
+            // send 0x52 (read multiple blocks) command
             SDBeginCommandByte[0] = (0X52);
 
-            // send argument
+            // send argument (block address in big endian)
             uint8_t *pb = reinterpret_cast<uint8_t *>(&block);
             SDBeginCommandByte[1] = pb[3];
             SDBeginCommandByte[2] = pb[2];
@@ -194,15 +205,16 @@ namespace ClearCore {
             SDBeginCommandByte[5] = (0X87);
 
             // discard first fill byte to avoid MISO pull-up problem.
-            SDBeginCommandByte[6] = 0xFF;
+            SDBeginCommandByte[6] = SD_READ_COMMAND;
 
             //Set SDEndCommand:
-            SDEndCommandByte[0] = 0xFF;
-            SDEndCommandByte[1] = 0xFF;
-            // send command
+            //send two read commands to discard delimiter
+            SDEndCommandByte[0] = SD_READ_COMMAND;
+            SDEndCommandByte[1] = SD_READ_COMMAND;
+            // send 0x4C (end transaction) command
             SDEndCommandByte[2] = (0X4C);
 
-            // send argument
+            // end command does not take argument, fill with NULL
             SDEndCommandByte[3] = 0X00;
             SDEndCommandByte[4] = 0X00;
             SDEndCommandByte[5] = 0X00;
@@ -212,19 +224,35 @@ namespace ClearCore {
             SDEndCommandByte[7] = (0X87);
 
             // discard first fill byte to avoid MISO pull-up problem.
-            SDEndCommandByte[8] = 0xFF;
+            SDEndCommandByte[8] = SD_READ_COMMAND;
+            //calculate # of full blocks to read
             bufCount = ((byteCount+offset)>>9)+1;
             bufSize = byteCount;
-            SDReadByte[9] = 0x00;
+            SDReadByte[9] = SD_READY_FLAG;
             SDBlockTransferComplete = false;
         }
 
-        void sendBlocskASync(uint8_t *buf, size_t count){
-            //TODO AW Eventually implement ASync write functionality? 
-            srcBuf = buf;
-            dstBuf = NULL;
-            bufCount = count + 1;
-            SDBlockTransferComplete = false;
+        void sendBlocskASync(uint32_t block, const uint8_t *buf, size_t byteCount, uint16_t offset){
+             //TODO AW Finish implementation of asynchronous writing
+             srcBuf = buf;
+             dataReadBuffer = new uint8_t[byteCount + (SD_BLOCK_SIZE*2)];
+             bufOffset = offset;
+             //Set SDBeginCommand:
+             // send command
+             SDBeginCommandByte[0] = (0X59);
+
+             // send argument
+             uint8_t *pb = reinterpret_cast<uint8_t *>(&block);
+             SDBeginCommandByte[1] = pb[3];
+             SDBeginCommandByte[2] = pb[2];
+             SDBeginCommandByte[3] = pb[1];
+             SDBeginCommandByte[4] = pb[0];
+
+             // send CRC - correct for CMD0 with arg zero or CMD8 with arg 0X1AA
+             SDBeginCommandByte[5] = (0X87);
+
+             // discard first fill byte to avoid MISO pull-up problem.
+             SDBeginCommandByte[6] = SD_READ_COMMAND;
         }
 
 
@@ -255,14 +283,15 @@ namespace ClearCore {
         uint8_t SDEndCommandByte[10];
         //The multi-byte pointers used for asynchronous transfer
         uint8_t *dstBuf;
-        uint8_t *srcBuf;
+        const uint8_t *srcBuf;
         //size of the multi-byte buffers
         size_t bufCount;
         size_t bufSize;
         //offset data handlers:
         uint16_t bufOffset;
-        uint8_t offsetData[512];
+        uint8_t sdWriteData[SD_BLOCK_SIZE];
         uint8_t *dataReadBuffer;
+        int responseTimeOut;
 
 
 

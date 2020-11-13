@@ -22,6 +22,7 @@
 #include "WavPlayer.h"
 
 namespace ClearCore{
+//buffer size must be divisible by  2
 #define BUF_SIZE 8192
 uint8_t SDsamples[BUF_SIZE];
 uint8_t SDsamples2[BUF_SIZE];
@@ -32,6 +33,7 @@ int m_soundDataLength = 0;
 uint8_t *m_soundData = 0;
 uint8_t m_volume = 40;
 uint32_t m_endOfDataPosn = 0;
+uint32_t m_numbOfChannels = 1;
 bool sixteenBitFile = false;
 FatFile *sFile;
 DigitalInOutHBridge g_wav_speaker;
@@ -49,27 +51,18 @@ void WavPlayer::Play(int volume, DigitalInOutHBridge audioOut, const char *filen
     m_volume = (uint8_t) volume;
 
     if(!sFile->open(filename)){
-/*        ConnectorUsb.SendLine("SD File Open Fail");*/
         return;
     }
-
     if (sFile->isOpen()) {
-
-/*        ClearCore::ConnectorUsb.SendLine("File Open!");*/
-
         // Read the wave format from the file header
         ParseHeader(sFile);
-
 
         //Read the specified file using two buffers. One buffer loads and starts playback
         //Playback is called on timer driven interrupts, so we are clear to buffer more data
         //into a second buffer while the file starts playing.
         m_switchSample = true;
-        sFile->read(SDsamples, BUF_SIZE);
+        sFile->readASync(SDsamples, BUF_SIZE);
         StartPlayback(BUF_SIZE);
-    }
-    else{
-/*        ClearCore::ConnectorUsb.SendLine("SD Read Fail");*/
     }
 }
 
@@ -85,13 +78,11 @@ extern "C" void PeriodicInterrupt(void) {
     }
     else if (sixteenBitFile) {
         g_wav_speaker.State((int16_t)((uint16_t)m_soundData[m_sample] + ((uint16_t)m_soundData[m_sample + 1] << 8)) >> m_volume);
-        //ConnectorIO4.State((int16_t)((uint16_t)m_soundData[m_sample + 2] + ((uint16_t)m_soundData[m_sample + 3] << 8)) >> m_volume);
-        m_sample += 4;
+        m_sample += m_numbOfChannels*2;
     }
     else {
         g_wav_speaker.State(((int16_t)m_soundData[m_sample]) * m_volume);
-        //ConnectorIO4.State(((int16_t)m_soundData[m_sample + 1]) * m_volume);
-        m_sample += 2;
+        m_sample += m_numbOfChannels;
     }
 
     // Ack the interrupt to clear the flag and wait for the next interrupt.
@@ -101,7 +92,6 @@ extern "C" void PeriodicInterrupt(void) {
 
 
 void WavPlayer::StartPlayback(int length) {
-/*    ClearCore::ConnectorUsb.SendLine("Start Playback");*/
     m_soundDataLength = length;
 
     // Enable the TCC2 peripheral
@@ -177,20 +167,20 @@ uint32_t ReadLE32(FatFile *theFile) {
 }
 
 void WavPlayer::ParseHeader(FatFile *theFile) {
-    uint32_t sampleRate = 0;
-    //uint32_t marker;
     uint32_t sampleBits;
     uint32_t chunkSize;
 
-    theFile->seekSet(24);
-    // SampleRate is bytes 24-27, little endian, hex
-    sampleRate = ReadLE32(theFile);
-
-    // Set the new sample frequency
-    m_frequencyHz = sampleRate;
-//     ClearCore::ConnectorUsb.Send("Freq: ");
-//     ClearCore::ConnectorUsb.Send(sampleRate);
-//     ClearCore::ConnectorUsb.SendLine("  0x");
+    theFile->seekSet(20);
+    //Number of channels is bytes 23-24, little endian
+    m_numbOfChannels = ReadLE32(theFile);
+    //get 16 MSB alone
+    m_numbOfChannels = m_numbOfChannels >> 16;
+    if(m_numbOfChannels>2){
+        //set # of channels to 1 by default
+        m_numbOfChannels = 1;
+    }
+    // SampleRate is bytes 25-28, little endian, hex
+    m_frequencyHz = ReadLE32(theFile);
 
     //get Bits per Sample
     theFile->seekSet(32);
@@ -209,23 +199,15 @@ void WavPlayer::ParseHeader(FatFile *theFile) {
     else {
         sixteenBitFile = false;
     }
-//     ClearCore::ConnectorUsb.Send("Bits per Sample: ");
-//     ClearCore::ConnectorUsb.SendLine(sampleBits);
-    /*marker = */ReadLE32(theFile);
+    //throw away marker
+    ReadLE32(theFile);
     chunkSize = ReadLE32(theFile);
-
-//     ClearCore::ConnectorUsb.Send(theFile->curPosition());
-//     ClearCore::ConnectorUsb.Send(": Marker: 0x");
-//     ClearCore::ConnectorUsb.Send(marker);
-//     ClearCore::ConnectorUsb.Send(" Size: 0x");
-//     ClearCore::ConnectorUsb.SendLine(chunkSize);
     m_endOfDataPosn = theFile->curPosition() + chunkSize;
 
 
 }
 
 void WavPlayer::StopPlayback() {
-/*    ClearCore::ConnectorUsb.SendLine("Stop Playback");*/
     m_playbackDone = true;
     // Disable playback per-m_sample interrupt.
     g_wav_speaker.State(0);
@@ -243,7 +225,6 @@ void WavPlayer::SetPlaybackConnector(DigitalInOutHBridge audioOut){
 bool WavPlayer::PlaybackFinished() {
     if(m_playbackDone){
         if(sFile->readWriteComplete()&&sFile->close()){
-            /*            ConnectorUsb.SendLine("Playback Finished");*/
             m_playbackDone = false;
             return true;
         }
@@ -252,14 +233,12 @@ bool WavPlayer::PlaybackFinished() {
 }
 
 void WavPlayer::ResumePlayback(uint8_t *data, int length) {
-    /*  ClearCore::ConnectorUsb.SendLine("Start Resume");*/
     m_soundData = data;
     m_soundDataLength = length;
     m_sample = 0;
 }
 
 void continuePlayback() {
-    //ClearCore::ConnectorUsb.SendLine("Stop Playback Temp");
     if(sFile->available() && (sFile->curPosition() < (m_endOfDataPosn))) {
         size_t nbyte = BUF_SIZE;
         uint32_t temp = sFile->curPosition() + BUF_SIZE;

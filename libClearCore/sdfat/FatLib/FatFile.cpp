@@ -828,7 +828,8 @@ int FatFile::readASync(void *buf, size_t nbyte) {
      }
      offset = m_curPosition & 0X1FF;  // offset in block
      blockOfCluster = m_vol->blockOfCluster(m_curPosition);
-     if(m_curPosition == 0){ //Initialize if at the beginning of a file
+     if(m_curPosition<512){ //Initialize if at the beginning of a file
+         m_prevBlock = blockOfCluster;
          while(m_vol->cardIsBusy()){
             continue;
          }
@@ -845,8 +846,7 @@ int FatFile::readASync(void *buf, size_t nbyte) {
          }
      }
      else{
-        //TODO AW make the minimum async read larger than 100
-        if (blockOfCluster == 0 && (m_curPosition % 512)<100) {
+        if (blockOfCluster<m_prevBlock) {
             // start of new cluster
             // increment current cluster
             m_curCluster++;
@@ -857,6 +857,7 @@ int FatFile::readASync(void *buf, size_t nbyte) {
      // read block to cache and copy data to dst buffer
      m_vol->readBlocksASync(block,dst,nbyte,offset);
      m_curPosition += nbyte;
+     m_prevBlock = blockOfCluster;
  
      return nbyte;
 
@@ -1500,4 +1501,107 @@ fail:
     m_error |= WRITE_ERROR;
     return -1;
 }
+//------------------------------------------------------------------------------
+int FatFile::writeASync(const void *buf, size_t nbyte) {
+    // convert void* to uint8_t*  -  must be before goto statements
+    const uint8_t *src = reinterpret_cast<const uint8_t *>(buf);
+    uint8_t cacheOption;
+    // number of bytes left to write  -  must be before goto statements
+    size_t nToWrite = nbyte;
+    size_t n;
+    // error if not a normal file or is read-only
+    if (!isFile() || !(m_flags & F_WRITE)) {
+        //goto fail;
+    }
+    // seek to end of file if append flag
+    if ((m_flags & F_APPEND)) {
+        if (!seekSet(m_fileSize)) {
+            //goto fail;
+        }
+    }
+    // Don't exceed max fileSize.
+    if (nbyte > (0XFFFFFFFF - m_curPosition)) {
+        //goto fail;
+    }
+    uint8_t blockOfCluster = m_vol->blockOfCluster(m_curPosition);
+    uint16_t blockOffset = m_curPosition & 0X1FF;
+    if(m_curPosition == 0){
+        while(m_vol->cardIsBusy()){
+            continue;
+        }
+        if (blockOfCluster == 0) {
+            // start of new cluster
+            if (m_curCluster != 0) {
+                int8_t fg = m_vol->fatGet(m_curCluster, &m_curCluster);
+                if (fg < 0) {
+                    //goto fail;
+                }
+                if (fg == 0) {
+                    // add cluster if at end of chain
+                    if (!addCluster()) {
+                        //goto fail;
+                    }
+                }
+            }
+            else {
+                if (m_firstCluster == 0) {
+                    // allocate first cluster of file
+                    if (!addCluster()) {
+                        //goto fail;
+                    }
+                    m_firstCluster = m_curCluster;
+                }
+                else {
+                    m_curCluster = m_firstCluster;
+                }
+            }
+        }
+    }
+    // block for data write
+    uint32_t block = m_vol->clusterFirstBlock(m_curCluster) + blockOfCluster;
 
+    
+
+        // use multiple block write command
+        uint8_t maxBlocks = m_vol->blocksPerCluster() - blockOfCluster;
+        size_t nb = nbyte >> 9;
+        if (nb > maxBlocks) {
+            nb = maxBlocks;
+        }
+        n = 512 * nb;
+        if (m_vol->cacheBlockNumber() <= block
+        && block < (m_vol->cacheBlockNumber() + nb)) {
+            // invalidate cache if block is in cache
+            m_vol->cacheInvalidate();
+        }
+        if (!m_vol->writeBlocksASync(block, src, nb, blockOffset)) {
+            //goto fail;
+        }
+    
+
+    m_curPosition += n;
+    src += n;
+    nToWrite -= n;
+    
+    if (m_curPosition > m_fileSize) {
+        // update fileSize and insure sync will update dir entry
+        m_fileSize = m_curPosition;
+        m_flags |= F_FILE_DIR_DIRTY;
+    }
+    else if (m_dateTime) {
+        // insure sync will update modified date and time
+        m_flags |= F_FILE_DIR_DIRTY;
+    }
+
+    if (m_flags & F_SYNC) {
+        if (!sync()) {
+            //goto fail;
+        }
+    }
+    return nbyte;
+
+//     fail:
+//     // return for write error
+//     m_error |= WRITE_ERROR;
+//     return -1;
+}

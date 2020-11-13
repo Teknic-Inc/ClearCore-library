@@ -460,6 +460,37 @@ fail:
     return false;
 }
 //------------------------------------------------------------------------------
+bool SdSpiCard::writeBlocksASync(uint32_t block, const uint8_t *src, size_t count, uint16_t offset) {
+    if (type() != SD_CARD_TYPE_SDHC) {
+        block <<= 9;
+    }
+    if (cardCommand(CMD25, block)) {
+        error(SD_CARD_ERROR_CMD25);
+        goto fail;
+    }
+    SdCard.sendBlocskASync(block,src,count,offset);
+//     TODO AW update sendBlockSync to execute the below code without blocking
+    for (size_t b = 0; b < count; b++, src += 512) {
+        SdCard.SpiTransferData(0xFC);
+        SdCard.SpiTransferData((uint8_t *)src, (uint8_t *)NULL, 512);
+        SdCard.SpiTransferData(0xFF);
+        SdCard.SpiTransferData(0XFF);
+
+        m_status = SdCard.SpiTransferData(0XFF);
+        if ((m_status & DATA_RES_MASK) != DATA_RES_ACCEPTED) {
+            error(SD_CARD_ERROR_WRITE);
+            goto fail;
+        }
+    }
+    SdCard.SpiTransferData(STOP_TRAN_TOKEN);
+    spiStop();
+    return true;
+
+    fail:
+    spiStop();
+    return false;
+}
+//------------------------------------------------------------------------------
 bool SdSpiCard::writeData(const uint8_t *src) {
     // wait for previous write to finish
     if (!waitNotBusy(SD_WRITE_TIMEOUT)) {
