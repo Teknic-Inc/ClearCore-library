@@ -1505,7 +1505,6 @@ fail:
 int FatFile::writeASync(const void *buf, size_t nbyte) {
     // convert void* to uint8_t*  -  must be before goto statements
     const uint8_t *src = reinterpret_cast<const uint8_t *>(buf);
-    uint8_t cacheOption;
     // number of bytes left to write  -  must be before goto statements
     size_t nToWrite = nbyte;
     size_t n;

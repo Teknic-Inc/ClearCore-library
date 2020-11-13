@@ -39,15 +39,15 @@ SDManager::SDManager(){}
     int SDManager::Open(const char *fileName, oflag_t oflag){
         int i = 0;
         while(i < MAX_FILE_SIZE){
-            if(!ActiveFiles[i].isOpen()){
-                //TODO add file open flag options, defaults to RD_ONLY
-                if(!ActiveFiles[i].open(fileName,oflag)){
+            if(!(ActiveFiles[i].isOpen())){
+                if(ActiveFiles[i].open(fileName,oflag)){
                     return i;
                 }
                 else{
                     return -1;
                 }
             }
+            i++;
         }
         //array is full, default to error
         return -1;
@@ -58,6 +58,23 @@ SDManager::SDManager(){}
         return ActiveFiles[fd].isOpen();
     }
 
+    int SDManager::OpenNext(int fd, oflag_t oflag){
+        int i = 0;
+        while(i < MAX_FILE_SIZE){
+            if(!ActiveFiles[i].isOpen()){
+                if(ActiveFiles[fd].openNext(&ActiveFiles[i],oflag)){
+                    return i;
+                }
+                else{
+                    return -1;
+                }
+            }
+            i++;
+        }
+        //array is full, default to error
+        return -1;
+    }
+
     bool SDManager::Close(int fd){
         //check to see if fd entry exists
         if(!ActiveFiles[fd].isOpen()){
@@ -66,29 +83,29 @@ SDManager::SDManager(){}
         return ActiveFiles[fd].close();
     }
 
-    bool SDManager::Exists(char *pathName){
+    bool SDManager::Exists(const char *pathName){
         return SDLibrary.exists(pathName);
     }
 
-    bool SDManager::RmDir(char *pathName){
+    bool SDManager::RmDir(const char *pathName){
         return SDLibrary.rmdir(pathName);
     }
 
-    bool SDManager::MkDir(char *dirName){
+    bool SDManager::MkDir(const char *dirName){
         return SDLibrary.mkdir(dirName);
     }
 
-    bool SDManager::ChDir(char *pathName){
+    bool SDManager::ChDir(const char *pathName){
         return SDLibrary.chdir(pathName);
     }
 
 
-    bool SDManager::Rename(char *origName,char *newName){
+    bool SDManager::Rename(const char *origName,const char *newName){
         return SDLibrary.rename(origName, newName);
     }
 
-    bool SDManager::Remove(int fd){
-        return ActiveFiles[fd].remove();
+    bool SDManager::Remove(const char *fileName){
+        return SDLibrary.remove(fileName);
     }
 
     int SDManager::Available(int fd){

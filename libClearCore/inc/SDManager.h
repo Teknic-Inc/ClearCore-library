@@ -100,6 +100,21 @@ public:
     bool IsOpen(int fd);
 
     /**
+        \brief opens the next file in the current directory
+
+        \param[in] fd,An open file for the directory
+                            containing the file to be opened.
+
+        \param[in] oflag, binary flag to set settings of the file
+
+        \return int index of the opened file
+
+        \note oflags can be OR'd together to set multiple settings
+        i.e: O_WRONLY|O_AT_END|O_CREAT
+    **/
+    int OpenNext(int fd, oflag_t oflag = O_RDONLY);
+
+    /**
         \brief closes file on SD card
 
         \param[in] fd, index of file to be closed
@@ -121,7 +136,7 @@ public:
 
         \note works with directories or files
     **/
-    bool Exists(char *pathName);
+    bool Exists(const char *pathName);
 
     /**
         \brief deletes current directory iff it is empty
@@ -130,7 +145,7 @@ public:
 
         \return true if success, false if failed
     **/
-    bool RmDir(char *pathName);
+    bool RmDir(const char *pathName);
 
     /**
         \brief creates new directory with specified name
@@ -139,7 +154,7 @@ public:
 
         \return true if successful, false if failed
     **/
-    bool MkDir(char *dirName);
+    bool MkDir(const char *dirName);
 
     /**
         \brief changes current working directory to specified path
@@ -148,7 +163,7 @@ public:
 
         \return true if successful, false if failed
     **/
-    bool ChDir(char *pathName);
+    bool ChDir(const char *pathName);
 
     /**
         \brief path or file at specified location
@@ -159,16 +174,16 @@ public:
 
         \return true for success, false for failure
     **/
-    bool Rename(char *origName, char *newName);
+    bool Rename(const char *origName, const char *newName);
 
     /**
         \brief deletes specified file
 
-         \param[in] fd, this is the index of the file to be removed
+         \param[in] fileName, this is the name of the file to remove
 
         \return true for success, false for failure
     **/
-    bool Remove(int fd);
+    bool Remove(const char *fileName);
 
     /**
         \brief checks if the specified file is available for
