@@ -43,8 +43,7 @@ typedef void (*voidFuncPtr)(void);
 /**
     \brief ClearCore Position Decoder.
 
-    Provides consolidated access to the input state of all of the ClearCore
-    connectors.
+    Provides position information from quadrature and index signals.
 **/
 class EncoderInput {
     friend class SysManager;
@@ -131,7 +130,7 @@ public:
         }
         \endcode
 
-        \return position count of the last Encoder index pulse.
+        \return The position count of the last Encoder index pulse.
     **/
     int32_t IndexPosition();
 
@@ -188,7 +187,7 @@ public:
         \brief Invert the edge that the index detection triggers on.
 
         The index nominally triggers when the digital input value rises.
-        This setting allows the the index to trigger on the falling edge.
+        This setting allows the index to trigger on the falling edge.
 
         \code{.cpp}
         // Set the index pulse to trigger on the falling input edge.
@@ -236,9 +235,8 @@ public:
     volatile const int16_t& StepsLastSample() {
         return m_stepsLast;
     }
-    
-private:
 
+private:
     const PeripheralRoute *m_aInfo;
     const PeripheralRoute *m_bInfo;
     const PeripheralRoute *m_indexInfo;
