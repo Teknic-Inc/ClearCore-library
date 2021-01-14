@@ -215,8 +215,11 @@ void DigitalInOutAnalogOut::DacEnable() {
     PMUX_ENABLE(m_inputPort, m_inputDataBit);   // (-) DAC output
     PMUX_ENABLE(m_analogPort, m_analogDataBit); // (+) DAC output
 
-    DAC->CTRLA.bit.ENABLE = 1;
     SYNCBUSY_WAIT(DAC, DAC_SYNCBUSY_ENABLE);
+    if (!DAC->CTRLA.bit.ENABLE) {
+        DAC->CTRLA.bit.ENABLE = 1;
+        SYNCBUSY_WAIT(DAC, DAC_SYNCBUSY_ENABLE);
+    }
 
     while (!DAC->STATUS.vec.READY) {
         continue;
@@ -245,8 +248,11 @@ void DigitalInOutAnalogOut::DacDisable() {
     PMUX_DISABLE(m_analogPort, m_analogDataBit); // (+) DAC output
 
     // Prevent the DAC from operating until re-enabled
-    DAC->CTRLA.bit.ENABLE = 0;
     SYNCBUSY_WAIT(DAC, DAC_SYNCBUSY_ENABLE);
+    if (DAC->CTRLA.bit.ENABLE) {
+        DAC->CTRLA.bit.ENABLE = 0;
+        SYNCBUSY_WAIT(DAC, DAC_SYNCBUSY_ENABLE);
+    }
 }
 
 /**
@@ -328,8 +334,10 @@ bool DigitalInOutAnalogOut::DacStoreCalibration(uint16_t zero, uint16_t span) {
     Write a value to the DAC DATA register.
 **/
 void DigitalInOutAnalogOut::DacRegisterWrite(uint16_t value) {
-    SYNCBUSY_WAIT(DAC, DAC_SYNCBUSY_DATA0);
-    DAC->DATA[0].reg = value;
+    if (DAC->DATA[0].reg != value) {
+        SYNCBUSY_WAIT(DAC, DAC_SYNCBUSY_DATA0);
+        DAC->DATA[0].reg = value;
+    }
 }
 
 /**

@@ -406,8 +406,10 @@ bool DigitalInOutHBridge::Mode(ConnectorModes newMode) {
     }
 
     // Only enable the TCC if it is being used to control something
-    m_tcc->CTRLA.bit.ENABLE = tccControlPwm;
-    SYNCBUSY_WAIT(m_tcc, TCC_SYNCBUSY_ENABLE);
+    if (m_tcc->CTRLA.bit.ENABLE != tccControlPwm) {
+        m_tcc->CTRLA.bit.ENABLE = tccControlPwm;
+        SYNCBUSY_WAIT(m_tcc, TCC_SYNCBUSY_ENABLE);
+    }
 
     m_mode = newMode;
 

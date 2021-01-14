@@ -43,8 +43,7 @@ typedef void (*voidFuncPtr)(void);
 /**
     \brief ClearCore Position Decoder.
 
-    Provides consolidated access to the input state of all of the ClearCore
-    connectors.
+    Provides position information from quadrature and index signals.
 **/
 class EncoderInput {
     friend class SysManager;
@@ -92,7 +91,7 @@ public:
         }
         \endcode
 
-        \return position count of the Encoder Input module.
+        \return The position count of the Encoder Input module.
     **/
     int32_t Position();
 
@@ -131,7 +130,7 @@ public:
         }
         \endcode
 
-        \return position count of the last Encoder index pulse.
+        \return The position count of the last Encoder index pulse.
     **/
     int32_t IndexPosition();
 
@@ -188,7 +187,7 @@ public:
         \brief Invert the edge that the index detection triggers on.
 
         The index nominally triggers when the digital input value rises.
-        This setting allows the the index to trigger on the falling edge.
+        This setting allows the index to trigger on the falling edge.
 
         \code{.cpp}
         // Set the index pulse to trigger on the falling input edge.
@@ -198,35 +197,46 @@ public:
     void IndexInverted(bool invert);
 
     /**
-        \brief Read the velocity of the encoder input (counts per second)
+        \brief Query for a quadrature error
 
         \code{.cpp}
-        // Read the current encoder velocity
-        int32_t encoderSpeed = EncoderIn.Velocity();
+        // Check for a quadrature error
+        bool quadratureError = EncoderIn.QuadratureError();
         \endcode
 
-        \return The encoder input velocity in counts per second.
+        \return The current state of the quadrature error flag in the position
+        decoder module.
     **/
     bool QuadratureError();
 
     /**
-        \brief Read the velocity of the encoder input (counts per second)
+        \brief Clear a quadrature error
 
         \code{.cpp}
-        // Read the current encoder velocity
-        int32_t encoderSpeed = EncoderIn.Velocity();
+        // Clear a quadrature error if there is one
+        if (EncoderIn.QuadratureError()) {
+            EncoderIn.ClearQuadratureError();
+        }
         \endcode
-
-        \return The encoder input velocity in counts per second.
     **/
     void ClearQuadratureError();
 
+    /**
+        \brief Get the number of encoder steps received in the last sample time.
+
+        \code{.cpp}
+        if (EncoderIn.StepsLastSample() == 0) {
+            // Do something in the case that we haven't received steps
+        }
+        \endcode
+
+        \return The number of steps received in the last sample time.
+    **/
     volatile const int16_t& StepsLastSample() {
         return m_stepsLast;
     }
-    
-private:
 
+private:
     const PeripheralRoute *m_aInfo;
     const PeripheralRoute *m_bInfo;
     const PeripheralRoute *m_indexInfo;
