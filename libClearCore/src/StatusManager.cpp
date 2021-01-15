@@ -30,6 +30,7 @@
 #include "EthernetManager.h"
 #include "HardwareMapping.h"
 #include "MotorDriver.h"
+#include "NvmManager.h"
 #include "SdCardDriver.h"
 #include "SysConnectors.h"
 #include "SysTiming.h"
@@ -42,6 +43,7 @@ extern MotorDriver *const MotorConnectors[];
 extern AdcManager &AdcMgr;
 extern CcioBoardManager &CcioMgr;
 extern EthernetManager &EthernetMgr;
+extern NvmManager &NvmMgr;
 extern ShiftRegister ShiftReg;
 extern SdCardDriver SdCard;
 StatusManager &StatusMgr = StatusManager::Instance();
@@ -200,6 +202,7 @@ void StatusManager::Refresh() {
     statusPending.bit.EthernetRemoteFault = EthernetMgr.PhyRemoteFault();
     statusPending.bit.EthernetPhyInitFailed = EthernetMgr.PhyInitFailed();
     statusPending.bit.SdCardError = SdCard.IsInFault();
+    statusPending.bit.NvmDesync = !NvmMgr.Synchonized();
 
     UpdateBlinkCodes(statusPending);
 
