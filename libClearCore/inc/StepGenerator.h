@@ -90,7 +90,8 @@ public:
         move. Invalid will result in move relative to the end position.
         Default: MOVE_TARGET_REL_END_POSN
     **/
-    virtual bool Move(int32_t dist, MoveTarget moveTarget = MOVE_TARGET_REL_END_POSN);
+    virtual bool Move(int32_t dist,
+                      MoveTarget moveTarget = MOVE_TARGET_REL_END_POSN);
 
     /**
         \brief Issues a velocity move at the specified velocity.
@@ -129,6 +130,20 @@ public:
         acceleration rate of the current move as the decel rate.
     **/
     void MoveStopDecel(uint32_t decelMax = 0);
+
+        /**
+        Interrupts the current move; Stops the motor at the maximum of the
+        active decel rate or estop decel rate.
+
+        \code{.cpp}
+        // Stop the motor at the deceleration rate.
+        ConnectorM0.MoveStop();
+        \endcode
+
+        \param[in] decelMax The new deceleration limit, in counts/sec^2.
+        Passing 0 keeps the previous deceleration rate.
+    **/
+    void MoveStop();
 
     /**
         \brief Sets the absolute commanded position to the given value.
@@ -203,6 +218,35 @@ public:
     void AccelMax(uint32_t accelMax);
 
     /**
+        \brief Sets the maximum deceleration in step pulses per second^2.
+
+        Value will be clipped if out of bounds
+
+        \code{.cpp}
+        // Set the StepGenerator's maximum deceleration to 15000 step pulses/sec^2
+        ConnectorM0.DecelMax(15000);
+        \endcode
+
+        \param[in] decelMax The new deceleration limit
+    **/
+    void DecelMax(uint32_t decelMax);
+
+    /**
+        \brief Sets the maximum deceleration for E-stop Deceleration in
+        step pulses per second^2. This is only for MoveStopDecel.
+
+        Value will be clipped if out of bounds
+
+        \code{.cpp}
+        // Set the StepGenerator's maximum E-stop deceleration to 15000 step pulses/sec^2
+        ConnectorM0.EStopDecelMax(15000);
+        \endcode
+
+        \param[in] decelMax The new e-stop deceleration limit
+    **/
+    void EStopDecelMax(uint32_t decelMax);
+
+    /**
         \brief Function to check if no steps are currently being commanded to
         the motor.
 
@@ -238,26 +282,25 @@ public:
 
 protected:
     struct LimitStatus {
-	    uint32_t InLimit            : 1;    // True if we are in a limit
-	    uint32_t LimitRampPos       : 1;    // True if we are ramping into the positive limit
-	    uint32_t LimitRampNeg       : 1;    // True if we are ramping into the negative limit
-	    uint32_t EnterHWLimit       : 1;    // True when entering HW limits
-	    uint32_t InPosHWLimit       : 1;    // True if we are in the positive HW limit
-	    uint32_t InNegHWLimit       : 1;    // True if we are in the negative HW limit
-	    uint32_t InPosHWLimitLast   : 1;
-	    uint32_t InNegHWLimitLast   : 1;
+        uint32_t LimitRampPos       : 1;    // True if we are ramping into the positive limit
+        uint32_t LimitRampNeg       : 1;    // True if we are ramping into the negative limit
+        uint32_t EnterHWLimit       : 1;    // True when entering HW limits
+        uint32_t InPosHWLimit       : 1;    // True if we are in the positive HW limit
+        uint32_t InNegHWLimit       : 1;    // True if we are in the negative HW limit
+        uint32_t InPosHWLimitLast   : 1;
+        uint32_t InNegHWLimitLast   : 1;
 
-	    public:
-	    LimitStatus()
-	    : InLimit(0),
-	    LimitRampPos(0),
-	    LimitRampNeg(0),
-	    EnterHWLimit(0),
-	    InPosHWLimit(0),
-	    InNegHWLimit(0),
-	    InPosHWLimitLast(0),
-	    InNegHWLimitLast(0) {}
+        public:
+        LimitStatus()
+            : LimitRampPos(0),
+              LimitRampNeg(0),
+              EnterHWLimit(0),
+              InPosHWLimit(0),
+              InNegHWLimit(0),
+              InPosHWLimitLast(0),
+              InNegHWLimitLast(0) {}
     };
+
     typedef enum {
         MS_IDLE,
         MS_START,
@@ -296,30 +339,13 @@ protected:
 
     bool CheckTravelLimits();
 
-    bool LimitSwitchCheck();
-
     void PosLimitActive(bool isActive) {
-	    m_limitInfo.InPosHWLimit = isActive;
+        m_limitInfo.InPosHWLimit = isActive;
     }
 
     void NegLimitActive(bool isActive) {
-	    m_limitInfo.InNegHWLimit = isActive;
+        m_limitInfo.InNegHWLimit = isActive;
     }
-
-    /**
-        \brief Sets the maximum deceleration for E-stop Deceleration in
-        step pulses per second^2. This is only for MoveStopDecel.
-
-        Value will be clipped if out of bounds
-
-        \code{.cpp}
-        // Set the StepGenerator's maximum velocity to 15000 step pulses/sec^2
-        ConnectorM0.AccelMax(15000);
-        \endcode
-
-        \param[in] decelMax The new deceleration limit
-    **/
-    void EStopDecelMax(uint32_t decelMax);
 
 private:
 
@@ -339,10 +365,12 @@ private:
     int32_t m_velLimitQx;     // Velocity limit
     int32_t m_altVelLimitQx;  // Velocity move Velocity limit
     int32_t m_accelLimitQx;   // Acceleration limit
+    int32_t m_decelLimitQx;   // Deceleration limit
     int32_t m_altDecelLimitQx;// E-Stop Deceleration limit
     int64_t m_posnCurrentQx;  // Current position
     int32_t m_velCurrentQx;   // Current velocity
     int32_t m_accelCurrentQx; // Current acceleration
+    int32_t m_decelCurrentQx; // Current deceleration
     int64_t m_posnTargetQx;   // Move length
     int32_t m_velTargetQx;    // Adjusted velocity limit
     int64_t m_posnDecelQx;    // Position to start decelerating
@@ -352,6 +380,7 @@ private:
     int32_t m_velLimitPendingQx;     // Velocity limit
     int32_t m_altVelLimitPendingQx;  // Velocity move Velocity limit
     int32_t m_accelLimitPendingQx;   // Acceleration limit
+    int32_t m_decelLimitPendingQx;   // Deceleration limit
     int32_t m_altDecelLimitPendingQx;// E-Stop Deceleration limit
 
     virtual void OutputDirection() = 0;
@@ -370,6 +399,8 @@ private:
         m_velLimitQx = m_velLimitPendingQx;
         m_altVelLimitQx = m_altVelLimitPendingQx;
         m_accelLimitQx = m_accelLimitPendingQx;
+        m_decelLimitQx = m_decelLimitPendingQx ? m_decelLimitPendingQx
+                                               : m_accelLimitPendingQx;
         m_altDecelLimitQx = m_altDecelLimitPendingQx;
     }
 };

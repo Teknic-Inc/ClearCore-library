@@ -47,8 +47,6 @@ void StepGenerator::StepsCalculated() {
         m_accelCurrentQx = m_accelLimitQx;
         m_posnTargetQx = static_cast<int64_t>(m_stepsCommanded)
                          << FRACT_BITS;
-		// Clear the InLimit flag, this will be set again if move violates limits
-		m_limitInfo.InLimit = false;
 
         if (m_velocityMove) {
             if (m_velTargetQx && m_velCurrentQx && m_direction != m_dirCommanded) {
@@ -178,9 +176,9 @@ void StepGenerator::StepsCalculated() {
                 // whether we should start decelerating.
                 m_posnCurrentQx -= (posnAdjQx + m_velCurrentQx);
                 // Calculate the decel point
-                uint64_t accelDistQx = (static_cast<uint64_t>(m_velCurrentQx) *
-                                        m_velCurrentQx / m_accelCurrentQx) >> 1;
-                m_posnDecelQx = m_posnTargetQx - accelDistQx;
+                uint64_t decelDistQx = (static_cast<uint64_t>(m_velCurrentQx) *
+                                        m_velCurrentQx / m_decelCurrentQx) >> 1;
+                m_posnDecelQx = m_posnTargetQx - decelDistQx;
                 m_moveState = MS_CRUISE;
                 // Allow to fall through into cruise in case the decel
                 // needs to start immediately
@@ -212,7 +210,7 @@ void StepGenerator::StepsCalculated() {
                 uint32_t pctSampleOverQ32 =
                     (overshootQx << 32) / m_velCurrentQx;
                 uint32_t velAdjQx = (static_cast<uint64_t>(pctSampleOverQ32) *
-                                     m_accelCurrentQx) >> 32;
+                                     m_decelCurrentQx) >> 32;
                 // Build in the divide by 2
                 uint32_t posnAdjQx =
                     (static_cast<uint64_t>(pctSampleOverQ32) * velAdjQx) >> 33;
@@ -225,6 +223,7 @@ void StepGenerator::StepsCalculated() {
                         (m_velCurrentQx <= 0) || (m_posnCurrentQx <= 0)) {
                     // If done, enforce final position.
                     m_accelCurrentQx = 0;
+                    m_decelCurrentQx = 0;
                     m_velCurrentQx = 0;
                     m_posnCurrentQx = m_posnTargetQx;
                     m_moveState = MS_END;
@@ -237,8 +236,8 @@ void StepGenerator::StepsCalculated() {
 
         case MS_DECEL: // Ramp down to stopped
             // Execute move
-            m_posnCurrentQx += m_velCurrentQx - (m_accelCurrentQx >> 1);
-            m_velCurrentQx -= m_accelCurrentQx;
+            m_posnCurrentQx += m_velCurrentQx - (m_decelCurrentQx >> 1);
+            m_velCurrentQx -= m_decelCurrentQx;
 
             // Check for done condition: if we overshot target position or
             // decel overshot zero velocity or position overflow
@@ -246,6 +245,7 @@ void StepGenerator::StepsCalculated() {
                     (m_posnCurrentQx <= 0)) {
                 // If done, enforce final position.
                 m_accelCurrentQx = 0;
+                m_decelCurrentQx = 0;
                 m_velCurrentQx = 0;
                 m_posnCurrentQx = m_posnTargetQx;
                 m_moveState = MS_END;
@@ -287,9 +287,9 @@ void StepGenerator::StepsCalculated() {
                 }
                 else {
                     // Calculate the decel point
-                    uint64_t accelDistQx = (static_cast<uint64_t>(m_velCurrentQx) *
+                    uint64_t decelDistQx = (static_cast<uint64_t>(m_velCurrentQx) *
                                             m_velCurrentQx / m_accelCurrentQx) >> 1;
-                    m_posnDecelQx = m_posnTargetQx - accelDistQx;
+                    m_posnDecelQx = m_posnTargetQx - decelDistQx;
 
                     m_moveState = MS_CRUISE;
                 }
@@ -482,6 +482,14 @@ bool StepGenerator::MoveVelocity(int32_t velocity) {
     return true;
 }
 
+void StepGenerator::MoveStop() {
+    __disable_irq();
+    m_velocityMove = true;
+    m_altVelLimitQx = 0;
+    m_moveState = MS_START;
+    __enable_irq();
+}
+
 void StepGenerator::MoveStopDecel(uint32_t decelMax) {
     __disable_irq();
     if (decelMax != 0) {
@@ -558,6 +566,26 @@ void StepGenerator::AccelMax(uint32_t accelMax) {
     m_accelLimitPendingQx = ConvertAccel(accelMax);
 }
 
+void StepGenerator::DecelMax(uint32_t decelMax) {
+    // When decelMax == 0, use the accel limit as the decel limit
+    if (decelMax == 0) {
+        m_decelLimitPendingQx = 0;
+        return;
+    }
+    // Convert from step pulses/sec/sec to step pulses/sample/sample
+    int64_t decelLim64 = ((static_cast<int64_t>(decelMax) << FRACT_BITS) /
+    (SampleRateHz * SampleRateHz));
+    // Ensure we didn't overflow 32-bit int
+    m_decelLimitPendingQx = min(decelLim64, INT32_MAX);
+    // Since decel has to be divided by 2 when calculating position increments,
+    // make sure it is even
+    m_decelLimitPendingQx &= ~1L;
+    // Enforce minimum acceleration of 2 step pulses/sample^2
+    if (m_decelLimitPendingQx < 2) {
+        m_decelLimitPendingQx = 2;
+    }
+}
+
 /*
     This function takes the acceleration in step pulses/sec^2
     and sets m_accelLimitQx in step pulses/sample^2.
@@ -584,43 +612,33 @@ void StepGenerator::StepsPerSampleMaxSet(uint32_t maxSteps) {
     m_velLimitPendingQx = min(velLim64, m_velLimitQx);
 }
 
- bool StepGenerator::LimitSwitchCheck() {
-	 // Handle the idle case
-	 if (m_moveState == MS_IDLE) {
-		 return false;
-	 }
-
-	 return false;
- }
-
  bool StepGenerator::CheckTravelLimits() {
-	 if (m_stepsPrevious == 0) {
-		 return false;
-	 }
+    if (m_stepsPrevious == 0) {
+        return false;
+    }
 
-	 // Determine if we are physically in the hardware limits
-	 m_limitInfo.EnterHWLimit = (m_limitInfo.InPosHWLimit || m_limitInfo.InNegHWLimit)
-	 && ((m_limitInfo.InPosHWLimit != m_limitInfo.InPosHWLimitLast)
-	 ||  (m_limitInfo.InNegHWLimit != m_limitInfo.InNegHWLimitLast));
-	 m_limitInfo.InPosHWLimitLast = m_limitInfo.InPosHWLimit;
-	 m_limitInfo.InNegHWLimitLast = m_limitInfo.InNegHWLimit;
+    // Determine if we are physically in the hardware limits
+    m_limitInfo.EnterHWLimit = (m_limitInfo.InPosHWLimit || m_limitInfo.InNegHWLimit)
+                            && ((m_limitInfo.InPosHWLimit != m_limitInfo.InPosHWLimitLast)
+                            ||  (m_limitInfo.InNegHWLimit != m_limitInfo.InNegHWLimitLast));
+    m_limitInfo.InPosHWLimitLast = m_limitInfo.InPosHWLimit;
+    m_limitInfo.InNegHWLimitLast = m_limitInfo.InNegHWLimit;
 
+    if (m_limitInfo.EnterHWLimit) {
 
-	 if (m_limitInfo.EnterHWLimit) {
-
-		 if ((!m_direction && m_limitInfo.InPosHWLimit) ||
-		 (m_direction && m_limitInfo.InNegHWLimit)) {
-			 // Ramp to a stop
-			 if (!m_direction) {
-				 m_limitInfo.LimitRampPos = true;
-			 }
-			 else {
-				 m_limitInfo.LimitRampNeg = true;
-			 }
-			 MoveStopDecel();
-		 }
-	 }
-	 return false;
+        if ((!m_direction && m_limitInfo.InPosHWLimit) ||
+            (m_direction && m_limitInfo.InNegHWLimit)) {
+            // Ramp to a stop
+            if (!m_direction) {
+                m_limitInfo.LimitRampPos = true;
+            }
+            else {
+                m_limitInfo.LimitRampNeg = true;
+            }
+            MoveStopDecel();
+        }
+    }
+    return false;
 }
 
 } // ClearCore namespace

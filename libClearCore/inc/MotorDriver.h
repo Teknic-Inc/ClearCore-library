@@ -35,6 +35,7 @@
 #include "StatusManager.h"
 #include "StepGenerator.h"
 #include "SysUtils.h"
+#include "SysManager.h"
 
 #define HLFB_CARRIER_LOSS_ERROR_LIMIT (0)
 #define HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ (25)
@@ -55,6 +56,7 @@ namespace ClearCore {
 /** Default enable trigger pulse width, in milliseconds. **/
 #define DEFAULT_TRIGGER_PULSE_WIDTH_MS  25
 
+extern SysManager SysMgr;
 
 /**
     \brief ClearCore motor connector class.
@@ -634,57 +636,6 @@ public:
     }
 
     /**
-        \brief Function to set the position capture sensor input by a
-        ClearCorePins value.
-
-        \param[in] capturePin The new position capture sensor pin
-        \return Returns true if the pin was valid
-
-        \note The specified pin must be a valid ClearCore pin that is capable
-        of digital input. Specifying CLEARCORE_PIN_INVALID for the capturePin 
-        disables the position capture feature.
-    **/
-    bool PositionCaptureSensorConnector(ClearCorePins capturePin);
-
-    /**
-        \brief Check the position capture sensor input pin.
-
-        \note A value of CLEARCORE_PIN_INVALID indicates that the position
-        capture feature is disabled.
-    **/
-    ClearCorePins PositionCaptureSensorConnector() {
-        return m_positionCaptureInput;
-    }
-
-    /**
-        \brief Function to set the position capture sensor input to active high
-        or low.
-
-        \param[in] activeHigh True if the input is active high.
-    **/
-    void PositionCaptureActiveHigh(bool activeHigh) {
-        m_positionCaptureActiveHigh = activeHigh;
-        // Reset the position capture input state
-        m_positionCaptureInputState = !activeHigh;
-    }
-
-    /**
-        \brief Check if the position capture sensor input is active high or low.
-
-        \return True if the position capture sensor is active high.
-    **/
-    bool PositionCaptureActiveHigh() {
-        return m_positionCaptureActiveHigh;
-    }
-
-    /**
-        \brief Get the last captured position.
-    **/
-    int32_t PositionCaptured() {
-        return m_positionCaptured;
-    }
-
-    /**
         \brief Return the latest HLFB state information.
 
         \code{.cpp}
@@ -788,24 +739,24 @@ public:
     }
 
     bool HlfbCarrier(HlfbCarrierFrequency freq) {
-	    switch (freq) {
-		    case HLFB_CARRIER_45_HZ:
-		    m_hlfbCarrierLossStateChange_ms =
-		    HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ;
-		    break;
-		    case HLFB_CARRIER_482_HZ:
-		    m_hlfbCarrierLossStateChange_ms =
-		    HLFB_CARRIER_LOSS_STATE_CHANGE_MS_482_HZ;
-		    break;
-		    default:
-		    return false;
-	    }
-	    m_hlfbCarrierFrequency = freq;
-	    return true;
+        switch (freq) {
+            case HLFB_CARRIER_45_HZ:
+            m_hlfbCarrierLossStateChange_ms =
+            HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ;
+            break;
+            case HLFB_CARRIER_482_HZ:
+            m_hlfbCarrierLossStateChange_ms =
+            HLFB_CARRIER_LOSS_STATE_CHANGE_MS_482_HZ;
+            break;
+            default:
+            return false;
+        }
+        m_hlfbCarrierFrequency = freq;
+        return true;
     }
 
     HlfbCarrierFrequency HlfbCarrier() {
-	    return m_hlfbCarrierFrequency;
+        return m_hlfbCarrierFrequency;
     }
 
     /**
@@ -1116,14 +1067,6 @@ public:
     }
 
     /**
-        Adjusts the current position of the motor by the specified amount.
-
-        \param[in] posnAdjust The amount, in counts, to adjust the motor's
-        current position by.
-    **/
-    void AddToPosition(int32_t posnAdjust);
-
-    /**
         Set the digital input connector used to control the state of the enable
         signal.
 
@@ -1282,27 +1225,6 @@ public:
     }
 
     /**
-        \brief Set up this motor connector to derive its motion automatically
-        from the motion commanded on a different motor, taking into account the
-        given multiplier and divisor scale factors.
-
-        \note Scale factors greater than 128/1 or less than 1/128 will get
-        rejected.
-
-        \code{.cpp}
-        // Command motor M-0 to follow the motion of motor M-1 but scaled at 2x
-        // and in the opposite direction.
-        if (ConnectorM0.FollowAxis(1, -2, 1)) {
-            // Follow Axis setup was successful.
-        }
-        \endcode
-
-        \return True if this motor was successfully configured to follow the
-        other axis as specified; false otherwise.
-    **/
-    bool FollowAxis(int8_t axis, int32_t multiplier = 1, int32_t divisor = 1);
-
-    /**
         Set the active level for the Enable signal. The default is active low.
 
         \param[in] activeLevel True for active high; false for active low.
@@ -1371,6 +1293,7 @@ public:
         \return True if the pin is a digital input connector; false otherwise.
     **/
     static bool IsValidInputPin(ClearCorePins pin);
+
     /**
         A helper function to determine whether the pin supplied is a valid
         digital output connector.
@@ -1380,6 +1303,22 @@ public:
         \return True if the pin is a digital output connector; false otherwise.
     **/
     static bool IsValidOutputPin(ClearCorePins pin);
+
+    /**
+        \brief Function to set the on time of a PWM signal being sent to the
+        motor's Input A
+
+        \param[in] count The PWM on time
+    **/
+    bool MotorInACount(uint16_t count);
+
+    /**
+        \brief Function to set the on time of a PWM signal being sent to the
+        motor's Input B
+
+        \param[in] count The PWM on time
+    **/
+    bool MotorInBCount(uint16_t count);
 
     /**
         \brief Default constructor so this connector can be a global and
@@ -1410,12 +1349,6 @@ protected:
     ClearCorePins m_enableConnector;
     ClearCorePins m_inputAConnector;
     ClearCorePins m_inputBConnector;
-
-    // Position capture
-    ClearCorePins m_positionCaptureInput;
-    bool m_positionCaptureActiveHigh;
-    bool m_positionCaptureInputState;
-    int32_t m_positionCaptured;
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // HLFB State
