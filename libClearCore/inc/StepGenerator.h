@@ -119,31 +119,22 @@ public:
     void MoveStopAbrupt();
 
     /**
-        Interrupts the current move; Slows the motor at the decel rate
+        Interrupts the current move; Slows the motor at the quicker of
+        the EStopDecelMax rate that was set when the moves was issued and
+        the current move's accel rate.
+        If the EStopDecelMax value should be updated before stopping,
+        it can be changed using the decelMax parameter.
 
         \code{.cpp}
         // Ramp to a stop at a decel rate of 100000 pulses/sec^2
         ConnectorM0.MoveStopDecel(100000);
         \endcode
 
-        \param[in] decelMax The deceleration rate. Passing 0 uses the
-        acceleration rate of the current move as the decel rate.
+        \param[in] decelMax The new EStop deceleration rate to set instead 
+        of the value that was set prior to issuing the move. Passing 0 
+        maintains the EStopDecelMax that was previously set.
     **/
     void MoveStopDecel(uint32_t decelMax = 0);
-
-        /**
-        Interrupts the current move; Stops the motor at the maximum of the
-        active decel rate or estop decel rate.
-
-        \code{.cpp}
-        // Stop the motor at the deceleration rate.
-        ConnectorM0.MoveStop();
-        \endcode
-
-        \param[in] decelMax The new deceleration limit, in counts/sec^2.
-        Passing 0 keeps the previous deceleration rate.
-    **/
-    void MoveStop();
 
     /**
         \brief Sets the absolute commanded position to the given value.
@@ -217,19 +208,6 @@ public:
     **/
     void AccelMax(uint32_t accelMax);
 
-    /**
-        \brief Sets the maximum deceleration in step pulses per second^2.
-
-        Value will be clipped if out of bounds
-
-        \code{.cpp}
-        // Set the StepGenerator's maximum deceleration to 15000 step pulses/sec^2
-        ConnectorM0.DecelMax(15000);
-        \endcode
-
-        \param[in] decelMax The new deceleration limit
-    **/
-    void DecelMax(uint32_t decelMax);
 
     /**
         \brief Sets the maximum deceleration for E-stop Deceleration in
@@ -365,12 +343,10 @@ private:
     int32_t m_velLimitQx;     // Velocity limit
     int32_t m_altVelLimitQx;  // Velocity move Velocity limit
     int32_t m_accelLimitQx;   // Acceleration limit
-    int32_t m_decelLimitQx;   // Deceleration limit
     int32_t m_altDecelLimitQx;// E-Stop Deceleration limit
     int64_t m_posnCurrentQx;  // Current position
     int32_t m_velCurrentQx;   // Current velocity
     int32_t m_accelCurrentQx; // Current acceleration
-    int32_t m_decelCurrentQx; // Current deceleration
     int64_t m_posnTargetQx;   // Move length
     int32_t m_velTargetQx;    // Adjusted velocity limit
     int64_t m_posnDecelQx;    // Position to start decelerating
@@ -380,7 +356,6 @@ private:
     int32_t m_velLimitPendingQx;     // Velocity limit
     int32_t m_altVelLimitPendingQx;  // Velocity move Velocity limit
     int32_t m_accelLimitPendingQx;   // Acceleration limit
-    int32_t m_decelLimitPendingQx;   // Deceleration limit
     int32_t m_altDecelLimitPendingQx;// E-Stop Deceleration limit
 
     virtual void OutputDirection() = 0;
@@ -399,8 +374,6 @@ private:
         m_velLimitQx = m_velLimitPendingQx;
         m_altVelLimitQx = m_altVelLimitPendingQx;
         m_accelLimitQx = m_accelLimitPendingQx;
-        m_decelLimitQx = m_decelLimitPendingQx ? m_decelLimitPendingQx
-                                               : m_accelLimitPendingQx;
         m_altDecelLimitQx = m_altDecelLimitPendingQx;
     }
 };

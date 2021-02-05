@@ -177,7 +177,7 @@ void StepGenerator::StepsCalculated() {
                 m_posnCurrentQx -= (posnAdjQx + m_velCurrentQx);
                 // Calculate the decel point
                 uint64_t decelDistQx = (static_cast<uint64_t>(m_velCurrentQx) *
-                                        m_velCurrentQx / m_decelCurrentQx) >> 1;
+                                        m_velCurrentQx / m_accelCurrentQx) >> 1;
                 m_posnDecelQx = m_posnTargetQx - decelDistQx;
                 m_moveState = MS_CRUISE;
                 // Allow to fall through into cruise in case the decel
@@ -210,7 +210,7 @@ void StepGenerator::StepsCalculated() {
                 uint32_t pctSampleOverQ32 =
                     (overshootQx << 32) / m_velCurrentQx;
                 uint32_t velAdjQx = (static_cast<uint64_t>(pctSampleOverQ32) *
-                                     m_decelCurrentQx) >> 32;
+                                     m_accelCurrentQx) >> 32;
                 // Build in the divide by 2
                 uint32_t posnAdjQx =
                     (static_cast<uint64_t>(pctSampleOverQ32) * velAdjQx) >> 33;
@@ -223,7 +223,6 @@ void StepGenerator::StepsCalculated() {
                         (m_velCurrentQx <= 0) || (m_posnCurrentQx <= 0)) {
                     // If done, enforce final position.
                     m_accelCurrentQx = 0;
-                    m_decelCurrentQx = 0;
                     m_velCurrentQx = 0;
                     m_posnCurrentQx = m_posnTargetQx;
                     m_moveState = MS_END;
@@ -236,8 +235,8 @@ void StepGenerator::StepsCalculated() {
 
         case MS_DECEL: // Ramp down to stopped
             // Execute move
-            m_posnCurrentQx += m_velCurrentQx - (m_decelCurrentQx >> 1);
-            m_velCurrentQx -= m_decelCurrentQx;
+            m_posnCurrentQx += m_velCurrentQx - (m_accelCurrentQx >> 1);
+            m_velCurrentQx -= m_accelCurrentQx;
 
             // Check for done condition: if we overshot target position or
             // decel overshot zero velocity or position overflow
@@ -245,7 +244,6 @@ void StepGenerator::StepsCalculated() {
                     (m_posnCurrentQx <= 0)) {
                 // If done, enforce final position.
                 m_accelCurrentQx = 0;
-                m_decelCurrentQx = 0;
                 m_velCurrentQx = 0;
                 m_posnCurrentQx = m_posnTargetQx;
                 m_moveState = MS_END;
@@ -482,19 +480,13 @@ bool StepGenerator::MoveVelocity(int32_t velocity) {
     return true;
 }
 
-void StepGenerator::MoveStop() {
-    __disable_irq();
-    m_velocityMove = true;
-    m_altVelLimitQx = 0;
-    m_moveState = MS_START;
-    __enable_irq();
-}
-
 void StepGenerator::MoveStopDecel(uint32_t decelMax) {
-    __disable_irq();
     if (decelMax != 0) {
         EStopDecelMax(decelMax);
+        m_altDecelLimitQx = m_altDecelLimitPendingQx;
     }
+    __disable_irq();
+    m_accelLimitQx = max(m_altDecelLimitQx, m_accelLimitQx);
     m_velocityMove = true;
     m_altVelLimitQx = 0;
     m_moveState = MS_START;
@@ -566,33 +558,15 @@ void StepGenerator::AccelMax(uint32_t accelMax) {
     m_accelLimitPendingQx = ConvertAccel(accelMax);
 }
 
-void StepGenerator::DecelMax(uint32_t decelMax) {
-    // When decelMax == 0, use the accel limit as the decel limit
-    if (decelMax == 0) {
-        m_decelLimitPendingQx = 0;
-        return;
-    }
-    // Convert from step pulses/sec/sec to step pulses/sample/sample
-    int64_t decelLim64 = ((static_cast<int64_t>(decelMax) << FRACT_BITS) /
-    (SampleRateHz * SampleRateHz));
-    // Ensure we didn't overflow 32-bit int
-    m_decelLimitPendingQx = min(decelLim64, INT32_MAX);
-    // Since decel has to be divided by 2 when calculating position increments,
-    // make sure it is even
-    m_decelLimitPendingQx &= ~1L;
-    // Enforce minimum acceleration of 2 step pulses/sample^2
-    if (m_decelLimitPendingQx < 2) {
-        m_decelLimitPendingQx = 2;
-    }
-}
-
 /*
     This function takes the acceleration in step pulses/sec^2
-    and sets m_accelLimitQx in step pulses/sample^2.
+    and sets m_accelLimitQx in step pulses/sample^2 to the higher
+    value of the current move's accel limit or the decelMax given.
 */
 void StepGenerator::EStopDecelMax(uint32_t decelMax) {
     // Convert from step pulses/sec/sec to step pulses/sample/sample
-    m_accelLimitQx = ConvertAccel(decelMax);
+    int32_t decelQx = ConvertAccel(decelMax);
+    m_altDecelLimitPendingQx = max(decelQx, m_accelLimitQx);
 }
 
 /*

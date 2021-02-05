@@ -348,7 +348,7 @@ void MotorDriver::Refresh() {
         m_motionCancellingEStop = false;
     }
     else if (eStopInput && !m_motionCancellingEStop) {
-        MoveStop();
+        MoveStopDecel();
         m_motionCancellingEStop = true;
         alertRegPending.bit.MotionCanceledSensorEStop = 1;
     }
@@ -491,7 +491,7 @@ bool MotorDriver::Move(int32_t dist, MoveTarget moveTarget) {
 
     if (!ValidateMove(negDir)) {
         if (m_statusRegMotor.bit.StepsActive ) {
-            MoveStop();
+            MoveStopDecel();
         }
         return false;
     }
@@ -503,7 +503,7 @@ bool MotorDriver::Move(int32_t dist, MoveTarget moveTarget) {
 bool MotorDriver::MoveVelocity(int32_t velocity) {
     if (!ValidateMove(velocity < 0)) {
         if (m_statusRegMotor.bit.StepsActive ) {
-            MoveStop();
+            MoveStopDecel();
         }
         return false;
     }
