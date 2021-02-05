@@ -59,8 +59,8 @@ DigitalIn::DigitalIn(
       m_interruptAvail(inputInfo->extIntAvail),
       m_changeRegPtr(nullptr),
       m_inRegPtr(nullptr),
-      m_stateFiltered(false),
       m_inputRegRTPtr(nullptr),
+      m_stateFiltered(false),
       m_filterLength(3),
       m_filterTicksLeft(1) {}
 

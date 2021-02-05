@@ -53,7 +53,8 @@ InputManager::InputManager()
       m_inputRegFallen(0),
       m_interruptsMask(0),
       m_interruptsEnabled(true),
-      m_interruptServiceRoutines() {}
+      m_interruptServiceRoutines(),
+      m_oneTimeFlags(0) {}
 
 /**
     Initialize the InputManager.
@@ -88,7 +89,8 @@ uint32_t InputManager::EicSense(InterruptTrigger trigger) {
 }
 
 bool InputManager::InterruptHandlerSet(int8_t extInt, voidFuncPtr callback,
-                                       InterruptTrigger trigger, bool enable) {
+                                       InterruptTrigger trigger, bool enable,
+                                       bool oneTime) {
     if (extInt < 0 || extInt >= EIC_NUMBER_OF_INTERRUPTS) {
         return false; // Invalid external interrupt number
     }
@@ -114,8 +116,14 @@ bool InputManager::InterruptHandlerSet(int8_t extInt, voidFuncPtr callback,
 
     m_interruptServiceRoutines[extInt] = callback;
 
-    // Enable the interrupt only if interrupts are enabled globally.
-    enable = m_interruptsEnabled && enable;
+    if (oneTime) {
+        m_oneTimeFlags |= (1UL << extInt);
+    }
+    else  {
+        m_oneTimeFlags &= ~(1UL << extInt);
+    }
+
+    // Enable the interrupt if requested.
     InterruptEnable(extInt, enable);
 
     EIC->CTRLA.bit.ENABLE = 1;
@@ -124,33 +132,47 @@ bool InputManager::InterruptHandlerSet(int8_t extInt, voidFuncPtr callback,
     return true;
 }
 
-void InputManager::InterruptEnable(int8_t extInt, bool enable) {
+void InputManager::InterruptEnable(int8_t extInt, bool enable,
+                                   bool clearPending) {
     if (extInt < 0 || extInt >= EIC_NUMBER_OF_INTERRUPTS) {
         return; // Invalid external interrupt number
     }
 
     if (enable) {
-        m_interruptsMask |= (1UL << extInt);
-        EIC->INTENSET.reg = (1UL << extInt);
+        if (clearPending) {
+            // Clear any existing interrupt flag
+            EIC->INTFLAG.reg = (1UL << extInt);
+        }
+        atomic_or_fetch(&m_interruptsMask, (1UL << extInt));
+        if (m_interruptsEnabled) {
+            EIC->INTENSET.reg = (1UL << extInt);
+        }
     }
     else {
-        m_interruptsMask &= ~(1UL << extInt);
-        EIC->INTENCLR.reg = (1UL << extInt);
+        atomic_and_fetch(&m_interruptsMask, ~(1UL << extInt));
+        if (m_interruptsEnabled) {
+            EIC->INTENCLR.reg = (1UL << extInt);
+        }
     }
 }
 
 void InputManager::InterruptsEnabled(bool enable) {
     m_interruptsEnabled = enable;
     if (enable) {
-        EIC->INTENSET.reg = m_interruptsMask;
+        EIC->INTENSET.reg = atomic_load_n(&m_interruptsMask);
     }
     else {
-        EIC->INTENCLR.reg = m_interruptsMask;
+        EIC->INTENCLR.reg = atomic_load_n(&m_interruptsMask);
     }
 }
 
 void InputManager::EIC_Handler(uint8_t index) {
     if (index < EIC_NUMBER_OF_INTERRUPTS) {
+        // If this is a one time interrupt, disable the interrupt.
+        if (m_oneTimeFlags & (1UL << index)) {
+            atomic_and_fetch(&m_interruptsMask, ~(1UL << index));
+            EIC->INTENCLR.reg = (1UL << index);
+        }
         // Ack the interrupt early so that we don't miss subsequent events
         EIC->INTFLAG.reg = 1UL << index;
         voidFuncPtr callback = m_interruptServiceRoutines[index];

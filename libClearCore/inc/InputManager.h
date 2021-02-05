@@ -158,7 +158,7 @@ public:
 
         \note Only connectors DI-6 through A-12 can trigger interrupts.
     **/
-    void InterruptEnable(int8_t extInt, bool enable);
+    void InterruptEnable(int8_t extInt, bool enable, bool clearPending = false);
 #endif
 
     /**
@@ -215,7 +215,8 @@ public:
     bool InterruptHandlerSet(int8_t extInt,
                              voidFuncPtr callback = nullptr,
                              InterruptTrigger trigger = RISING,
-                             bool enable = true);
+                             bool enable = true,
+                             bool oneTime = false);
 
     /**
         Initialize the InputManager.
@@ -261,6 +262,8 @@ private:
     bool m_interruptsEnabled;
     // Registered interrupt service routines
     voidFuncPtr m_interruptServiceRoutines[EIC_NUMBER_OF_INTERRUPTS];
+    // Bitmask indicating which interrupt handlers disable after triggerring
+    uint16_t m_oneTimeFlags;
 
 #ifndef HIDE_FROM_DOXYGEN
     /**

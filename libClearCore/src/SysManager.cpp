@@ -38,6 +38,7 @@
 #include "DigitalInOutAnalogOut.h"
 #include "DigitalInOutHBridge.h"
 #include "DmaManager.h"
+#include "EncoderInput.h"
 #include "EthernetManager.h"
 #include "HardwareMapping.h"
 #include "InputManager.h"
@@ -90,6 +91,7 @@ extern AdcManager &AdcMgr;
 extern DmaManager &DmaMgr;
 extern EthernetManager &EthernetMgr;
 extern CcioBoardManager &CcioMgr;
+EncoderInput EncoderIn;
 extern InputManager &InputMgr;
 extern MotorManager &MotorMgr;
 extern NvmManager &NvmMgr;
@@ -233,6 +235,19 @@ void SysManager::Initialize() {
 
     InitClocks();
 
+    // Enable brownout detection on the 3.3V rail. The default fuse value is 1.7
+    // Set brownout detection to ~2.5V. Default from factory is 1.7V,
+    // It appears that NVM can work to as low as 1.7V
+    SUPC->BOD33.bit.ENABLE = 0;
+    SUPC->BOD33.bit.LEVEL = 167;  // Brown out voltage = 1.5V + LEVEL * 6mV.
+    // Reset
+    // If desired, an interrupt can be triggered instead of reset. Useful if
+    // sensitive actions need to be completed at the last moment.
+    SUPC->BOD33.bit.ACTION = SUPC_BOD33_ACTION_RESET_Val;//SUPC_BOD33_ACTION_NONE_Val;
+    // Hysteresis voltage (4 bits). HYST*6mV
+    SUPC->BOD33.bit.HYST = 0x7;
+    SUPC->BOD33.bit.ENABLE = 1; // enable brown-out detection
+
     // Reset and initialize the HBridge
     StatusMgr.HBridgeState(true);
     Delay_ms(1);
@@ -257,6 +272,7 @@ void SysManager::Initialize() {
     AdcMgr.Initialize();
     CcioMgr.Initialize();
     UsbMgr.Initialize();
+    EncoderIn.Initialize();
 
     // Configure external interrupt controller
     SET_CLOCK_SOURCE(EIC_GCLK_ID, 0);
@@ -326,6 +342,7 @@ void SysManager::UpdateFastImpl() {
     }
 
     InputMgr.UpdateEnd();
+    EncoderIn.Update();
 
     // Update subsystems in the background
     ShiftReg.Update();

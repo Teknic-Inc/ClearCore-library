@@ -342,10 +342,12 @@ bool DigitalInOut::PwmDuty(uint8_t newDuty) {
     }
 
     // Wait for the TC CC value to be ready to be written
-    SYNCBUSY_WAIT(&m_tc->COUNT8, TC_SYNCBUSY_CC_Msk);
-    m_tc->COUNT8.CCBUF[m_tcPadNum].reg = (m_logicInversion) ? newDuty
-                                         : 255 - newDuty;
-
+    uint8_t ccBufVal = (m_logicInversion) ? newDuty : 255 - newDuty;
+    if (m_tc->COUNT8.CCBUF[m_tcPadNum].reg != ccBufVal) {
+        uint32_t syncMask = m_tcPadNum ? TC_SYNCBUSY_CC1 : TC_SYNCBUSY_CC0;
+        SYNCBUSY_WAIT(&m_tc->COUNT8, syncMask);
+        m_tc->COUNT8.CCBUF[m_tcPadNum].reg = ccBufVal;
+    }
     ShiftReg.LedPwmValue(m_clearCorePin, newDuty);
     return true;
 }

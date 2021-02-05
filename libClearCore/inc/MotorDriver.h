@@ -35,6 +35,11 @@
 #include "StatusManager.h"
 #include "StepGenerator.h"
 #include "SysUtils.h"
+#include "SysManager.h"
+
+#define HLFB_CARRIER_LOSS_ERROR_LIMIT (0)
+#define HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ (25)
+#define HLFB_CARRIER_LOSS_STATE_CHANGE_MS_482_HZ (4)
 
 namespace ClearCore {
 
@@ -50,6 +55,8 @@ namespace ClearCore {
 
 /** Default enable trigger pulse width, in milliseconds. **/
 #define DEFAULT_TRIGGER_PULSE_WIDTH_MS  25
+
+extern SysManager SysMgr;
 
 /**
     \brief ClearCore motor connector class.
@@ -197,6 +204,11 @@ public:
         HLFB_MODE_HAS_BIPOLAR_PWM
     } HlfbModes;
 
+    typedef enum {
+	    HLFB_CARRIER_45_HZ,
+	    HLFB_CARRIER_482_HZ
+    } HlfbCarrierFrequency;
+
     /**
         \enum MotorReadyStates
 
@@ -230,7 +242,7 @@ public:
     /**
         \union StatusRegMotor
 
-        \brief Register access for informations about the motor's operating
+        \brief Register access for information about the motor's operating
         status.
     **/
     union StatusRegMotor {
@@ -238,28 +250,52 @@ public:
             Broad access to the whole register
         **/
         uint32_t reg;
+
         /**
             Field access to the motor status register
         **/
         struct {
             /**
-                TRUE if the motor has an active Enable Request
+                TRUE if the commanded position equals the target position and
+                the HLFB is asserted
             **/
-            uint32_t Enabled : 1;
+            uint32_t AtTargetPosition : 1;
+            /**
+                TRUE if the commanded velocity is nonzero
+            **/
+            uint32_t StepsActive : 1;
+            /**
+                TRUE if the commanded velocity equals the target velocity
+            **/
+            uint32_t AtTargetVelocity : 1;
             /**
                 Direction of the most recent move
-                TRUE if moving in the positive direction
+                TRUE if the last motion was in the positive direction
                 Latches until start of new move
             **/
             uint32_t MoveDirection : 1;
             /**
-                TRUE if the motor is moving
+                TRUE if the HLFB is deasserted AND the enable output is asserted
+                When set, any currently executing motion will get canceled
             **/
-            uint32_t StepsActive : 1;
+            uint32_t MotorInFault : 1;
             /**
-                TRUE if the motor is at the target velocity
+                TRUE if the motor's enable output is asserted AND the HLFB
+                is NOT deasserted.
             **/
-            uint32_t AtVelTarget : 1;
+            uint32_t Enabled : 1;
+            /**
+                TRUE if the last commanded move was a positional move.
+            **/
+            uint32_t PositionalMove : 1;
+            /**
+                Reflects the state of the HLFB.
+            **/
+            uint32_t HlfbState : 2;
+            /**
+                Alerts Present.
+            **/
+            uint32_t AlertsPresent : 1;
             /**
                 Motor ready state
             **/
@@ -268,6 +304,18 @@ public:
                 TRUE if enable trigger pulses are being sent
             **/
             uint32_t Triggering : 1;
+            /**
+                Reflects the state of the associated positive limit connector.
+            **/
+            uint32_t InPositiveLimit : 1;
+            /**
+                Reflects the state of the associated negative limit connector.
+            **/
+            uint32_t InNegativeLimit : 1;
+            /**
+                Reflects the state of the associated E-stop sensor connector.
+            **/
+            uint32_t InEStopSensor : 1;
         } bit;
 
         /**
@@ -284,6 +332,91 @@ public:
             reg = val;
         }
     };
+
+    /**
+        \union AlertRegMotor
+
+        \brief Accumulating register of alerts that have occurred on this motor.
+    **/
+    union AlertRegMotor {
+        /**
+            Broad access to the whole register
+        **/
+        uint32_t reg;
+
+        /**
+            Field access to the motor alert register
+        **/
+        struct {
+            /**
+                TRUE whenever a command is rejected due to an existing alert
+                register bit being asserted.
+            **/
+            uint16_t MotionCanceledInAlert : 1;
+            /**
+                TRUE whenever executing motion is canceled due to a positive
+                limit switch being asserted or whenever a command is rejected
+                while in the limit.
+            **/
+            uint16_t MotionCanceledPositiveLimit : 1;
+            /**
+                TRUE whenever executing motion is canceled due to a negative
+                limit switch being asserted or whenever a command is rejected
+                while in the limit.
+            **/
+            uint16_t MotionCanceledNegativeLimit : 1;
+            /**
+                TRUE whenever executing motion is canceled due to an E-Stop
+                triggered by the specified E-Stop sensor or whenever a command
+                is rejected while the E-Stop is asserted.
+            **/
+            uint16_t MotionCanceledSensorEStop : 1;
+            /**
+                TRUE whenever executing motion is canceled due to the enable
+                output deasserting or whenever a command is rejected while the
+                enable output is deasserted.
+            **/
+            uint16_t MotionCanceledMotorDisabled : 1;
+            /**
+                TRUE whenever the MotorInFault status is set in the motor status
+                register.
+            **/
+            uint16_t MotorFaulted : 1;
+        } bit;
+
+        /**
+            AlertRegMotor default constructor
+        **/
+        AlertRegMotor() {
+            reg = 0;
+        }
+
+        /**
+            AlertRegMotor constructor with initial value
+        **/
+        AlertRegMotor(uint32_t val) {
+            reg = val;
+        }
+    };
+
+    /**
+        Verify that the motor is in a good state before sending a move command.
+
+        \return True if the motor is ready for a move command; false if there
+        is a configuration setting or error that would (or should) prevent motion.
+    **/
+    bool ValidateMove(bool negDirection);
+
+    /**
+        \copydoc StepGenerator::Move()
+    **/
+    virtual bool Move(int32_t dist,
+                      MoveTarget moveTarget = MOVE_TARGET_REL_END_POSN) override;
+
+    /**
+        \copydoc StepGenerator::MoveVelocity()
+    **/
+    virtual bool MoveVelocity(int32_t velocity) override;
 
     /**
         \brief Sets the filter length in samples. The default is 3 samples.
@@ -605,6 +738,27 @@ public:
         return DigitalIn::InputFallen();
     }
 
+    bool HlfbCarrier(HlfbCarrierFrequency freq) {
+        switch (freq) {
+            case HLFB_CARRIER_45_HZ:
+            m_hlfbCarrierLossStateChange_ms =
+            HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ;
+            break;
+            case HLFB_CARRIER_482_HZ:
+            m_hlfbCarrierLossStateChange_ms =
+            HLFB_CARRIER_LOSS_STATE_CHANGE_MS_482_HZ;
+            break;
+            default:
+            return false;
+        }
+        m_hlfbCarrierFrequency = freq;
+        return true;
+    }
+
+    HlfbCarrierFrequency HlfbCarrier() {
+        return m_hlfbCarrierFrequency;
+    }
+
     /**
         \brief Check whether the connector is in a hardware fault state.
 
@@ -659,6 +813,31 @@ public:
     StatusRegMotor StatusRegFallen();
 
     /**
+        \brief Accessor for the current Motor Alert Register
+
+        \code{.cpp}
+        if (ConnectorM0.AlertReg().bit.MotionCanceledMotorDisabled) {
+            // Motion on M-0 was canceled because the motor was disabled
+        }
+        \endcode
+    **/
+    volatile const AlertRegMotor &AlertReg() {
+        return m_alertRegMotor;
+    }
+
+    /**
+        \brief Clear the Motor Alert Register
+
+        \code{.cpp}
+        // Clear any alerts that have accumulated for M-0.
+        ConnectorM0.ClearAlerts();
+        \endcode
+    **/
+    void ClearAlerts(uint32_t mask = UINT32_MAX) {
+        atomic_and_fetch(&m_alertRegMotor.reg, ~mask);
+    }
+
+    /**
         \brief Function to invert the default polarity of the enable signal of
         this motor.
 
@@ -705,6 +884,174 @@ public:
     bool PolarityInvertSDHlfb(bool invert);
 
     /**
+        \brief Set the associated brake output connector.
+
+        Brake output mode uses HLFB readings from a connected ClearPath motor
+        to energize or de-energize a connected brake. The motor connectors M-0
+        through M-3 can be mapped to any of the ClearCore outputs IO-0 through
+        IO-5, or to any attached CCIO-8 output pin.
+
+        \code{.cpp}
+        if (ConnectorM0.BrakeOutput(CLEARCORE_PIN_IO2)) {
+            // M-0's brake output is now set to IO-2 and enabled.
+        }
+        \endcode
+
+        \code{.cpp}
+        if (ConnectorM0.BrakeOutput(CLEARCORE_PIN_INVALID)) {
+            // M-0's brake output is now disabled.
+        }
+        \endcode
+
+        \param[in] pin The pin representing the connector to use as the brake
+        output for this motor. If CLEARCORE_PIN_INVALID is supplied, brake
+        output is disabled.
+
+        \return True if the brake output was successfully set and enabled, or
+        successfully disabled; false if a pin other than CLEARCORE_PIN_INVALID
+        was supplied that isn't a valid digital output pin.
+    **/
+    bool BrakeOutput(ClearCorePins pin);
+
+    /**
+        \brief Get the associated brake output connector.
+
+        Brake output mode uses HLFB readings from a connected ClearPath motor
+        to energize or de-energize a connected brake. The motor connectors M-0
+        through M-3 can be mapped to any of the ClearCore outputs IO-0 through
+        IO-5, or to any attached CCIO-8 output pin.
+
+        \code{.cpp}
+        if (ConnectorM0.BrakeOutput() == CLEARCORE_PIN_IO2) {
+            // M-0's brake output is currently set to IO-2 and enabled.
+        }
+        \endcode
+
+        \code{.cpp}
+        if (ConnectorM0.BrakeOutput() == CLEARCORE_PIN_INVALID) {
+            // M-0's brake output is currently disabled.
+        }
+        \endcode
+
+        \return The pin representing the digital output connector configured to
+        be this motor's brake output, or CLEARCORE_PIN_INVALID if no such
+        connector has been configured.
+    **/
+    ClearCorePins BrakeOutput() {
+        return m_brakeOutputPin;
+    }
+
+    /**
+        \brief Set the associated positive limit switch connector.
+
+        When the input is active on the connector associated with this
+        limit, all motion in the positive direction will be stopped.
+
+        \code{.cpp}
+        if (ConnectorM0.LimitSwitchPos(CLEARCORE_PIN_IO2)) {
+            // M-0's positive limit switch is now set to IO-2 and enabled.
+        }
+        \endcode
+
+        \code{.cpp}
+        if (ConnectorM0.LimitSwitchPos(CLEARCORE_PIN_INVALID)) {
+            // M-0's positive limit switch is now disabled.
+        }
+        \endcode
+
+        \param[in] pin The pin representing the connector to use as the
+        positive limit switch for this motor. If CLEARCORE_PIN_INVALID
+        is supplied, the positive limit is disabled.
+
+        \return True if the positive limit switch was successfully set and
+        enabled, or  successfully disabled; false if a pin other than
+        CLEARCORE_PIN_INVALID was supplied that isn't a valid digital
+        input pin.
+    **/
+    bool LimitSwitchPos(ClearCorePins pin);
+
+    /**
+        \brief Get the associated positive limit switch output connector.
+
+        When the input is active on the connector associated with this
+        limit, all motion in the positive direction will be stopped.
+
+        \code{.cpp}
+        if (ConnectorM0.LimitSwitchPos() == CLEARCORE_PIN_IO2) {
+            // M-0's positive limit switch is currently set to IO-2 and enabled.
+        }
+        \endcode
+
+        \code{.cpp}
+        if (ConnectorM0.LimitSwitchPos() == CLEARCORE_PIN_INVALID) {
+            // M-0's positive limit switch is currently disabled.
+        }
+        \endcode
+
+        \return The pin representing the digital output connector configured to
+        be this motor's positive limit, or CLEARCORE_PIN_INVALID if no such
+        connector has been configured.
+    **/
+    ClearCorePins LimitSwitchPos() {
+        return m_limitSwitchPos;
+    }
+
+    /**
+        \brief Set the associated negative limit switch connector.
+
+        When the input is active on the connector associated with this
+        limit, all motion in the negative direction will be stopped.
+
+        \code{.cpp}
+        if (ConnectorM0.LimitSwitchNeg(CLEARCORE_PIN_IO2)) {
+            // M-0's negative limit switch is now set to IO-2 and enabled.
+        }
+        \endcode
+
+        \code{.cpp}
+        if (ConnectorM0.LimitSwitchNeg(CLEARCORE_PIN_INVALID)) {
+            // M-0's negative limit switch is now disabled.
+        }
+        \endcode
+
+        \param[in] pin The pin representing the connector to use as the
+        negative limit switch for this motor. If CLEARCORE_PIN_INVALID
+        is supplied, the negative limit is disabled.
+
+        \return True if the negative limit switch was successfully set and
+        enabled, or  successfully disabled; false if a pin other than
+        CLEARCORE_PIN_INVALID was supplied that isn't a valid digital
+        input pin.
+    **/
+    bool LimitSwitchNeg(ClearCorePins pin);
+
+    /**
+        \brief Get the associated negative limit switch output connector.
+
+        When the input is active on the connector associated with this
+        limit, all motion in the negative direction will be stopped.
+
+        \code{.cpp}
+        if (ConnectorM0.LimitSwitchNeg() == CLEARCORE_PIN_IO2) {
+            // M-0's negative limit switch is currently set to IO-2 and enabled.
+        }
+        \endcode
+
+        \code{.cpp}
+        if (ConnectorM0.LimitSwitchNeg() == CLEARCORE_PIN_INVALID) {
+            // M-0's negative limit switch is currently disabled.
+        }
+        \endcode
+
+        \return The pin representing the digital output connector configured to
+        be this motor's negative limit, or CLEARCORE_PIN_INVALID if no such
+        connector has been configured.
+    **/
+    ClearCorePins LimitSwitchNeg() {
+        return m_limitSwitchNeg;
+    }
+
+    /**
         \brief Get the connector's operational mode.
 
         \code{.cpp}
@@ -719,7 +1066,204 @@ public:
         return Connector::Mode();
     }
 
+    /**
+        Set the digital input connector used to control the state of the enable
+        signal.
+
+        \code{.cpp}
+        if (ConnectorM0.EnableConnector(CLEARCORE_PIN_DI6)) {
+            // Connector DI-6 was successfully configured to control the enable
+            // signal for motor M-0.
+        }
+        \endcode
+
+        \param[in] pin The pin representing the digital input connector that
+        will control the state of this motor's enable signal.
+
+        \return True if the enable connector was configured successfully.
+    **/
+    bool EnableConnector(ClearCorePins pin);
+
+    /**
+        Get the digital input connector used to control the state of the enable
+        signal.
+
+        \code{.cpp}
+        if (ConnectorM0.EnableConnector() == CLEARCORE_PIN_DI8) {
+            // Connector DI-8 is currently configured to control the enable
+            // signal for motor M-0.
+        }
+        \endcode
+
+        \return The pin representing the digital input connector configured to
+        control this motor's enable signal, or CLEARCORE_PIN_INVALID if no such
+        connector has been configured.
+    **/
+    ClearCorePins EnableConnector() {
+        return m_enableConnector;
+    }
+
+    /**
+        Set the digital input connector used to control the state of the Input A
+        signal.
+
+        \code{.cpp}
+        if (ConnectorM0.InputAConnector(CLEARCORE_PIN_DI6)) {
+            // Connector DI-6 was successfully configured to control the Input A
+            // signal for motor M-0.
+        }
+        \endcode
+
+        \param[in] pin The pin representing the digital input connector that
+        will control the state of this motor's Input A signal.
+
+        \return True if the Input A connector was configured successfully.
+    **/
+    bool InputAConnector(ClearCorePins pin);
+
+    /**
+        Get the digital input connector used to control the state of the Input A
+        signal.
+
+        \code{.cpp}
+        if (ConnectorM0.InputAConnector() == CLEARCORE_PIN_DI8) {
+            // Connector DI-8 is currently configured to control the Input A
+            // signal for motor M-0.
+        }
+        \endcode
+
+        \return The pin representing the digital input connector configured to
+        control this motor's Input A signal, or CLEARCORE_PIN_INVALID if no such
+        connector has been configured.
+    **/
+    ClearCorePins InputAConnector() {
+        return m_inputAConnector;
+    }
+
+    /**
+        Set the digital input connector used to control the state of the Input B
+        signal.
+
+        \code{.cpp}
+        if (ConnectorM0.InputBConnector(CLEARCORE_PIN_DI6)) {
+            // Connector DI-6 was successfully configured to control the Input B
+            // signal for motor M-0.
+        }
+        \endcode
+
+        \param[in] pin The pin representing the digital input connector that
+        will control the state of this motor's Input B signal.
+
+        \return True if the Input B connector was configured successfully.
+    **/
+    bool InputBConnector(ClearCorePins pin);
+
+    /**
+        Get the digital input connector used to control the state of the Input B
+        signal.
+
+        \code{.cpp}
+        if (ConnectorM0.InputBConnector() == CLEARCORE_PIN_DI8) {
+            // Connector DI-8 is currently configured to control the Input B
+            // signal for motor M-0.
+        }
+        \endcode
+
+        \return The pin representing the digital input connector configured to
+        control this motor's Input B signal, or CLEARCORE_PIN_INVALID if no such
+        connector has been configured.
+    **/
+    ClearCorePins InputBConnector() {
+        return m_inputBConnector;
+    }
+
+    /**
+        Set the digital input connector used as an E-Stop signal.
+
+        \code {.cppp}
+        if (ConnectorM0.EStopConnector(CLEARCORE_PIN_DI6)) {
+            // Connector DI-6 was successfully configured to act as an E-Stop
+            // input signal for motor M-0.
+        }
+        \endcode
+
+        \param[in] pin The pin representing the digital input connector that
+        will act as an E-Stop signal for this motor.
+
+        \return True if the E-Stop connector was configured successfully.
+    **/
+    bool EStopConnector(ClearCorePins pin);
+
+    /**
+        Get the digital input connector used to control the E-Stop input for
+        this motor.
+
+        \code{.cpp}
+        if (ConnectorM0.EStopConnector() == CLEARCORE_PIN_DI6) {
+            // Connector DI-6 is currently configured as an E-Stop input for
+            // motor M-0.
+        }
+        \endcode
+
+        \return The Pin representing the digital input connector configured as
+        an E-Stop input for this motor, or CLEARCORE_PIN_INVALID if no such
+        connector has been configured.
+    **/
+    ClearCorePins EStopConnector() {
+        return m_eStopConnector;
+    }
+
+    /**
+        Get the HLFB input status.
+
+        \return True if the HLFB state is currently asserted or is actively
+        detecting a PWM signal.
+    **/
+    bool HlfbInputStatus() {
+        return m_hlfbState == HLFB_ASSERTED ||
+               m_hlfbState == HLFB_HAS_MEASUREMENT;
+    }
+
+    /**
+        Set the active level for the Enable signal. The default is active low.
+
+        \param[in] activeLevel True for active high; false for active low.
+    **/
+    void EnableActiveLevel(bool activeLevel) {
+        m_polarityInversions.bit.enableInverted = activeLevel;
+    }
+
+    /**
+        Get the active level for the Enable signal. The default is active low.
+
+        \return True if the enable signal is configured to be active high;
+        false if configured to be active low.
+    **/
+    bool EnableActiveLevel() {
+        return m_polarityInversions.bit.enableInverted;
+    }
+
+    /**
+        Set the active level for the HLFB signal. The default is active high.
+
+        \param[in] activeLevel True for active high; false for active low.
+    **/
+    void HlfbActiveLevel(bool activeLevel) {
+        m_polarityInversions.bit.hlfbInverted = !activeLevel;
+    }
+
+    /**
+        Get the active level for the HLFB signal. The default is active high.
+
+        \return True if the HLFB signal is configured to be active high;
+        false if configured to be active low.
+    **/
+    bool HlfbActiveLevel() {
+        return !m_polarityInversions.bit.hlfbInverted;
+    }
+
 #ifndef HIDE_FROM_DOXYGEN
+
     virtual void OutputDirection() override {
         if (m_mode == Connector::CPM_MODE_STEP_AND_DIR &&
                 m_polarityInversions.bit.directionInverted) {
@@ -729,6 +1273,52 @@ public:
             DATA_OUTPUT_STATE(m_aInfo->gpioPort, m_aDataMask, !Direction());
         }
     }
+
+    void ClearFaults(uint32_t disableTime_ms, uint32_t waitForHlfbTime_ms = 0) {
+        EnableTriggerPulse(1, disableTime_ms);
+        m_clearFaultHlfbTimer = waitForHlfbTime_ms;
+        m_clearFaultState = CLEAR_FAULT_PULSE_ENABLE;
+    }
+
+    bool ClearFaultsActive() {
+        return m_clearFaultState != CLEAR_FAULT_IDLE;
+    }
+
+    /**
+        A helper function to determine whether the pin supplied is a valid
+        digital input connector.
+
+        \param[in] pin The pin to validate as a digital input.
+
+        \return True if the pin is a digital input connector; false otherwise.
+    **/
+    static bool IsValidInputPin(ClearCorePins pin);
+
+    /**
+        A helper function to determine whether the pin supplied is a valid
+        digital output connector.
+
+        \param[in] pin The pin to validate as a digital output.
+
+        \return True if the pin is a digital output connector; false otherwise.
+    **/
+    static bool IsValidOutputPin(ClearCorePins pin);
+
+    /**
+        \brief Function to set the on time of a PWM signal being sent to the
+        motor's Input A
+
+        \param[in] count The PWM on time
+    **/
+    bool MotorInACount(uint16_t count);
+
+    /**
+        \brief Function to set the on time of a PWM signal being sent to the
+        motor's Input B
+
+        \param[in] count The PWM on time
+    **/
+    bool MotorInBCount(uint16_t count);
 
     /**
         \brief Default constructor so this connector can be a global and
@@ -750,6 +1340,15 @@ protected:
     volatile uint32_t *m_aTccBuffer;
     uint32_t m_bDataMask;
     volatile uint32_t *m_bTccBuffer;
+    uint32_t m_aTccSyncMask;
+    volatile uint32_t *m_aTccSyncReg;
+    uint32_t m_bTccSyncMask;
+    volatile uint32_t *m_bTccSyncReg;
+
+    // Enable, InA, InB connector pairing
+    ClearCorePins m_enableConnector;
+    ClearCorePins m_inputAConnector;
+    ClearCorePins m_inputBConnector;
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // HLFB State
@@ -765,19 +1364,25 @@ protected:
     uint16_t m_hlfbPeriod[CPM_HLFB_CAP_HISTORY];
     // HLFB measurement count, used to show lack of PWM
     uint16_t m_hlfbNoPwmSampleCount;
+    HlfbCarrierFrequency m_hlfbCarrierFrequency;
+    uint32_t m_hlfbCarrierLossStateChange_ms;
+    // The last board time (in milliseconds) when PWM carrier was detected
+    uint32_t m_hlfbLastCarrierDetectTime;
     // HLFB last duty cycle
     float m_hlfbDuty;
     // HLFB state return
     HlfbStates m_hlfbState;
+    bool m_lastHlfbInputValue;
     bool m_hlfbPwmReadingPending;
     uint16_t m_hlfbStateChangeCounter;
 
     // Inversion mask of actual enable, direction, and HLFB state
     PolarityInversionsSD m_polarityInversions;
 
+    bool m_enableRequestedState;
     bool m_enableTriggerActive;
     uint32_t m_enableTriggerPulseStartMs;
-    uint16_t m_enableTriggerPulseCount;
+    uint32_t m_enableTriggerPulseCount;
     uint32_t m_enableTriggerPulseLenMs;
 
     uint16_t m_aDutyCnt;
@@ -785,11 +1390,12 @@ protected:
 
     bool m_inFault;
 
-    bool m_enableRequestedState;
-
     StatusRegMotor m_statusRegMotor;
     StatusRegMotor m_statusRegMotorRisen;
     StatusRegMotor m_statusRegMotorFallen;
+    StatusRegMotor m_statusRegMotorLast;
+
+    AlertRegMotor m_alertRegMotor;
 
     /**
         Initialize hardware and/or internal state.
@@ -804,6 +1410,13 @@ protected:
     void ToggleEnable();
 
 private:
+
+    enum ClearFaultState {
+        CLEAR_FAULT_IDLE,
+        CLEAR_FAULT_PULSE_ENABLE,
+        CLEAR_FAULT_WAIT_FOR_HLFB
+    };
+
     bool m_initialized;
 
     // Internal fields used for the IsReady field of the motor status reg
@@ -811,6 +1424,21 @@ private:
     bool m_isEnabled;
     bool m_hlfbCarrierLost;
     int32_t m_enableCounter;
+
+    // Brake Output Feature
+    ClearCorePins m_brakeOutputPin;
+
+    // Limit Switch Feature
+    ClearCorePins m_limitSwitchNeg;
+    ClearCorePins m_limitSwitchPos;
+
+    // Hardware E-Stop Sensor Feature
+    ClearCorePins m_eStopConnector;
+    bool m_motionCancellingEStop;
+
+    bool m_shiftRegEnableReq;
+    ClearFaultState m_clearFaultState;
+    uint32_t m_clearFaultHlfbTimer;
 
     /**
         Construct, wire in pads and LED Shift register object
@@ -856,6 +1484,30 @@ private:
         \return Returns false if the mode is invalid or setup fails.
     **/
     bool Mode(Connector::ConnectorModes newMode) override;
+
+    /**
+        A helper function to wire in one of the connectors to control a motor
+        digital input or reflect the state of a motor digital output.
+
+        \param[in] pin The pin value requested to be assigned to the
+        \a memberPin member variable.
+        \param[in] memberPin A reference to the member variable that is to be
+        set to the value of \a pin.
+        \param[in] input True if the \a memberPin requires a digital input pin
+        (default) or false if it requires a digital output pin. Used to validate
+        the \a pin value supplied.
+
+        \return True if the pin supplied is valid and successfully configured;
+        false if the pin supplied was invalid.
+    **/
+    bool SetConnector(ClearCorePins pin, ClearCorePins &memberPin,
+                      bool input = true);
+
+    /**
+        A helper function to check if the E-Stop sensor is valid and/or
+        currently active (low).
+    **/
+    bool CheckEStopSensor();
 
 }; // MotorDriver
 

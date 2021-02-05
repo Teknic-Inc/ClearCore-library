@@ -113,6 +113,11 @@ public:
                 The SD card is currently in a hardware fault state.
             **/
             uint32_t SdCardError           : 1;
+            /**
+                The last NVM write has not yet synchronized or was unable to
+                synchronize.
+            **/
+            uint32_t NvmDesync      : 1;
         } bit;
 
         /**

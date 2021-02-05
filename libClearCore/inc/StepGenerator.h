@@ -65,7 +65,7 @@ public:
     typedef enum {
         MOVE_TARGET_ABSOLUTE,
         MOVE_TARGET_REL_END_POSN,
-    } MOVE_TARGET;
+    } MoveTarget;
 
     /**
         \brief Issues a positional move for the specified distance.
@@ -90,7 +90,8 @@ public:
         move. Invalid will result in move relative to the end position.
         Default: MOVE_TARGET_REL_END_POSN
     **/
-    bool Move(int32_t dist, MOVE_TARGET moveTarget = MOVE_TARGET_REL_END_POSN);
+    virtual bool Move(int32_t dist,
+                      MoveTarget moveTarget = MOVE_TARGET_REL_END_POSN);
 
     /**
         \brief Issues a velocity move at the specified velocity.
@@ -105,7 +106,7 @@ public:
 
         \param[in] velocity The velocity of the move in step pulses/second.
     **/
-    bool MoveVelocity(int32_t velocity);
+    virtual bool MoveVelocity(int32_t velocity);
 
     /**
         Interrupts the current move; the motor may stop abruptly.
@@ -118,17 +119,22 @@ public:
     void MoveStopAbrupt();
 
     /**
-        Interrupts the current move; Slows the motor at the decel rate
+        Interrupts the current move; Slows the motor at the quicker of
+        the EStopDecelMax rate that was set when the moves was issued and
+        the current move's accel rate.
+        If the EStopDecelMax value should be updated before stopping,
+        it can be changed using the decelMax parameter.
 
         \code{.cpp}
-        // Command an abrupt stop
-        ConnectorM0.MoveStopAbrupt();
+        // Ramp to a stop at a decel rate of 100000 pulses/sec^2
+        ConnectorM0.MoveStopDecel(100000);
         \endcode
 
-        \param[in] velMax The new velocity limit. Passing 0 keeps the
-        previous deceleration rate
+        \param[in] decelMax The new EStop deceleration rate to set instead 
+        of the value that was set prior to issuing the move. Passing 0 
+        maintains the EStopDecelMax that was previously set.
     **/
-    void MoveStopDecel(int32_t decelMax = 0);
+    void MoveStopDecel(uint32_t decelMax = 0);
 
     /**
         \brief Sets the absolute commanded position to the given value.
@@ -168,7 +174,7 @@ public:
         }
         \endcode
 
-        \return Returns the momentary commanded position.
+        \return Returns the momentary commanded velocity.
         /note Velocity changes as the motor accelerates and decelerates, this
         should not be used to track the motion of the motor
     **/
@@ -186,7 +192,7 @@ public:
 
         \param[in] velMax The new velocity limit
     **/
-    void VelMax(int32_t velMax);
+    void VelMax(uint32_t velMax);
 
     /**
         \brief Sets the maximum acceleration in step pulses per second^2.
@@ -200,7 +206,8 @@ public:
 
         \param[in] accelMax The new acceleration limit
     **/
-    void AccelMax(int32_t accelMax);
+    void AccelMax(uint32_t accelMax);
+
 
     /**
         \brief Sets the maximum deceleration for E-stop Deceleration in
@@ -209,13 +216,13 @@ public:
         Value will be clipped if out of bounds
 
         \code{.cpp}
-        // Set the StepGenerator's maximum velocity to 15000 step pulses/sec^2
-        ConnectorM0.AccelMax(15000);
+        // Set the StepGenerator's maximum E-stop deceleration to 15000 step pulses/sec^2
+        ConnectorM0.EStopDecelMax(15000);
         \endcode
 
-        \param[in] decelMax The new deceleration limit
+        \param[in] decelMax The new e-stop deceleration limit
     **/
-    void EStopDecelMax(int32_t decelMax);
+    void EStopDecelMax(uint32_t decelMax);
 
     /**
         \brief Function to check if no steps are currently being commanded to
@@ -252,6 +259,26 @@ public:
     }
 
 protected:
+    struct LimitStatus {
+        uint32_t LimitRampPos       : 1;    // True if we are ramping into the positive limit
+        uint32_t LimitRampNeg       : 1;    // True if we are ramping into the negative limit
+        uint32_t EnterHWLimit       : 1;    // True when entering HW limits
+        uint32_t InPosHWLimit       : 1;    // True if we are in the positive HW limit
+        uint32_t InNegHWLimit       : 1;    // True if we are in the negative HW limit
+        uint32_t InPosHWLimitLast   : 1;
+        uint32_t InNegHWLimitLast   : 1;
+
+        public:
+        LimitStatus()
+            : LimitRampPos(0),
+              LimitRampNeg(0),
+              EnterHWLimit(0),
+              InPosHWLimit(0),
+              InNegHWLimit(0),
+              InPosHWLimitLast(0),
+              InNegHWLimitLast(0) {}
+    };
+
     typedef enum {
         MS_IDLE,
         MS_START,
@@ -261,18 +288,24 @@ protected:
         MS_DECEL_VEL,
         MS_END,
         MS_CHANGE_DIR,
-    } MOVE_STATES;
+    } MoveStates;
 
     uint32_t m_stepsPrevious;
     uint32_t m_stepsPerSampleMax;
-    MOVE_STATES m_moveState;
+    MoveStates m_moveState;
     bool m_direction;
+    // True if the last move commanded was a positional move (latched)
+    bool m_lastMoveWasPositional;
+
+    LimitStatus m_limitInfo;
+
+    int32_t m_posnAbsolute;
 
     volatile const bool &Direction() {
         return m_direction;
     }
 
-    volatile const MOVE_STATES &MoveStateGet() {
+    volatile const MoveStates &MoveStateGet() {
         return m_moveState;
     }
 
@@ -282,16 +315,25 @@ protected:
         return m_stepsPrevious;
     }
 
+    bool CheckTravelLimits();
+
+    void PosLimitActive(bool isActive) {
+        m_limitInfo.InPosHWLimit = isActive;
+    }
+
+    void NegLimitActive(bool isActive) {
+        m_limitInfo.InNegHWLimit = isActive;
+    }
+
 private:
-    int32_t m_posnAbsolute;
 
     int32_t m_stepsCommanded;
     int32_t m_stepsSent;      // Accumulated integer position
 
-    bool m_eStopDecelMove;    // An e-stop deceleration is active
     bool m_velocityMove;      // A Velocity move is active
     bool m_moveDirChange;     // The move is changing direction
-    bool m_moveOvershoot;     // The new requested position is too close
+    bool m_dirCommanded;      // The direction of the commanded move
+
 
     // All of the position, velocity and acceleration parameters are signed and
     // in Q format, with all arithmetic performed in fixed point.
