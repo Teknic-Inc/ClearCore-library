@@ -10,6 +10,10 @@ From the Atmel Studio Tools menu, open the Device Pack Manager. Ensure the follo
 * SAME53_DFP version 1.1.118
 * CMSIS version 4.5.0
 
+#### Installers and Resources
+
+https://www.teknic.com/downloads/
+
 ### libClearCore
 
 libClearCore provides a C++ object oriented API to interface with the ClearCore hardware. Each connector of the ClearCore has an associated object to use in your application. A Doxygen reference manual for the libClearCore API is available at https://teknic-inc.github.io/ClearCore-library/.
