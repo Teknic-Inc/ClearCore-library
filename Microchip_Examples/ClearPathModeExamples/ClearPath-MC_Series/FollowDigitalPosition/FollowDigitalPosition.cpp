@@ -8,11 +8,11 @@
  * Description:
  *    This example enables and then moves a ClearPath motor between various
  *    positions within a range defined in the MSP software based on the state
- *    of an analog sensor. During operation, various move statuses are written
+ *    of an analog input. During operation, various move statuses are written
  *    to the USB serial port.
- *    The resolution for PWM outputs is 8-bit, meaning only 256 discrete
- *    positions can be commanded. The motor's actual commanded position may
- *    differ from what you input below because of this.
+ *    To achieve better positioning resolution (i.e. more commandable positions),  
+ *    consider using the ClearPath operational modes "Pulse Burst Positioning"
+ *    or "Move Incremental Distance" instead.
  *
  * Requirements:
  * 1. A ClearPath motor must be connected to Connector M-0.
@@ -27,14 +27,14 @@
  * 4. The ClearPath must have defined positions for 0% and 100% PWM (On the
  *    main MSP window check the "Position Range Setup (cnts)" box and fill in
  *    the two text boxes labeled "Posn at 0% PWM" and "Posn at 100% PWM").
- *    Change the "PositionZeroPWM" and "PositionMaxPWM" variables in the sketch
+ *    Change the "PositionZeroPWM" and "PositionMaxPWM" variables in the example
  *    below to match.
  * 5. Homing must be configured in the MSP software for your mechanical
  *    system (e.g. homing direction, torque limit, etc.). This example does
  *    not use the ClearPath's Input A as a homing sensor, although that may
  *    be configured in this mode through MSP.
- * 6. An analog sensor connected to one of the analog inputs (A-9 through A-12)
- *    to control motor position. Define the appropriate connector below.
+ * 6. An analog input source connected to Connector A-9 to control motor 
+ *    position.
  * 7. (Optional) An input source, such as a switch, connected to DI-6 to control
  *    the Command Lock or Home Sensor (configured in MSP).
  *
@@ -52,7 +52,7 @@
 
 #include "ClearCore.h"
 
-// Defines the motor's connector as ConnectorM0
+// Defines the motor's connector
 #define motor ConnectorM0
 
 // Defines the command lock sensor connector
@@ -123,8 +123,6 @@ int main() {
         int32_t commandedPosition =
             static_cast<int32_t>(round(analogVoltage / 10 * positionMaxPWM));
         CommandPosition(commandedPosition);    // See below for the detailed function definition.
-        // Wait 2000ms.
-        Delay_ms(2000);
     }
 }
 
@@ -161,17 +159,6 @@ bool CommandPosition(int32_t commandedPosition) {
     // Command the move.
     motor.MotorInBDuty(dutyRequest);
 
-    // Waits for HLFB to assert (signaling the move has successfully completed)
-    SerialPort.SendLine("Moving... Waiting for HLFB");
-
-    // Delay to give HLFB time to change according to the new command
-    Delay_ms(2);
-
-    while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {
-        continue;
-    }
-
-    SerialPort.SendLine("Move Done");
     return true;
 }
 //------------------------------------------------------------------------------
