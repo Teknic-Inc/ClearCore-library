@@ -131,14 +131,11 @@ int main() {
  *
  *    Move to position number commandedPosition (counts in MSP)
  *    Prints the move status to the USB serial port
- *    Returns when HLFB asserts (indicating the motor has reached the commanded
- *    position)
+ *    Returns whether the command has been updated.
  *
  * Parameters:
  *    int commandedPosition  - The position, in counts, to command
  *
- * Returns: True/False depending on whether the position was successfully
- * commanded.
  */
 bool CommandPosition(int32_t commandedPosition) {
     if (abs(commandedPosition) > abs(positionMaxPWM) ||
