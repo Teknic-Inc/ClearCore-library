@@ -33,7 +33,7 @@
  *    system (e.g. homing direction, torque limit, etc.). This example does
  *    not use the ClearPath's Input A as a homing sensor, although that may
  *    be configured in this mode through MSP.
- * 6. An analog input source connected to Connector A-9 to control motor 
+ * 6. An analog input source (0-10V) connected to Connector A-9 to control motor 
  *    position.
  * 7. (Optional) An input source, such as a switch, connected to DI-6 to control
  *    the Command Lock or Home Sensor (configured in MSP).
