@@ -10,8 +10,8 @@
  *    on the state of an analog input sensor. During operation, various move
  *    statuses are written to the USB serial port.
  *    Consider using Manual Velocity Control mode instead if you do not wish to 
- *	  use an analog sensor to command velocity, if you require greater velocity 
- *	  command resolution (i.e. more commandable positions), or if HLFB is needed 
+ *    use an analog sensor to command velocity, if you require greater velocity 
+ *    command resolution (i.e. more commandable positions), or if HLFB is needed 
  *    for "move done/at speed" status feedback.
  *
  * Requirements:
@@ -123,8 +123,8 @@ int main() {
  * commanded.
  */
 bool CommandVelocity(int32_t commandedVelocity) {
-    if (abs(commandedVelocity) > abs(maxSpeed)) {
-        SerialPort.SendLine("Move rejected, requested velocity over the limit.");
+    if (abs(commandedVelocity) >= abs(maxSpeed)) {
+        SerialPort.SendLine("Move rejected, requested velocity at or over the limit.");
         return false;
     }
 
@@ -132,9 +132,9 @@ bool CommandVelocity(int32_t commandedVelocity) {
     SerialPort.SendLine(commandedVelocity);
 
     // Change ClearPath's Input A state to change direction.
-	// Note: this section of code was included so this commandVelocity function 
-	// could be used to command negative (opposite direction) velocity. However the 
-	// analog signal used by this example only commands positive velocities.
+    // Note: this section of code was included so this commandVelocity function 
+    // could be used to command negative (opposite direction) velocity. However the 
+    // analog signal used by this example only commands positive velocities.
     if (commandedVelocity >= 0) {
         motor.MotorInAState(false);
     }
