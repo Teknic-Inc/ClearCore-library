@@ -3,7 +3,7 @@
  *
  * Objective:
  *    This example demonstrates control of a ClearPath motor in Step and
- *    Direction mode.
+ *    Direction mode, making velocity moves.
  *
  * Description:
  *    This example enables a ClearPath then commands a series of repeating
@@ -20,8 +20,8 @@
  * 4. Set the Input Format in MSP for "Step + Direction".
  *
  * ** Note: Set the Input Resolution in MSP the same as your motor's Positioning
- *    Resolution spec if you'd like the pulses sent by ClearCore to command a
- *    move of the same number of Encoder Counts, a 1:1 ratio.
+ *    Resolution spec if you'd like the pulse frequency sent by ClearCore to 
+ *    command the same frequency in motor encoder counts/sec, a 1:1 ratio.
  *
  * Links:
  * ** ClearCore Documentation: https://teknic-inc.github.io/ClearCore-library/
@@ -98,7 +98,7 @@ int main() {
         // Move at 10,000 steps/sec for 2000ms
         MoveAtVelocity(10000);
         Delay_ms(2000);
-        // Increase speed to -10,000 steps/sec for 2000ms
+        // Move at -10,000 steps/sec for 2000ms
         MoveAtVelocity(-10000);
         Delay_ms(2000);
         // Command a 0 steps/sec velocity to stop motion for 2000ms
@@ -125,14 +125,14 @@ void MoveAtVelocity(int32_t velocity) {
     // Command the velocity move
     motor.MoveVelocity(velocity);
 
-	// Waits for the step command to ramp up/down to the commanded velocity. 
-	// This time will depend on your Acceleration Limit.
-	SerialPort.SendLine("Ramping to speed...");
-	while (!motor.CruiseVelocityReached()) {
-		continue;
-	}
+    // Waits for the step command to ramp up/down to the commanded velocity. 
+    // This time will depend on your Acceleration Limit.
+    SerialPort.SendLine("Ramping to speed...");
+    while (!motor.CruiseVelocityReached()) {
+    	continue;
+    }
 
-	SerialPort.SendLine("At Speed");
+    SerialPort.SendLine("At Speed");
 	
 }
 //------------------------------------------------------------------------------
