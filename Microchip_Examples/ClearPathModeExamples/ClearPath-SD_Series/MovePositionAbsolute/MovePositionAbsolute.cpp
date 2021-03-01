@@ -20,7 +20,7 @@
  * 4. Set the Input Format in MSP for "Step + Direction".
  *
  * ** Note: Homing is optional, and not required in this operational mode or in
- *    this example. This example makes its first move in the positive direction,
+ *    this example. This example makes positive absolute position moves,
  *    assuming any homing move occurs in the negative direction.
  *
  * ** Note: Set the Input Resolution in MSP the same as your motor's Positioning
@@ -100,11 +100,11 @@ int main() {
         // Move to +10000 counts (positive direction), then wait 2000ms
         MoveAbsolutePosition(10000);
         Delay_ms(2000);
-        // Move to -19200 counts (negative direction), then wait 2000ms
-        MoveAbsolutePosition(-19200);
+        // Move to 19200 counts, then wait 2000ms
+        MoveAbsolutePosition(19200);
         Delay_ms(2000);
-        // Move to -12800 counts, then wait 2000ms
-        MoveAbsolutePosition(-12800);
+        // Move to 12800 counts, then wait 2000ms
+        MoveAbsolutePosition(12800);
         Delay_ms(2000);
         // Move back to "home", then wait 2000ms
         MoveAbsolutePosition(0);
