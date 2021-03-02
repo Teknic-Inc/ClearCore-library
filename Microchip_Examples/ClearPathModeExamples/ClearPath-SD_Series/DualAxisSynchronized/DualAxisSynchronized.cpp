@@ -76,7 +76,12 @@ int main() {
     // Sets all motor connectors into step and direction mode.
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
                           Connector::CPM_MODE_STEP_AND_DIR);
-
+    
+    // Put the motor connectors into the HLFB mode to read bipolar PWM (the
+    // correct mode for ASG w/ Measured Torque)
+	motor0.HlfbMode(MotorDriver::HLFB_MODE_HAS_BIPOLAR_PWM);
+	motor1.HlfbMode(MotorDriver::HLFB_MODE_HAS_BIPOLAR_PWM);
+    
     // Sets the maximum velocity for each move.
     motor0.VelMax(velocityLimit);
     motor1.VelMax(velocityLimit);
