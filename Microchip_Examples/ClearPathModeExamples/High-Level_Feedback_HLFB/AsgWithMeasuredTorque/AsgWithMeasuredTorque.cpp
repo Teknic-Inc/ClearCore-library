@@ -28,8 +28,7 @@
  *    measured torque through the MSP software (select Advanced>>High Level
  *    Feedback [Mode]... then choose "ASG-Position, w/Measured Torque" or
  *    "ASG-Velocity, w/ Measured Torque" and hit the OK button).
- *    Select a 45 Hz PWM Carrier Frequency in this menu for the most accurate
- *    torque measurements.
+ *    Select a 482 Hz PWM Carrier Frequency in this menu.
  *
  * Links:
  * ** ClearCore Documentation: https://teknic-inc.github.io/ClearCore-library/
