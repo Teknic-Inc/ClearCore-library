@@ -21,6 +21,7 @@
  *    Advanced>>High Level Feedback [Mode]... then choose
  *    "ASG-Position, w/Measured Torque" from the dropdown and hit
  *    the OK button).
+ *    Select a 482 Hz PWM Carrier Frequency in this menu.
  * 4. If the two motors must spin in opposite directions (i.e. they are mounted
  *    facing different directions), check the "Reverse Direction" checkbox of
  *    one motor in MSP.
