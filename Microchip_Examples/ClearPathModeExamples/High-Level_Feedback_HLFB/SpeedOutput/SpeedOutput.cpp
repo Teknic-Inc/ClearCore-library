@@ -24,8 +24,7 @@
  * 3. The connected ClearPath motor must have its HLFB mode set to "Speed Output"
  *    (select Advanced>>High Level Feedback [Mode]... then choose "Speed Output"
  *    from the dropdown and hit the OK button).
- *    Select a 45 Hz PWM Carrier Frequency in this menu for the most accurate
- *    speed measurements.
+ *    Select a 482 Hz PWM Carrier Frequency in this menu.
  *
  * Links:
  * ** ClearCore Documentation: https://teknic-inc.github.io/ClearCore-library/
