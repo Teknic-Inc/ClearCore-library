@@ -403,7 +403,10 @@ public:
         Verify that the motor is in a good state before sending a move command.
 
         \return True if the motor is ready for a move command; false if there
-        is a configuration setting or error that would (or should) prevent motion.
+        is a configuration setting or error that would (or should) prevent
+        motion.
+
+        \note For use with Step and Direction mode.
     **/
     bool ValidateMove(bool negDirection);
 
@@ -476,6 +479,8 @@ public:
         \endcode
 
         \return The current state of Input A
+
+        \note For use with ClearPath-MC.
     **/
     bool MotorInAState();
 
@@ -488,6 +493,8 @@ public:
         \endcode
 
         \param[in] value The boolean state to be passed to the input
+
+        \note For use with ClearPath-MC.
     **/
     bool MotorInAState(bool value);
 
@@ -501,6 +508,8 @@ public:
         \endcode
 
         \return The current state of Input B
+
+        \note For use with ClearPath-MC.
     **/
     bool MotorInBState();
 
@@ -513,6 +522,8 @@ public:
         \endcode
 
         \param[in] value The boolean state to be passed to the input
+
+        \note For use with ClearPath-MC.
     **/
     bool MotorInBState(bool value);
 
@@ -555,6 +566,8 @@ public:
         \endcode
 
         \param[in] duty The PWM duty cycle
+
+        \note For use with ClearPath-MC.
     **/
     bool MotorInADuty(uint8_t duty);
 
@@ -568,6 +581,8 @@ public:
         \endcode
 
         \param[in] duty The PWM duty cycle
+
+        \note For use with ClearPath-MC.
     **/
     bool MotorInBDuty(uint8_t duty);
 
@@ -967,6 +982,8 @@ public:
         enabled, or  successfully disabled; false if a pin other than
         CLEARCORE_PIN_INVALID was supplied that isn't a valid digital
         input pin.
+
+        \note For use with Step and Direction mode.
     **/
     bool LimitSwitchPos(ClearCorePins pin);
 
@@ -991,6 +1008,8 @@ public:
         \return The pin representing the digital output connector configured to
         be this motor's positive limit, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
+
+        \note For use with Step and Direction mode.
     **/
     ClearCorePins LimitSwitchPos() {
         return m_limitSwitchPos;
@@ -1022,6 +1041,8 @@ public:
         enabled, or  successfully disabled; false if a pin other than
         CLEARCORE_PIN_INVALID was supplied that isn't a valid digital
         input pin.
+
+        \note For use with Step and Direction mode.
     **/
     bool LimitSwitchNeg(ClearCorePins pin);
 
@@ -1046,6 +1067,8 @@ public:
         \return The pin representing the digital output connector configured to
         be this motor's negative limit, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
+
+        \note For use with Step and Direction mode.
     **/
     ClearCorePins LimitSwitchNeg() {
         return m_limitSwitchNeg;
@@ -1118,6 +1141,8 @@ public:
         will control the state of this motor's Input A signal.
 
         \return True if the Input A connector was configured successfully.
+
+        \note For use with ClearPath-MC.
     **/
     bool InputAConnector(ClearCorePins pin);
 
@@ -1135,6 +1160,8 @@ public:
         \return The pin representing the digital input connector configured to
         control this motor's Input A signal, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
+
+        \note For use with ClearPath-MC.
     **/
     ClearCorePins InputAConnector() {
         return m_inputAConnector;
@@ -1155,6 +1182,8 @@ public:
         will control the state of this motor's Input B signal.
 
         \return True if the Input B connector was configured successfully.
+
+        \note For use with ClearPath-MC.
     **/
     bool InputBConnector(ClearCorePins pin);
 
@@ -1172,6 +1201,8 @@ public:
         \return The pin representing the digital input connector configured to
         control this motor's Input B signal, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
+
+        \note For use with ClearPath-MC.
     **/
     ClearCorePins InputBConnector() {
         return m_inputBConnector;
@@ -1191,6 +1222,8 @@ public:
         will act as an E-Stop signal for this motor.
 
         \return True if the E-Stop connector was configured successfully.
+
+        \note For use with Step and Direction mode.
     **/
     bool EStopConnector(ClearCorePins pin);
 
@@ -1208,6 +1241,8 @@ public:
         \return The Pin representing the digital input connector configured as
         an E-Stop input for this motor, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
+
+        \note For use with Step and Direction mode.
     **/
     ClearCorePins EStopConnector() {
         return m_eStopConnector;
@@ -1309,6 +1344,8 @@ public:
         motor's Input A
 
         \param[in] count The PWM on time
+
+        \note For use with ClearPath-MC.
     **/
     bool MotorInACount(uint16_t count);
 
@@ -1317,6 +1354,8 @@ public:
         motor's Input B
 
         \param[in] count The PWM on time
+
+        \note For use with ClearPath-MC.
     **/
     bool MotorInBCount(uint16_t count);
 
