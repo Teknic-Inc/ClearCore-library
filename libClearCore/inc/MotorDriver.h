@@ -964,8 +964,9 @@ public:
     /**
         \brief Set the associated positive limit switch connector.
 
-        When the input is active on the connector associated with this
-        limit, all motion in the positive direction will be stopped.
+        When the input is deasserted (LED off) on the connector associated with
+        this limit, all motion in the positive direction will be stopped (i.e.
+        use a Normally Closed (NC) switch on this connector).
 
         \code{.cpp}
         if (ConnectorM0.LimitSwitchPos(CLEARCORE_PIN_IO2)) {
@@ -995,8 +996,9 @@ public:
     /**
         \brief Get the associated positive limit switch output connector.
 
-        When the input is active on the connector associated with this
-        limit, all motion in the positive direction will be stopped.
+        When the input is deasserted (LED off) on the connector associated with
+        this limit, all motion in the positive direction will be stopped (i.e.
+        use a Normally Closed (NC) switch on this connector).
 
         \code{.cpp}
         if (ConnectorM0.LimitSwitchPos() == CLEARCORE_PIN_IO2) {
@@ -1023,8 +1025,9 @@ public:
     /**
         \brief Set the associated negative limit switch connector.
 
-        When the input is active on the connector associated with this
-        limit, all motion in the negative direction will be stopped.
+        When the input is deasserted (LED off) on the connector associated with
+        this limit, all motion in the negative direction will be stopped (i.e.
+        use a Normally Closed (NC) switch on this connector).
 
         \code{.cpp}
         if (ConnectorM0.LimitSwitchNeg(CLEARCORE_PIN_IO2)) {
@@ -1054,8 +1057,9 @@ public:
     /**
         \brief Get the associated negative limit switch output connector.
 
-        When the input is active on the connector associated with this
-        limit, all motion in the negative direction will be stopped.
+        When the input is deasserted (LED off) on the connector associated with
+        this limit, all motion in the negative direction will be stopped (i.e.
+        use a Normally Closed (NC) switch on this connector).
 
         \code{.cpp}
         if (ConnectorM0.LimitSwitchNeg() == CLEARCORE_PIN_IO2) {
