@@ -185,9 +185,8 @@ public:
     int32_t VelocityRefCommanded();
 
     /**
-        \brief Sets the maximum velocity in step pulses per second.
-
-        Value will be clipped if out of bounds
+        \brief Sets the maximum velocity for position moves, in step pulses per
+        second.
 
         \code{.cpp}
         // Set the StepGenerator's maximum velocity to 1200 step pulses/sec
