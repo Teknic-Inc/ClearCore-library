@@ -243,7 +243,7 @@ public:
         \union StatusRegMotor
 
         \brief Register access for information about the motor's operating
-        status.
+        status. Intended for use in Step and Direction mode.
     **/
     union StatusRegMotor {
         /**
@@ -337,6 +337,7 @@ public:
         \union AlertRegMotor
 
         \brief Accumulating register of alerts that have occurred on this motor.
+         Intended for use in Step and Direction mode.
     **/
     union AlertRegMotor {
         /**
