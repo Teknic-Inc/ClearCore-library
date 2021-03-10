@@ -177,8 +177,6 @@ public:
         \endcode
 
         \return Returns the momentary commanded velocity.
-        /note Velocity changes as the motor accelerates and decelerates, this
-        should not be used to track the motion of the motor
     **/
     int32_t VelocityRefCommanded();
 
