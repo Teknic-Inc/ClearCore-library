@@ -119,11 +119,13 @@ public:
     void MoveStopAbrupt();
 
     /**
-        Interrupts the current move; Slows the motor at the quicker of
-        the EStopDecelMax rate that was set when the moves was issued and
-        the current move's accel rate.
-        If the EStopDecelMax value should be updated before stopping,
-        it can be changed using the decelMax parameter.
+        Interrupts any current move and commands the motor to stop. The stopping
+        acceleration used will be the higher of either
+        - 1) the move's current acceleration rate, or
+        - 2) the value of #EStopDecelMax.
+
+        This function's \a decelMax parameter can be used to update the
+        #EStopDecelMax value used for stopping.
 
         \code{.cpp}
         // Ramp to a stop at a decel rate of 100000 pulses/sec^2
