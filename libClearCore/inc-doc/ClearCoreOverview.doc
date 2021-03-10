@@ -6,7 +6,7 @@ namespace ClearCore {
 # Introduction
     ClearCore is an industrial motion and I/O controller featuring flexible, software-configurable I/O with a rich C++ Motion and I/O library. This document serves as a reference guide for the library and the variety of functions used to interface with and control your ClearCore in a motion control application.
     
-    For ClearCore hardware documentation, including device specifications and I/O wiring examples, see the <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf">ClearCore Hardware Manual</a>.
+    For ClearCore hardware documentation, including device specifications and I/O wiring examples, see the <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf">ClearCore System Diagram</a>.
     
 # Informational Pages    - \ref ConnectorMain
     - \ref MotorDriverMain
@@ -64,7 +64,7 @@ namespace ClearCore {
     - \ref ArduinoRef
 
 # Hardware Reference
-    - Refer to the <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf">ClearCore Hardware Manual</a>.
+    - Refer to the <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf">ClearCore System Diagram</a>.
         - Jump to:
             - <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=1">Overview</a>
             - <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=2">Connector Wiring</a>
