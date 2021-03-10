@@ -841,7 +841,8 @@ public:
     }
 
     /**
-        \brief Clear the Motor Alert Register
+        \brief Clear the Motor Alert Register. Motion will be prevented if any
+        Alert Register bits are set.
 
         \code{.cpp}
         // Clear any alerts that have accumulated for M-0.
