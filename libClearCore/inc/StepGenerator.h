@@ -89,6 +89,8 @@ public:
         should be done. Absolute or relative to the end position of the current
         move. Invalid will result in move relative to the end position.
         Default: MOVE_TARGET_REL_END_POSN
+
+        \note For use with Step and Direction mode.
     **/
     virtual bool Move(int32_t dist,
                       MoveTarget moveTarget = MOVE_TARGET_REL_END_POSN);
@@ -105,6 +107,8 @@ public:
         velocity.
 
         \param[in] velocity The velocity of the move in step pulses/second.
+
+        \note For use with Step and Direction mode.
     **/
     virtual bool MoveVelocity(int32_t velocity);
 
