@@ -204,9 +204,12 @@ public:
         HLFB_MODE_HAS_BIPOLAR_PWM
     } HlfbModes;
 
+    /**
+        \brief High-Level Feedback (HLFB) carrier frequency: 45 Hz or 482 Hz
+    **/
     typedef enum {
-	    HLFB_CARRIER_45_HZ,
-	    HLFB_CARRIER_482_HZ
+        HLFB_CARRIER_45_HZ,
+        HLFB_CARRIER_482_HZ
     } HlfbCarrierFrequency;
 
     /**
@@ -754,23 +757,51 @@ public:
         return DigitalIn::InputFallen();
     }
 
+    /**
+        \brief Set the HLFB carrier frequency signal.
+
+        \code{.cpp}
+        // Set motor M-0 to use the higher HFLB carrier frequency (482 Hz)
+        ConnectorM0.HlfbCarrier(MotorDriver::HLFB_CARRIER_482_HZ);
+        \endcode
+
+        \return True if the HLFB carrier frequency was correctly set
+    **/
     bool HlfbCarrier(HlfbCarrierFrequency freq) {
         switch (freq) {
             case HLFB_CARRIER_45_HZ:
-            m_hlfbCarrierLossStateChange_ms =
-            HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ;
-            break;
+                m_hlfbCarrierLossStateChange_ms =
+                    HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ;
+                break;
             case HLFB_CARRIER_482_HZ:
-            m_hlfbCarrierLossStateChange_ms =
-            HLFB_CARRIER_LOSS_STATE_CHANGE_MS_482_HZ;
-            break;
+                m_hlfbCarrierLossStateChange_ms =
+                    HLFB_CARRIER_LOSS_STATE_CHANGE_MS_482_HZ;
+                break;
             default:
-            return false;
+                return false;
         }
         m_hlfbCarrierFrequency = freq;
         return true;
     }
 
+    /**
+        \brief This motor's HLFB carrier frequency.
+
+        \code{.cpp}
+        // Do work that depends on the current HLFB carrier frequency
+        switch (ConnectorM0.HlfbCarrier()) {
+            case MotorDriver::HLFB_CARRIER_45_HZ:
+                // Slow HLFB carrier. Do something.
+                break;
+            case MotorDriver::HLFB_CARRIER_482_HZ:
+            default:
+                // Fast HLFB carrier. Do something else.
+                break;
+        }
+        \endcode
+
+        \return The HLFB carrier frequency.
+    **/
     HlfbCarrierFrequency HlfbCarrier() {
         return m_hlfbCarrierFrequency;
     }
