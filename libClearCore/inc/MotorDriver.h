@@ -902,9 +902,11 @@ public:
         \brief Set the associated brake output connector.
 
         Brake output mode uses HLFB readings from a connected ClearPath motor
-        to energize or de-energize a connected brake. The motor connectors M-0
-        through M-3 can be mapped to any of the ClearCore outputs IO-0 through
-        IO-5, or to any attached CCIO-8 output pin.
+        to energize or de-energize a connected brake. HLFB must be configured
+        for either "ASG with Measured Torque" or "Servo On" for the automatic
+        brake to function correctly. The motor connectors M-0 through M-3
+        can be mapped to any of the ClearCore outputs IO-0 through IO-5, or to
+        any attached CCIO-8 output pin.
 
         \code{.cpp}
         if (ConnectorM0.BrakeOutput(CLEARCORE_PIN_IO2)) {
@@ -932,9 +934,11 @@ public:
         \brief Get the associated brake output connector.
 
         Brake output mode uses HLFB readings from a connected ClearPath motor
-        to energize or de-energize a connected brake. The motor connectors M-0
-        through M-3 can be mapped to any of the ClearCore outputs IO-0 through
-        IO-5, or to any attached CCIO-8 output pin.
+        to energize or de-energize a connected brake. HLFB must be configured
+        for either "ASG with Measured Torque" or "Servo On" for the automatic
+        brake to function correctly. The motor connectors M-0 through M-3
+        can be mapped to any of the ClearCore outputs IO-0 through IO-5, or to
+        any attached CCIO-8 output pin.
 
         \code{.cpp}
         if (ConnectorM0.BrakeOutput() == CLEARCORE_PIN_IO2) {
