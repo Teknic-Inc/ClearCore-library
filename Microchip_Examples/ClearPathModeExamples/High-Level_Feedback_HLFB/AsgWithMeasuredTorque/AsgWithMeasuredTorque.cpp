@@ -55,6 +55,8 @@ int main() {
     // Put the motor connector into the HLFB mode to read bipolar PWM (the
     // correct mode for ASG w/ Measured Torque)
     motor.HlfbMode(MotorDriver::HLFB_MODE_HAS_BIPOLAR_PWM);
+    // Set the HFLB carrier frequency to 482 Hz
+    motor.HlfbCarrier(MotorDriver::HLFB_CARRIER_482_HZ);
 
     // Set up serial communication and wait up to 5 seconds for a port to open
     // HLFB states are written to the serial port
