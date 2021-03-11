@@ -19,10 +19,12 @@
  * 3. Homing must be configured in the MSP software for your mechanical system
  *    (e.g. homing direction, switch polarity, etc.). To configure, click the
  *    "Setup..." button found under the "Homing" label on the MSP's main window.
- * 4. The ClearPath motor must be set to use the HLFB mode "ASG-Position"
- *    through the MSP software (select Advanced>>High Level Feedback [Mode]...
- *    then choose "All Systems Go (ASG) - Position" from the dropdown and hit
- *    the OK button).
+ * 4. The ClearPath motor must be set to use the HLFB mode "ASG-Position
+ *    w/Measured Torque" with a PWM carrier frequency of 482 Hz through the MSP
+ *    software (select Advanced>>High Level Feedback [Mode]... then choose
+ *    "ASG-Position w/Measured Torque" from the dropdown, make sure that 482 Hz
+ *    is selected in the "PWM Carrier Frequency" dropdown, and hit the OK
+ *    button).
  * 5. Wire the homing sensor to Connector DI-6.
  * 6. The ClearPath must have defined Absolute Position Selections set up in the
  *    MSP software (On the main MSP window check the "Position Selection Setup
@@ -78,6 +80,11 @@ int main() {
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
                           Connector::CPM_MODE_A_DIRECT_B_DIRECT);
 
+    // Set the motor's HLFB mode to bipolar PWM
+    motor.HlfbMode(MotorDriver::HLFB_MODE_HAS_BIPOLAR_PWM);
+    // Set the HFLB carrier frequency to 482 Hz
+    motor.HlfbCarrier(MotorDriver::HLFB_CARRIER_482_HZ);
+
     // Enforces the state of the motor's Input A before enabling the motor
     motor.MotorInAState(false);
     // Set input B to match the initial state of the sensor.
@@ -127,9 +134,15 @@ int main() {
  *    int positionNum  - The position number to command (defined in MSP)
  *
  * Returns: True/False depending on whether a valid position was
- * successfully commanded and reached.
+ *    successfully commanded and reached.
  */
 bool MoveToPosition(uint8_t positionNum) {
+    // Check if an alert is currently preventing motion
+    if (motor.StatusReg().bit.AlertsPresent) {
+        SerialPort.SendLine("Motor status: 'In Alert'. Move Canceled.");
+        return false;
+    }
+
     SerialPort.Send("Moving to position: ");
     SerialPort.Send(positionNum);
 

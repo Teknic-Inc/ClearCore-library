@@ -41,9 +41,15 @@ namespace ClearCore {
 typedef void (*voidFuncPtr)(void);
 
 /**
-    \brief ClearCore Position Decoder.
+    \brief ClearCore Position Sensor Decoder.
 
-    Provides position information from quadrature and index signals.
+    Provides position and velocity information from external quadrature and
+    index signals. Use the Encoder Input Adapter Board (PN: CL-ENCDR-DFIN) to
+    wire an external encoder to ClearCore.
+
+    \note When using the Encoder Input Adapter Board, ClearCore's DI-6/DI-7/DI-8
+    inputs will be unavailable. Refer to the ClearCore User Manual for specs
+    and wiring information.
 **/
 class EncoderInput {
     friend class SysManager;

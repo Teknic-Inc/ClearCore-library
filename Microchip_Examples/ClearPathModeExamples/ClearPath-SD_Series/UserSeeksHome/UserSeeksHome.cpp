@@ -5,7 +5,7 @@
  *    This example demonstrates control of the "User Seeks Home" homing feature
  *    of a ClearPath-SD motor (this feature is also available in ClearPath-MCPV
  *    Pulse Burst Positioning Mode, but this example is only for Step and
- *    Direction mode). "User Seeks Home" should be used when more flexilibty is
+ *    Direction mode). "User Seeks Home" should be used when more flexibility is
  *    required during a homing sequence (e.g. to move at multiple velocities,
  *    stopping to perform other tasks, manually exiting a homing sequence, or
  *    using sensor-based homing).
@@ -21,10 +21,12 @@
  * 1. A ClearPath motor must be connected to Connector M-0.
  * 2. The connected ClearPath motor must be configured through the MSP software
  *    for Step and Direction mode (In MSP select Mode>>Step and Direction).
- * 3. The ClearPath motor must be set to use the HLFB mode "ASG-Position"
- *    through the MSP software (select Advanced>>High Level Feedback [Mode]...
- *    then choose "All Systems Go (ASG) - Position" from the dropdown and hit
- *    the OK button).
+ * 3. The ClearPath motor must be set to use the HLFB mode "ASG-Position
+ *    w/Measured Torque" with a PWM carrier frequency of 482 Hz through the MSP
+ *    software (select Advanced>>High Level Feedback [Mode]... then choose
+ *    "ASG-Position w/Measured Torque" from the dropdown, make sure that 482 Hz
+ *    is selected in the "PWM Carrier Frequency" dropdown, and hit the OK
+ *    button).
  * 4. The ClearPath must have homing enabled and configured. To configure, look
  *    under the "Homing" label on the MSP's main window, check the "Enabled"
  *    radial button, then click the "Setup..." button. Set the Homing Style set
@@ -74,6 +76,11 @@ int main() {
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
                           Connector::CPM_MODE_STEP_AND_DIR);
 
+    // Set the motor's HLFB mode to bipolar PWM
+    motor.HlfbMode(MotorDriver::HLFB_MODE_HAS_BIPOLAR_PWM);
+    // Set the HFLB carrier frequency to 482 Hz
+    motor.HlfbCarrier(MotorDriver::HLFB_CARRIER_482_HZ);
+
     // Sets the maximum velocity in step pulses/sec.
     motor.VelMax(10000);
     // Sets the maximum acceleration in step pulses/sec^2.
@@ -93,6 +100,16 @@ int main() {
     // Enables the motor
     motor.EnableRequest(true);
     SerialPort.SendLine("Motor Enabled");
+
+    // Check if an alert would prevent motion
+    if (motor.StatusReg().bit.AlertsPresent) {
+        // In this case, we can't proceed with homing.
+        SerialPort.SendLine("Motor status: 'In Alert'. Move Canceled.");
+        // The end...
+        while (true) {
+            continue;
+        }
+    }
 
     // Commands a speed of 5000 pulses/sec towards the hardstop for 2 seconds
     SerialPort.SendLine("Moving toward hardstop... Waiting for HLFB");

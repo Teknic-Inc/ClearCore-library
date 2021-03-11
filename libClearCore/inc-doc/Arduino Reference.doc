@@ -30,7 +30,6 @@ This section serves as a reference guide for the ClearCore Arduino wrapper funct
 <table>
 <caption>ClearCore motor input aliases</caption>
 <tr><th>Name<th>Arduino Alias
-<tr><td> <td><center>IO0</center>
 <tr><td>M-0 Input A <td><center>M0INA</center>
 <tr><td>M-0 Input B <td><center>M0INB</center>
 <tr><td>M-1 Input A <td><center>M1INA</center>

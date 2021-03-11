@@ -129,13 +129,20 @@ int main() {
  *    int commandedTorque  - The torque to command
  *
  * Returns: True/False depending on whether the torque was successfully
- * commanded.
+ *    commanded.
  */
 bool CommandTorque(int8_t commandedTorque) {
     if (abs(commandedTorque) > abs(maxTorque)) {
         SerialPort.SendLine("Move rejected, invalid torque requested");
         return false;
     }
+
+    // Check if an alert is currently preventing motion
+    if (motor.StatusReg().bit.AlertsPresent) {
+        SerialPort.SendLine("Motor status: 'In Alert'. Move Canceled.");
+        return false;
+    }
+
     SerialPort.Send("Commanding torque: ");
     SerialPort.SendLine(commandedTorque);
 
