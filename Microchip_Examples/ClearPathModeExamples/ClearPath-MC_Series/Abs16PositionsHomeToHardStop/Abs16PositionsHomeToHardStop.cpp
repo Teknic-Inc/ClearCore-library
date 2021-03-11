@@ -16,10 +16,12 @@
  *    for Move To Absolute Position, 16 Positions (Home to Hard Stop) mode (In
  *    MSP select Mode>>Position>>Move to Absolute Position, then with "16
  *    Positions (Home to Hard Stop)" selected hit the OK button).
- * 3. The ClearPath motor must be set to use the HLFB mode "ASG-Position"
- *    through the MSP software (select Advanced>>High Level Feedback [Mode]...
- *    then choose "All Systems Go (ASG) - Position" from the dropdown and hit
- *    the OK button).
+ * 3. The ClearPath motor must be set to use the HLFB mode "ASG-Position
+ *    w/Measured Torque" with a PWM carrier frequency of 482 Hz through the MSP
+ *    software (select Advanced>>High Level Feedback [Mode]... then choose
+ *    "ASG-Position w/Measured Torque" from the dropdown, make sure that 482 Hz
+ *    is selected in the "PWM Carrier Frequency" dropdown, and hit the OK
+ *    button).
  * 4. The ClearPath must have defined Absolute Position Selections through
  *    the MSP software (On the main MSP window fill in the textboxes labeled
  *    1-16 found under "Position Selection Setup (cnts)").
@@ -64,6 +66,11 @@ int main() {
     // Sets all motor connectors to the correct mode for Absolute Position mode
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
                           Connector::CPM_MODE_A_DIRECT_B_DIRECT);
+
+    // Set the motor's HLFB mode to bipolar PWM
+    motor.HlfbMode(MotorDriver::HLFB_MODE_HAS_BIPOLAR_PWM);
+    // Set the HFLB carrier frequency to 482 Hz
+    motor.HlfbCarrier(MotorDriver::HLFB_CARRIER_482_HZ);
 
     // Enforces the state of the motor's A and B inputs before enabling
     // the motor.
@@ -145,9 +152,15 @@ int main() {
  *    int positionNum  - The position number to command (defined in MSP)
  *
  * Returns: True/False depending on whether the position was successfully
- * commanded.
+ *    commanded.
  */
 bool MoveToPosition(uint8_t positionNum) {
+    // Check if an alert is currently preventing motion
+    if (motor.StatusReg().bit.AlertsPresent) {
+        SerialPort.SendLine("Motor status: 'In Alert'. Move Canceled.");
+        return false;
+    }
+
     SerialPort.Send("Moving to position: ");
     SerialPort.SendLine(positionNum);
 

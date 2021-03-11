@@ -16,10 +16,12 @@
  *    for Move Incremental Distance, 2 Increments (Home to Switch) mode (In MSP
  *    select Mode>>Position>>Move Incremental Distance, then with "2 Increments
  *    (Home to Switch)" selected hit the OK button).
- * 3. The ClearPath motor must be set to use the HLFB mode "ASG-Position"
- *    through the MSP software (select Advanced>>High Level Feedback [Mode]...
- *    then choose "All Systems Go (ASG) - Position" from the dropdown and hit
- *    the OK button).
+ * 3. The ClearPath motor must be set to use the HLFB mode "ASG-Position
+ *    w/Measured Torque" with a PWM carrier frequency of 482 Hz through the MSP
+ *    software (select Advanced>>High Level Feedback [Mode]... then choose
+ *    "ASG-Position w/Measured Torque" from the dropdown, make sure that 482 Hz
+ *    is selected in the "PWM Carrier Frequency" dropdown, and hit the OK
+ *    button).
  * 4. If the ClearPath is configured for sensor-based homing, ensure that the
  *    homing sensor is wired to Connector DI-6 (homing is optional, not required
  *    in this operational mode or in this example).
@@ -30,7 +32,7 @@
  * 6. Ensure the Trigger Pulse Time in MSP is set to 20ms. To configure, click
  *    the "Setup..." button found under the "Trigger Pulse" label on the MSP's
  *    main window, fill in the text box, and hit the OK button. Setting this to 
- *    20ms allows trigger pulses to be as long as 60ms, which will accomodate 
+ *    20ms allows trigger pulses to be as long as 60ms, which will accommodate 
  *    our 25ms pulses used later.
  * 7. Ensure the Input A & B filters in MSP are both set to 20ms (In MSP
  *    select Advanced>>Input A, B Filtering... then in the Settings box fill in
@@ -92,6 +94,11 @@ int main() {
     // mode.
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
                           Connector::CPM_MODE_A_DIRECT_B_DIRECT);
+
+    // Set the motor's HLFB mode to bipolar PWM
+    motor.HlfbMode(MotorDriver::HLFB_MODE_HAS_BIPOLAR_PWM);
+    // Set the HFLB carrier frequency to 482 Hz
+    motor.HlfbCarrier(MotorDriver::HLFB_CARRIER_482_HZ);
 
     // Enforces the state of the motor's A and B inputs before enabling
     motor.MotorInAState(false);
@@ -167,6 +174,12 @@ int main() {
  * Returns: True/False depending on whether the move was successfully triggered.
  */
 bool MoveIncrements(uint32_t numberOfIncrements, int32_t positionIncrement) {
+    // Check if an alert is currently preventing motion
+    if (motor.StatusReg().bit.AlertsPresent) {
+        SerialPort.SendLine("Motor status: 'In Alert'. Move Canceled.");
+        return false;
+    }
+
     SerialPort.Send("Moving ");
     SerialPort.Send(numberOfIncrements);
     SerialPort.Send(" * ");
