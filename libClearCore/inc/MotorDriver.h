@@ -691,6 +691,9 @@ public:
 
         \return Returns #HLFB_DUTY_UNKNOWN number if no update has been
         detected.
+
+        \note The correct HLFB carrier frequency must be set using
+        #HlfbCarrier().
     **/
     volatile const float &HlfbPercent() {
         return m_hlfbDuty;
