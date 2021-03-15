@@ -411,6 +411,10 @@ public:
         motion.
 
         \note For use with Step and Direction mode.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     bool ValidateMove(bool negDirection);
 
@@ -766,6 +770,10 @@ public:
         \endcode
 
         \return True if the HLFB carrier frequency was correctly set
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     bool HlfbCarrier(HlfbCarrierFrequency freq) {
         switch (freq) {
@@ -801,6 +809,10 @@ public:
         \endcode
 
         \return The HLFB carrier frequency.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     HlfbCarrierFrequency HlfbCarrier() {
         return m_hlfbCarrierFrequency;
@@ -960,6 +972,10 @@ public:
         \return True if the brake output was successfully set and enabled, or
         successfully disabled; false if a pin other than CLEARCORE_PIN_INVALID
         was supplied that isn't a valid digital output pin.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     bool BrakeOutput(ClearCorePins pin);
 
@@ -988,6 +1004,10 @@ public:
         \return The pin representing the digital output connector configured to
         be this motor's brake output, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     ClearCorePins BrakeOutput() {
         return m_brakeOutputPin;
@@ -1022,6 +1042,10 @@ public:
         input pin.
 
         \note For use with Step and Direction mode.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     bool LimitSwitchPos(ClearCorePins pin);
 
@@ -1049,6 +1073,10 @@ public:
         connector has been configured.
 
         \note For use with Step and Direction mode.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     ClearCorePins LimitSwitchPos() {
         return m_limitSwitchPos;
@@ -1083,6 +1111,10 @@ public:
         input pin.
 
         \note For use with Step and Direction mode.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     bool LimitSwitchNeg(ClearCorePins pin);
 
@@ -1110,6 +1142,10 @@ public:
         connector has been configured.
 
         \note For use with Step and Direction mode.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     ClearCorePins LimitSwitchNeg() {
         return m_limitSwitchNeg;
@@ -1145,6 +1181,10 @@ public:
         will control the state of this motor's enable signal.
 
         \return True if the enable connector was configured successfully.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     bool EnableConnector(ClearCorePins pin);
 
@@ -1162,6 +1202,10 @@ public:
         \return The pin representing the digital input connector configured to
         control this motor's enable signal, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     ClearCorePins EnableConnector() {
         return m_enableConnector;
@@ -1184,6 +1228,10 @@ public:
         \return True if the Input A connector was configured successfully.
 
         \note For use with ClearPath-MC.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     bool InputAConnector(ClearCorePins pin);
 
@@ -1203,6 +1251,10 @@ public:
         connector has been configured.
 
         \note For use with ClearPath-MC.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     ClearCorePins InputAConnector() {
         return m_inputAConnector;
@@ -1225,6 +1277,10 @@ public:
         \return True if the Input B connector was configured successfully.
 
         \note For use with ClearPath-MC.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     bool InputBConnector(ClearCorePins pin);
 
@@ -1244,6 +1300,10 @@ public:
         connector has been configured.
 
         \note For use with ClearPath-MC.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     ClearCorePins InputBConnector() {
         return m_inputBConnector;
@@ -1265,6 +1325,10 @@ public:
         \return True if the E-Stop connector was configured successfully.
 
         \note For use with Step and Direction mode.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     bool EStopConnector(ClearCorePins pin);
 
@@ -1284,6 +1348,10 @@ public:
         connector has been configured.
 
         \note For use with Step and Direction mode.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     ClearCorePins EStopConnector() {
         return m_eStopConnector;
