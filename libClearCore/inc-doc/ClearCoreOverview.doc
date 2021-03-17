@@ -8,7 +8,8 @@ namespace ClearCore {
     
     For ClearCore hardware documentation, including device specifications and I/O wiring examples, see the <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf">ClearCore System Diagram</a>.
     
-# Informational Pages    - \ref ConnectorMain
+# Informational Pages
+    - \ref InstallationInstructions    - \ref ConnectorMain
     - \ref MotorDriverMain
         - \ref MoveGen
     - \ref UsbMain

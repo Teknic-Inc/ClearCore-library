@@ -1,0 +1,67 @@
+namespace ClearCore {
+/**
+\page InstallationInstructions Installation and Update Instructions
+<h1> Automatic Install </h1>
+    Download and run the appropriate installer for your development environment below to automatically install all ClearCore libraries:
+    <ul>
+        <li> Microchip/Atmel Studio<br>
+        https://www.teknic.com/files/downloads/ClearCore_Atmel_Installer.zip
+
+        <li> Arduino<br>
+        https://www.teknic.com/files/downloads/ClearCore_Arduino_Wrapper_Installer.zip
+    </ul>
+  
+<h1> Manual Install </h1>
+    If the installers above cannot be run, or if a manual installation is preferred, follow the appropriate instructions below for your development environment:
+    <ul>
+        <li> Microchip/Atmel Studio<br>
+        https://www.teknic.com/files/downloads/manual_install_instructions_atmel.pdf
+
+        <li> Arduino<br>
+        https://www.teknic.com/files/downloads/manual_install_instructions_arduino.pdf
+    </ul>
+<h1> Updating Libraries </h1>
+    To check which release of the ClearCore software library is being used, and/or to update to a different release follow the instructions below:
+    
+<h2> Microchip/Atmel Studio </h2>
+    <i>Checking your current version number</i>
+    <ol>
+        <li> The library version can be found by checking this folder name:<br>
+        C:\Program Files (x86)\Teknic\ClearCore-Library <b>x.x</b><br>
+        where "x.x" is the version number.
+    </ol>
+    
+    <i>Updating the version</i>
+    <ol start="2">
+        <li> The latest released version can be found on Teknic's ClearCore GitHub repository:<br>
+        https://github.com/Teknic-Inc/ClearCore-library/releases
+        
+        <li> Under the most recent release, download the Source Code .zip file.<br>
+        <img src="assets.jpg">
+        
+        <li> Extract this .zip file to this location:<br>
+        C:\Program Files (x86)\Teknic
+        
+        <li> The newer version will now be included in your program files. Note: any older version is not removed by this process.<br>
+        <img src="installed_versions.jpg">
+    </ol>
+    
+<h2> Arduino </h2>
+    <i>Checking your current version number</i>
+    <ol>
+        <li> Open the Arudino IDE and navigate to Tools > Board > Boards Manager...
+        <li> In the Boards Manager search bar, search for "ClearCore". The library version number will be listed here.<br>
+        <img src="boards_manager_installed.png">
+    </ol>
+    <i>Updating the version</i>
+     <ol start="3">
+        <li> If newer versions are available, the "Update" button will be visible. Click "Update".<br>
+        <img src="boards_manager_update.png"><br>
+        
+        When the most recent library version is installed, older versions of the library may be selectable. It is only recommended to use older versions<br>
+        if your ClearCore application code was originally developed using an older version. Some newer features may not be usable with earlier versions.<br>
+        <img src="boards_manager_select_version.png"><br>
+    </ol>
+**/
+//********************************************************************************************
+}
