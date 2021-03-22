@@ -90,7 +90,7 @@ int main() {
         continue;
     }
 
-    // Enables the motor; homing will begin automatically.
+    // Enables the motor
     motor.EnableRequest(true);
     SerialPort.SendLine("Motor Enabled");
 
@@ -102,7 +102,7 @@ int main() {
     SerialPort.SendLine("Motor Ready");
 
     while (true) {
-        // Move to Position 1 defined in MSP (Inputs A off, B off).
+        // Move to Velocity 1 defined in MSP (Inputs A off, B off).
         // See below for the detailed function definition.
         RampToVelocitySelection(1);
 
@@ -136,7 +136,7 @@ int main() {
  *    velocity)
  *
  * Parameters:
- *    int velocityIndex  - The position number to command (defined in MSP)
+ *    int velocityIndex  - The velocity number to command (defined in MSP)
  *
  * Returns: True/False depending on whether the velocity selection was
  *    successfully commanded.
