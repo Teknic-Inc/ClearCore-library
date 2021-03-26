@@ -173,9 +173,8 @@ void EthernetTcpClient::Close() {
     if (m_tcpData->state != CLOSING) {
         TcpClose(m_tcpData->pcb, m_tcpData);
     }
+    free(m_tcpData);
     m_tcpData = nullptr;
-    // Flush the received data.
-    FlushInput();
 }
 
 uint32_t EthernetTcpClient::Send(const uint8_t *buffer, uint32_t size) {

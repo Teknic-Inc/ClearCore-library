@@ -6,11 +6,12 @@
  *    functionality.
  *
  * Description:
- *    This example takes input signals from an external encoder and uses the
- *    captured position/velocity to control a ClearPath motor.
+ *    This example takes input signals from an external encoder through the 
+ *    CL-ENCRD-DFIN Encoder Adapter Board, and uses the encoder position
+ *    or velocity to control a ClearPath-SD servo.
  *
  * Requirements:
- * 1. A ClearPath motor must be connected to Connector M-0.
+ * 1. A ClearPath-SD motor must be connected to Connector M-0.
  * 2. The connected ClearPath motor must be configured through the MSP software
  *    for Step and Direction mode (In MSP select Mode>>Step and Direction).
  * 3. The ClearPath motor must be set to use the HLFB mode "ASG-Position"
@@ -18,14 +19,16 @@
  *    then choose "All Systems Go (ASG) - Position" from the dropdown and hit
  *    the OK button).
  * 4. Set the Input Format in MSP for "Step + Direction".
- * 5. The A and B signals from an external encoder source must be connected to
- *    inputs DI-6 and DI-7. (The exact ordering doesn't matter.)
- * 6. The index signal from an external encoder source must be connected to
- *    input DI-8.
+ * 5. An external encoder much be wired to the CL-ENCRD-DFIN Encoder Adapter Board, 
+ *    and the board connected to the ClearCore I/O Header. See the ClearCore User 
+ *    Manaual for connector pinouts.
  *
- * ** Note: Homing is optional, and not required in this operational mode or in
- *    this example. This example makes its first move in the positive direction,
- *    assuming any homing move occurs in the negative direction.
+ * ** Reminder: When using the CL-ENCRD-DFIN Encoder Adapter Board, ClearCore 
+ *    connectors DI-6, DI-7, and DI-8 are unavailable and should be left Not  
+ *    Connected to any external device.
+ *
+ * ** Note: Homing is optional and not required in this operational mode or in
+ *    this example.
  *
  * ** Note: Set the Input Resolution in MSP the same as your motor's Positioning
  *    Resolution spec if you'd like the pulses sent by ClearCore to command a

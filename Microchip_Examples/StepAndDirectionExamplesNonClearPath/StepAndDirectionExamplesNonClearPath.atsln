@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Atmel Studio Solution File, Format Version 11.00
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "StepAndDirection (non-ClearPath)", "StepAndDirection (non-ClearPath)\StepAndDirection (non-ClearPath).cppproj", "{92CA1B77-8EFE-4ED5-A822-E17D8B8BD833}"
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "StepAndDirection (non-ClearPath)", "StepAndDirectionNonClearPath\StepAndDirectionNonClearPath.cppproj", "{92CA1B77-8EFE-4ED5-A822-E17D8B8BD833}"
 EndProject
 Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "ClearCore", "..\..\libClearCore\ClearCore.cppproj", "{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}"
 EndProject

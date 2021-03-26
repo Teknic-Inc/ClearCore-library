@@ -142,11 +142,17 @@ int main() {
  *    int commandedVelocity  - The velocity to command
  *
  * Returns: True/False depending on whether the velocity was successfully
- * commanded.
+ *    commanded.
  */
 bool CommandVelocity(int32_t commandedVelocity) {
     if (abs(commandedVelocity) > maxVelocity) {
         SerialPort.SendLine("Move rejected, invalid velocity requested.");
+        return false;
+    }
+
+    // Check if an alert is currently preventing motion
+    if (motor.StatusReg().bit.AlertsPresent) {
+        SerialPort.SendLine("Motor status: 'In Alert'. Move Canceled.");
         return false;
     }
 

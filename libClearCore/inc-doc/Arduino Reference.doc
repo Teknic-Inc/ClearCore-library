@@ -26,21 +26,21 @@ This section serves as a reference guide for the ClearCore Arduino wrapper funct
 <tr><td>#ConnectorCOM0 <td><center>Serial0</center>
 <tr><td>#ConnectorCOM1 <td><center>Serial1</center>
 </table>
+<br>
 
 <table>
 <caption>ClearCore motor input aliases</caption>
 <tr><th>Name<th>Arduino Alias
-<tr><td> <td><center>IO0</center>
-<tr><td>M-0 Input A <td><center>M0INA</center>
-<tr><td>M-0 Input B <td><center>M0INB</center>
-<tr><td>M-1 Input A <td><center>M1INA</center>
-<tr><td>M-1 Input B <td><center>M1INB</center>
-<tr><td>M-2 Input A <td><center>M2INA</center>
-<tr><td>M-2 Input B <td><center>M2INB</center>
-<tr><td>M-3 Input A <td><center>M3INA</center>
-<tr><td>M-3 Input B <td><center>M3INB</center>
+<tr><td>M-0 Input A <td><center>M0_INA</center>
+<tr><td>M-0 Input B <td><center>M0_INB</center>
+<tr><td>M-1 Input A <td><center>M1_INA</center>
+<tr><td>M-1 Input B <td><center>M1_INB</center>
+<tr><td>M-2 Input A <td><center>M2_INA</center>
+<tr><td>M-2 Input B <td><center>M2_INB</center>
+<tr><td>M-3 Input A <td><center>M3_INA</center>
+<tr><td>M-3 Input B <td><center>M3_INB</center>
 </table>
-
+<br>
 
 <h2> SDK Examples </h2>
 As part of the Arduino installation package a number of examples sketches are included. These sketches demonstrate how to utilize the various features of ClearCore using standard Arduino functions and classes. The examples may be found in the Arduino IDE under the Examples menu, as seen below:

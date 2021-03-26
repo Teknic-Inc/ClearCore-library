@@ -30,9 +30,11 @@
  *      checkbox directly below it labeled "Has Detents").
  *    * On the main MSP window set the dropdown labeled "On Enable..." to be
  *      "Zero Velocity".
- *    * Set the HLFB mode to "ASG-Velocity" (select Advanced>>High Level
- *      Feedback [Mode]... then choose "All Systems Go (ASG) - Velocity" from
- *      the dropdown and hit the OK button).
+ *    * Set the HLFB mode to "ASG-Velocity w/Measured Torque" with a PWM carrier
+ *      frequency of 482 Hz through the MSP software (select Advanced>>High
+ *      Level Feedback [Mode]... then choose "ASG-Velocity w/Measured Torque" 
+ *      from the dropdown, make sure that 482 Hz is selected in the "PWM Carrier
+ *      Frequency" dropdown, and hit the OK button).
  *
  * Links:
  * ** ClearCore Documentation: https://teknic-inc.github.io/ClearCore-library/
@@ -80,6 +82,11 @@ int main() {
     // mode.
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
                           Connector::CPM_MODE_A_DIRECT_B_DIRECT);
+
+    // Set the motor's HLFB mode to bipolar PWM
+    motor.HlfbMode(MotorDriver::HLFB_MODE_HAS_BIPOLAR_PWM);
+    // Set the HFLB carrier frequency to 482 Hz
+    motor.HlfbCarrier(MotorDriver::HLFB_CARRIER_482_HZ);
 
     // Enforces the state of the motor's A and B inputs before enabling
     // the motor.
@@ -155,6 +162,12 @@ bool MoveAtVelocity(double velocity) {
         SerialPort.Send("An invalid velocity of ");
         SerialPort.Send(velocity);
         SerialPort.SendLine(" RPM has been requested.");
+        return false;
+    }
+
+    // Check if an alert is currently preventing motion
+    if (motor.StatusReg().bit.AlertsPresent) {
+        SerialPort.SendLine("Motor status: 'In Alert'. Move Canceled.");
         return false;
     }
 

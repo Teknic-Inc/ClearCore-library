@@ -3,7 +3,7 @@
  *
  * Objective:
  *    This example demonstrates control of a ClearPath motor in Step and
- *    Direction mode.
+ *    Direction mode, making velocity moves.
  *
  * Description:
  *    This example enables a ClearPath then commands a series of repeating
@@ -13,19 +13,17 @@
  * 1. A ClearPath motor must be connected to Connector M-0.
  * 2. The connected ClearPath motor must be configured through the MSP software
  *    for Step and Direction mode (In MSP select Mode>>Step and Direction).
- * 3. The ClearPath motor must be set to use the HLFB mode "ASG-Position"
- *    through the MSP software (select Advanced>>High Level Feedback [Mode]...
- *    then choose "All Systems Go (ASG) - Position" from the dropdown and hit
- *    the OK button).
+ * 3. The ClearPath motor must be set to use the HLFB mode "ASG-Position
+ *    w/Measured Torque" with a PWM carrier frequency of 482 Hz through the MSP
+ *    software (select Advanced>>High Level Feedback [Mode]... then choose
+ *    "ASG-Position w/Measured Torque" from the dropdown, make sure that 482 Hz
+ *    is selected in the "PWM Carrier Frequency" dropdown, and hit the OK
+ *    button).
  * 4. Set the Input Format in MSP for "Step + Direction".
  *
- * ** Note: Homing is optional, and not required in this operational mode or in
- *    this example. This example makes its first move in the positive direction,
- *    assuming any homing move occurs in the negative direction.
- *
  * ** Note: Set the Input Resolution in MSP the same as your motor's Positioning
- *    Resolution spec if you'd like the pulses sent by ClearCore to command a
- *    move of the same number of Encoder Counts, a 1:1 ratio.
+ *    Resolution spec if you'd like the pulse frequency sent by ClearCore to 
+ *    command the same frequency in motor encoder counts/sec, a 1:1 ratio.
  *
  * Links:
  * ** ClearCore Documentation: https://teknic-inc.github.io/ClearCore-library/
@@ -50,14 +48,13 @@
 // Specify which serial to use: ConnectorUsb, ConnectorCOM0, or ConnectorCOM1.
 #define SerialPort ConnectorUsb
 
-// Define the velocity and acceleration limits to be used for each move
-int32_t velocityLimit = 10000; // pulses per sec
+// Define the acceleration limit to be used for each move
 int32_t accelerationLimit = 100000; // pulses per sec^2
 
 // Declares our user-defined helper function, which is used to command moves to
 // the motor. The definition/implementation of this function is at the  bottom
 // of the example
-void MoveAtVelocity(int32_t velocity);
+bool MoveAtVelocity(int32_t velocity);
 
 int main() {
     // Sets the input clocking rate. This normal rate is ideal for ClearPath
@@ -68,8 +65,10 @@ int main() {
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
                           Connector::CPM_MODE_STEP_AND_DIR);
 
-    // Sets the maximum velocity for each move
-    motor.VelMax(velocityLimit);
+    // Set the motor's HLFB mode to bipolar PWM
+    motor.HlfbMode(MotorDriver::HLFB_MODE_HAS_BIPOLAR_PWM);
+    // Set the HFLB carrier frequency to 482 Hz
+    motor.HlfbCarrier(MotorDriver::HLFB_CARRIER_482_HZ);
 
     // Set the maximum acceleration for each move
     motor.AccelMax(accelerationLimit);
@@ -97,19 +96,19 @@ int main() {
     SerialPort.SendLine("Motor Ready");
 
     while (true) {
-        // Move at 20,000 counts/sec, then wait 2000ms
-        MoveAtVelocity(20000);
+        // Move at 1,000 steps/sec for 2000ms
+        MoveAtVelocity(1000);
         Delay_ms(2000);
-        // Move at -40,000 counts/sec, then wait 2000ms
-        MoveAtVelocity(-40000);
+        // Move at -5,000 steps/sec for 2000ms
+        MoveAtVelocity(-5000);
         Delay_ms(2000);
-        // Move at 10,000 counts/sec, then wait 2000ms
+        // Move at 10,000 steps/sec for 2000ms
         MoveAtVelocity(10000);
         Delay_ms(2000);
-        // Increase speed to 15,000 counts/sec, then wait 2000ms
-        MoveAtVelocity(15000);
+        // Move at -10,000 steps/sec for 2000ms
+        MoveAtVelocity(-10000);
         Delay_ms(2000);
-        // Command a 0 counts/sec velocity to stop motion, then wait 2000ms
+        // Command a 0 steps/sec velocity to stop motion for 2000ms
         MoveAtVelocity(0);
         Delay_ms(2000);
     }
@@ -122,15 +121,32 @@ int main() {
  *    Prints the move status to the USB serial port
  *
  * Parameters:
- *    int velocity  - The velocity, in step pulses/sec, to command
+ *    int velocity  - The velocity, in step steps/sec, to command
  *
  * Returns: None
  */
-void MoveAtVelocity(int32_t velocity) {
-    SerialPort.Send("Moving at velocity: ");
+bool MoveAtVelocity(int32_t velocity) {
+    // Check if an alert is currently preventing motion
+    if (motor.StatusReg().bit.AlertsPresent) {
+        SerialPort.SendLine("Motor status: 'In Alert'. Move Canceled.");
+        return false;
+    }
+
+    SerialPort.Send("Commanding velocity: ");
     SerialPort.SendLine(velocity);
 
     // Command the velocity move
     motor.MoveVelocity(velocity);
+
+    // Waits for the step command to ramp up/down to the commanded velocity. 
+    // This time will depend on your Acceleration Limit.
+    SerialPort.SendLine("Ramping to speed...");
+    while (!motor.StatusReg().bit.AtTargetVelocity) {
+        continue;
+    }
+
+    SerialPort.SendLine("At Speed");
+    return true;
 }
 //------------------------------------------------------------------------------
+

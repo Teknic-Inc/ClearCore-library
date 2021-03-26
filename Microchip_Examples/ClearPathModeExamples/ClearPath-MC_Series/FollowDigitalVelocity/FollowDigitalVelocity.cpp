@@ -1,4 +1,4 @@
-/*
+/* 
  * Title: FollowDigitalVelocity
  *
  * Objective:
@@ -9,14 +9,10 @@
  *    This example enables a ClearPath motor and executes velocity moves based
  *    on the state of an analog input sensor. During operation, various move
  *    statuses are written to the USB serial port.
- *    This example does not use HLFB for motor feedback. It is possible your
- *    commanded velocity is not reached before a new velocity is commanded.
- *    The resolution for PWM outputs is 8-bit, meaning 256 discrete speeds
- *    can be commanded in each direction. The motor's actual commanded speed may
- *    differ from what you input below because of this.
- *    Consider using Manual Velocity Control mode if greater velocity command
- *    resolution is required, or if HLFB is needed for "move done/at speed"
- *    status feedback.
+ *    Consider using Manual Velocity Control mode instead if you do not wish to 
+ *    use an analog sensor to command velocity, if you require greater velocity 
+ *    command resolution (i.e. more commandable positions), or if HLFB is needed 
+ *    for "move done/at speed" status feedback.
  *
  * Requirements:
  * 1. A ClearPath motor must be connected to Connector M-0.
@@ -34,8 +30,8 @@
  *    select Advanced>>Input A, B Filtering... then in the Settings box fill in
  *    the textbox labeled "Input A Filter Time Constant (msec)" then hit the OK
  *    button).
- * 6. An analog sensor connected to one of the analog inputs (A-9 through A-12)
- *    to control motor velocity. Define the appropriate connector below.
+ * 6. An analog input source (0-10V) connected to ConnectorA9 to control
+ *    motor velocity.
  *
  *
  * Links:
@@ -55,7 +51,7 @@
 // Defines the motor's connector as ConnectorM0
 #define motor ConnectorM0
 
-// Defines the analog input to control commanded position
+// Defines the analog input to control commanded velocity
 #define AnalogSensor ConnectorA9
 
 // The INPUT_A_FILTER must match the Input A filter setting in MSP
@@ -68,7 +64,7 @@
 // Specify which serial to use: ConnectorUsb, ConnectorCOM0, or ConnectorCOM1.
 #define SerialPort ConnectorUsb
 
-// This is the commanded speed limit (must match the MSP value). This speed
+// This is the commanded speed limit in RPM (must match the MSP value). This speed
 // cannot actually be commanded, so use something slightly higher than your real
 // max speed here and in MSP
 double maxSpeed = 510;
@@ -79,7 +75,7 @@ double maxSpeed = 510;
 bool CommandVelocity(int32_t commandedVelocity);
 
 int main() {
-    // Set up an analog sensor to control commanded position.
+    // Set up an analog sensor to control commanded velocity.
     AnalogSensor.Mode(Connector::INPUT_ANALOG);
 
     // Sets all motor connectors to the correct mode for Follow Digital
@@ -102,25 +98,15 @@ int main() {
     motor.EnableRequest(true);
     SerialPort.SendLine("Motor Enabled");
 
-    // Waits for 5 seconds to allow the motor to come up to speed
-    SerialPort.SendLine("Waiting for motor to reach speed...");
-    startTime = Milliseconds();
-    while (Milliseconds() - startTime < timeout) {
-        continue;
-    }
-    SerialPort.SendLine("Motor Ready");
-
     while (true) {
         // Read the voltage on the analog sensor (0-10V).
         float analogVoltage = AnalogSensor.AnalogVoltage();
-        // Convert the voltage measured to a position within the valid range.
+        // Convert the voltage measured to a velocity within the valid range.
         int32_t commandedVelocity =
             static_cast<int32_t>(round(analogVoltage / 10 * maxSpeed));
 
         // Move at the commanded velocity.
         CommandVelocity(commandedVelocity);    // See below for the detailed function definition.
-        // Wait 5000ms.
-        Delay_ms(5000);
     }
 }
 
@@ -129,18 +115,22 @@ int main() {
  *
  *    Command the motor to move using a velocity of commandedVelocity
  *    Prints the move status to the USB serial port
- *    Returns when HLFB asserts (indicating the motor has reached the commanded
- *    velocity)
  *
  * Parameters:
  *    int commandedVelocity  - The velocity to command
  *
  * Returns: True/False depending on whether the velocity was successfully
- * commanded.
+ *    commanded.
  */
 bool CommandVelocity(int32_t commandedVelocity) {
-    if (abs(commandedVelocity) > abs(maxSpeed)) {
-        SerialPort.SendLine("Move rejected, requested velocity over the limit.");
+    if (abs(commandedVelocity) >= abs(maxSpeed)) {
+        SerialPort.SendLine("Move rejected, requested velocity at or over the limit.");
+        return false;
+    }
+
+    // Check if an alert is currently preventing motion
+    if (motor.StatusReg().bit.AlertsPresent) {
+        SerialPort.SendLine("Motor status: 'In Alert'. Move Canceled.");
         return false;
     }
 
@@ -148,7 +138,10 @@ bool CommandVelocity(int32_t commandedVelocity) {
     SerialPort.SendLine(commandedVelocity);
 
     // Change ClearPath's Input A state to change direction.
-    if (commandedVelocity > 0) {
+    // Note: this section of code was included so this commandVelocity function 
+    // could be used to command negative (opposite direction) velocity. However the 
+    // analog signal used by this example only commands positive velocities.
+    if (commandedVelocity >= 0) {
         motor.MotorInAState(false);
     }
     else {

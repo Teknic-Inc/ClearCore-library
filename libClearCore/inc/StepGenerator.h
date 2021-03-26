@@ -89,6 +89,8 @@ public:
         should be done. Absolute or relative to the end position of the current
         move. Invalid will result in move relative to the end position.
         Default: MOVE_TARGET_REL_END_POSN
+
+        \note For use with Step and Direction mode.
     **/
     virtual bool Move(int32_t dist,
                       MoveTarget moveTarget = MOVE_TARGET_REL_END_POSN);
@@ -105,6 +107,8 @@ public:
         velocity.
 
         \param[in] velocity The velocity of the move in step pulses/second.
+
+        \note For use with Step and Direction mode.
     **/
     virtual bool MoveVelocity(int32_t velocity);
 
@@ -119,11 +123,13 @@ public:
     void MoveStopAbrupt();
 
     /**
-        Interrupts the current move; Slows the motor at the quicker of
-        the EStopDecelMax rate that was set when the moves was issued and
-        the current move's accel rate.
-        If the EStopDecelMax value should be updated before stopping,
-        it can be changed using the decelMax parameter.
+        Interrupts any current move and commands the motor to stop. The stopping
+        acceleration used will be the higher of either
+        - 1) the move's current acceleration rate, or
+        - 2) the value of #EStopDecelMax.
+
+        This function's \a decelMax parameter can be used to update the
+        #EStopDecelMax value used for stopping.
 
         \code{.cpp}
         // Ramp to a stop at a decel rate of 100000 pulses/sec^2
@@ -175,15 +181,12 @@ public:
         \endcode
 
         \return Returns the momentary commanded velocity.
-        /note Velocity changes as the motor accelerates and decelerates, this
-        should not be used to track the motion of the motor
     **/
     int32_t VelocityRefCommanded();
 
     /**
-        \brief Sets the maximum velocity in step pulses per second.
-
-        Value will be clipped if out of bounds
+        \brief Sets the maximum velocity for position moves, in step pulses per
+        second.
 
         \code{.cpp}
         // Set the StepGenerator's maximum velocity to 1200 step pulses/sec

@@ -47,7 +47,9 @@ namespace ClearCore {
         - [Ramp Up/Down To Selected Velocity](@ref ClearPathModeExamples/ClearPath-MC_Series/RampUpDownToSelectedVelocity/RampUpDownToSelectedVelocity.cpp)
     
     <h3>ClearPath-SD Series</h3>
-        - [SingleAxis](@ref ClearPathModeExamples/ClearPath-SD_Series/SingleAxis/SingleAxis.cpp)
+        - [SingleAxis, MovePositionAbsolute](@ref ClearPathModeExamples/ClearPath-SD_Series/MovePositionAbsolute/MovePositionAbsolute.cpp)
+        - [SingleAxis, MovePositionRelative](@ref ClearPathModeExamples/ClearPath-SD_Series/MovePositionRelative/MovePositionRelative.cpp)
+        - [SingleAxis, MoveVelocity](@ref ClearPathModeExamples/ClearPath-SD_Series/MoveVelocity/MoveVelocity.cpp)
         - [Dual Axis, Synchronized Motion](@ref ClearPathModeExamples/ClearPath-SD_Series/DualAxisSynchronized/DualAxisSynchronized.cpp)
         - [Homing, User Seeks Home](@ref ClearPathModeExamples/ClearPath-SD_Series/UserSeeksHome/UserSeeksHome.cpp)
         - [Motor Status Register](@ref ClearPathModeExamples/ClearPath-SD_Series/MotorStatusRegister/MotorStatusRegister.cpp)
@@ -55,6 +57,9 @@ namespace ClearCore {
     <h3>High-Level Feedback (HLFB)</h3>
         - [ASG With Measured Torque](@ref ClearPathModeExamples/High-Level_Feedback_HLFB/AsgWithMeasuredTorque/AsgWithMeasuredTorque.cpp)
         - [Speed Output](@ref ClearPathModeExamples/High-Level_Feedback_HLFB/SpeedOutput/SpeedOutput.cpp)
+
+<h2>Encoder Input Example</h2>
+    - [Follow Encoder](@ref EncoderInputExamples/FollowEncoder/FollowEncoder.cpp)
 
 <h2>Ethernet Example</h2>
     - [UDP Hello World](@ref EthernetExamples/EthernetUdpHelloWorld/EthernetUdpHelloWorld.cpp)
@@ -66,8 +71,8 @@ namespace ClearCore {
     - [SPI Serial Display](@ref SerialCommExamples/SpiSerialDisplay/SpiSerialDisplay.cpp)
     - [TTL Serial Display](@ref SerialCommExamples/TtlSerialDisplay/TtlSerialDisplay.cpp)
     
-<h2>Step And Direction Example</h2>
-    - [Step And Direction](@ref StepAndDirectionExamples/StepAndDirection/StepAndDirection.cpp)
+<h2>Step And Direction Example (non-ClearPath)</h2>
+    - [Step And Direction](@ref StepAndDirectionExamplesNonClearPath/StepAndDirectionNonClearPath/StepAndDirection.cpp)
 **/
 
 /**
@@ -184,7 +189,15 @@ namespace ClearCore {
 **/
 
 /**
-    \example ClearPathModeExamples/ClearPath-SD_Series/SingleAxis/SingleAxis.cpp
+    \example ClearPathModeExamples/ClearPath-SD_Series/MovePositionAbsolute/MovePositionAbsolute.cpp
+    Return to \ref SdkExamples
+**/
+/**
+    \example ClearPathModeExamples/ClearPath-SD_Series/MovePositionRelative/MovePositionRelative.cpp
+    Return to \ref SdkExamples
+**/
+/**
+    \example ClearPathModeExamples/ClearPath-SD_Series/MoveVelocity/MoveVelocity.cpp
     Return to \ref SdkExamples
 **/
 /**
@@ -206,6 +219,11 @@ namespace ClearCore {
 **/
 /**
     \example ClearPathModeExamples/High-Level_Feedback_HLFB/SpeedOutput/SpeedOutput.cpp
+    Return to \ref SdkExamples
+**/
+
+/**
+    \example EncoderInputExamples/FollowEncoder/FollowEncoder.cpp
     Return to \ref SdkExamples
 **/
 
@@ -236,7 +254,7 @@ namespace ClearCore {
 **/
 
 /**
-    \example StepAndDirectionExamples/StepAndDirection/StepAndDirection.cpp
+    \example StepAndDirectionExamplesNonClearPath/StepAndDirectionNonClearPath/StepAndDirection.cpp
     Return to \ref SdkExamples
 **/
 //********************************************************************************************

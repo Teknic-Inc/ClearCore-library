@@ -24,8 +24,7 @@
  * 3. The connected ClearPath motor must have its HLFB mode set to "Speed Output"
  *    (select Advanced>>High Level Feedback [Mode]... then choose "Speed Output"
  *    from the dropdown and hit the OK button).
- *    Select a 45 Hz PWM Carrier Frequency in this menu for the most accurate
- *    speed measurements.
+ *    Select a 482 Hz PWM Carrier Frequency in this menu.
  *
  * Links:
  * ** ClearCore Documentation: https://teknic-inc.github.io/ClearCore-library/
@@ -52,6 +51,8 @@ int main() {
     // Put the motor connector into the correct HLFB mode to read the Speed
     // Output PWM signal and convert it to percent of Max Speed.
     motor.HlfbMode(MotorDriver::HLFB_MODE_HAS_PWM);
+    // Set the HFLB carrier frequency to 482 Hz
+    motor.HlfbCarrier(MotorDriver::HLFB_CARRIER_482_HZ);
 
     // Set up serial communication at a baud rate of baudRate (9600 bps) then
     // wait up to 5 seconds for a port to open.

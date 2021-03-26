@@ -204,9 +204,12 @@ public:
         HLFB_MODE_HAS_BIPOLAR_PWM
     } HlfbModes;
 
+    /**
+        \brief High-Level Feedback (HLFB) carrier frequency: 45 Hz or 482 Hz
+    **/
     typedef enum {
-	    HLFB_CARRIER_45_HZ,
-	    HLFB_CARRIER_482_HZ
+        HLFB_CARRIER_45_HZ,
+        HLFB_CARRIER_482_HZ
     } HlfbCarrierFrequency;
 
     /**
@@ -243,7 +246,7 @@ public:
         \union StatusRegMotor
 
         \brief Register access for information about the motor's operating
-        status.
+        status. Intended for use in Step and Direction mode.
     **/
     union StatusRegMotor {
         /**
@@ -337,6 +340,7 @@ public:
         \union AlertRegMotor
 
         \brief Accumulating register of alerts that have occurred on this motor.
+         Intended for use in Step and Direction mode.
     **/
     union AlertRegMotor {
         /**
@@ -403,7 +407,14 @@ public:
         Verify that the motor is in a good state before sending a move command.
 
         \return True if the motor is ready for a move command; false if there
-        is a configuration setting or error that would (or should) prevent motion.
+        is a configuration setting or error that would (or should) prevent
+        motion.
+
+        \note For use with Step and Direction mode.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     bool ValidateMove(bool negDirection);
 
@@ -476,6 +487,8 @@ public:
         \endcode
 
         \return The current state of Input A
+
+        \note For use with ClearPath-MC.
     **/
     bool MotorInAState();
 
@@ -488,6 +501,8 @@ public:
         \endcode
 
         \param[in] value The boolean state to be passed to the input
+
+        \note For use with ClearPath-MC.
     **/
     bool MotorInAState(bool value);
 
@@ -501,6 +516,8 @@ public:
         \endcode
 
         \return The current state of Input B
+
+        \note For use with ClearPath-MC.
     **/
     bool MotorInBState();
 
@@ -513,6 +530,8 @@ public:
         \endcode
 
         \param[in] value The boolean state to be passed to the input
+
+        \note For use with ClearPath-MC.
     **/
     bool MotorInBState(bool value);
 
@@ -555,6 +574,8 @@ public:
         \endcode
 
         \param[in] duty The PWM duty cycle
+
+        \note For use with ClearPath-MC.
     **/
     bool MotorInADuty(uint8_t duty);
 
@@ -568,6 +589,8 @@ public:
         \endcode
 
         \param[in] duty The PWM duty cycle
+
+        \note For use with ClearPath-MC.
     **/
     bool MotorInBDuty(uint8_t duty);
 
@@ -668,6 +691,9 @@ public:
 
         \return Returns #HLFB_DUTY_UNKNOWN number if no update has been
         detected.
+
+        \note The correct HLFB carrier frequency must be set using
+        #HlfbCarrier().
     **/
     volatile const float &HlfbPercent() {
         return m_hlfbDuty;
@@ -738,23 +764,59 @@ public:
         return DigitalIn::InputFallen();
     }
 
+    /**
+        \brief Set the HLFB carrier frequency signal.
+
+        \code{.cpp}
+        // Set motor M-0 to use the higher HFLB carrier frequency (482 Hz)
+        ConnectorM0.HlfbCarrier(MotorDriver::HLFB_CARRIER_482_HZ);
+        \endcode
+
+        \return True if the HLFB carrier frequency was correctly set
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
+    **/
     bool HlfbCarrier(HlfbCarrierFrequency freq) {
         switch (freq) {
             case HLFB_CARRIER_45_HZ:
-            m_hlfbCarrierLossStateChange_ms =
-            HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ;
-            break;
+                m_hlfbCarrierLossStateChange_ms =
+                    HLFB_CARRIER_LOSS_STATE_CHANGE_MS_45_HZ;
+                break;
             case HLFB_CARRIER_482_HZ:
-            m_hlfbCarrierLossStateChange_ms =
-            HLFB_CARRIER_LOSS_STATE_CHANGE_MS_482_HZ;
-            break;
+                m_hlfbCarrierLossStateChange_ms =
+                    HLFB_CARRIER_LOSS_STATE_CHANGE_MS_482_HZ;
+                break;
             default:
-            return false;
+                return false;
         }
         m_hlfbCarrierFrequency = freq;
         return true;
     }
 
+    /**
+        \brief This motor's HLFB carrier frequency.
+
+        \code{.cpp}
+        // Do work that depends on the current HLFB carrier frequency
+        switch (ConnectorM0.HlfbCarrier()) {
+            case MotorDriver::HLFB_CARRIER_45_HZ:
+                // Slow HLFB carrier. Do something.
+                break;
+            case MotorDriver::HLFB_CARRIER_482_HZ:
+            default:
+                // Fast HLFB carrier. Do something else.
+                break;
+        }
+        \endcode
+
+        \return The HLFB carrier frequency.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
+    **/
     HlfbCarrierFrequency HlfbCarrier() {
         return m_hlfbCarrierFrequency;
     }
@@ -826,7 +888,8 @@ public:
     }
 
     /**
-        \brief Clear the Motor Alert Register
+        \brief Clear the Motor Alert Register. Motion will be prevented if any
+        Alert Register bits are set.
 
         \code{.cpp}
         // Clear any alerts that have accumulated for M-0.
@@ -887,9 +950,11 @@ public:
         \brief Set the associated brake output connector.
 
         Brake output mode uses HLFB readings from a connected ClearPath motor
-        to energize or de-energize a connected brake. The motor connectors M-0
-        through M-3 can be mapped to any of the ClearCore outputs IO-0 through
-        IO-5, or to any attached CCIO-8 output pin.
+        to energize or de-energize a connected brake. HLFB must be configured
+        for either "ASG with Measured Torque" or "Servo On" for the automatic
+        brake to function correctly. The motor connectors M-0 through M-3
+        can be mapped to any of the ClearCore outputs IO-0 through IO-5, or to
+        any attached CCIO-8 output pin.
 
         \code{.cpp}
         if (ConnectorM0.BrakeOutput(CLEARCORE_PIN_IO2)) {
@@ -910,6 +975,10 @@ public:
         \return True if the brake output was successfully set and enabled, or
         successfully disabled; false if a pin other than CLEARCORE_PIN_INVALID
         was supplied that isn't a valid digital output pin.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     bool BrakeOutput(ClearCorePins pin);
 
@@ -917,9 +986,11 @@ public:
         \brief Get the associated brake output connector.
 
         Brake output mode uses HLFB readings from a connected ClearPath motor
-        to energize or de-energize a connected brake. The motor connectors M-0
-        through M-3 can be mapped to any of the ClearCore outputs IO-0 through
-        IO-5, or to any attached CCIO-8 output pin.
+        to energize or de-energize a connected brake. HLFB must be configured
+        for either "ASG with Measured Torque" or "Servo On" for the automatic
+        brake to function correctly. The motor connectors M-0 through M-3
+        can be mapped to any of the ClearCore outputs IO-0 through IO-5, or to
+        any attached CCIO-8 output pin.
 
         \code{.cpp}
         if (ConnectorM0.BrakeOutput() == CLEARCORE_PIN_IO2) {
@@ -936,6 +1007,10 @@ public:
         \return The pin representing the digital output connector configured to
         be this motor's brake output, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     ClearCorePins BrakeOutput() {
         return m_brakeOutputPin;
@@ -944,8 +1019,9 @@ public:
     /**
         \brief Set the associated positive limit switch connector.
 
-        When the input is active on the connector associated with this
-        limit, all motion in the positive direction will be stopped.
+        When the input is deasserted (LED off) on the connector associated with
+        this limit, all motion in the positive direction will be stopped (i.e.
+        use a Normally Closed (NC) switch on this connector).
 
         \code{.cpp}
         if (ConnectorM0.LimitSwitchPos(CLEARCORE_PIN_IO2)) {
@@ -967,14 +1043,21 @@ public:
         enabled, or  successfully disabled; false if a pin other than
         CLEARCORE_PIN_INVALID was supplied that isn't a valid digital
         input pin.
+
+        \note For use with Step and Direction mode.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     bool LimitSwitchPos(ClearCorePins pin);
 
     /**
         \brief Get the associated positive limit switch output connector.
 
-        When the input is active on the connector associated with this
-        limit, all motion in the positive direction will be stopped.
+        When the input is deasserted (LED off) on the connector associated with
+        this limit, all motion in the positive direction will be stopped (i.e.
+        use a Normally Closed (NC) switch on this connector).
 
         \code{.cpp}
         if (ConnectorM0.LimitSwitchPos() == CLEARCORE_PIN_IO2) {
@@ -991,6 +1074,12 @@ public:
         \return The pin representing the digital output connector configured to
         be this motor's positive limit, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
+
+        \note For use with Step and Direction mode.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     ClearCorePins LimitSwitchPos() {
         return m_limitSwitchPos;
@@ -999,8 +1088,9 @@ public:
     /**
         \brief Set the associated negative limit switch connector.
 
-        When the input is active on the connector associated with this
-        limit, all motion in the negative direction will be stopped.
+        When the input is deasserted (LED off) on the connector associated with
+        this limit, all motion in the negative direction will be stopped (i.e.
+        use a Normally Closed (NC) switch on this connector).
 
         \code{.cpp}
         if (ConnectorM0.LimitSwitchNeg(CLEARCORE_PIN_IO2)) {
@@ -1022,14 +1112,21 @@ public:
         enabled, or  successfully disabled; false if a pin other than
         CLEARCORE_PIN_INVALID was supplied that isn't a valid digital
         input pin.
+
+        \note For use with Step and Direction mode.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     bool LimitSwitchNeg(ClearCorePins pin);
 
     /**
         \brief Get the associated negative limit switch output connector.
 
-        When the input is active on the connector associated with this
-        limit, all motion in the negative direction will be stopped.
+        When the input is deasserted (LED off) on the connector associated with
+        this limit, all motion in the negative direction will be stopped (i.e.
+        use a Normally Closed (NC) switch on this connector).
 
         \code{.cpp}
         if (ConnectorM0.LimitSwitchNeg() == CLEARCORE_PIN_IO2) {
@@ -1046,6 +1143,12 @@ public:
         \return The pin representing the digital output connector configured to
         be this motor's negative limit, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
+
+        \note For use with Step and Direction mode.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     ClearCorePins LimitSwitchNeg() {
         return m_limitSwitchNeg;
@@ -1081,6 +1184,10 @@ public:
         will control the state of this motor's enable signal.
 
         \return True if the enable connector was configured successfully.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     bool EnableConnector(ClearCorePins pin);
 
@@ -1098,6 +1205,10 @@ public:
         \return The pin representing the digital input connector configured to
         control this motor's enable signal, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     ClearCorePins EnableConnector() {
         return m_enableConnector;
@@ -1118,6 +1229,12 @@ public:
         will control the state of this motor's Input A signal.
 
         \return True if the Input A connector was configured successfully.
+
+        \note For use with ClearPath-MC.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     bool InputAConnector(ClearCorePins pin);
 
@@ -1135,6 +1252,12 @@ public:
         \return The pin representing the digital input connector configured to
         control this motor's Input A signal, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
+
+        \note For use with ClearPath-MC.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     ClearCorePins InputAConnector() {
         return m_inputAConnector;
@@ -1155,6 +1278,12 @@ public:
         will control the state of this motor's Input B signal.
 
         \return True if the Input B connector was configured successfully.
+
+        \note For use with ClearPath-MC.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     bool InputBConnector(ClearCorePins pin);
 
@@ -1172,6 +1301,12 @@ public:
         \return The pin representing the digital input connector configured to
         control this motor's Input B signal, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
+
+        \note For use with ClearPath-MC.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     ClearCorePins InputBConnector() {
         return m_inputBConnector;
@@ -1191,6 +1326,12 @@ public:
         will act as an E-Stop signal for this motor.
 
         \return True if the E-Stop connector was configured successfully.
+
+        \note For use with Step and Direction mode.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     bool EStopConnector(ClearCorePins pin);
 
@@ -1208,6 +1349,12 @@ public:
         \return The Pin representing the digital input connector configured as
         an E-Stop input for this motor, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
+
+        \note For use with Step and Direction mode.
+
+        \note Available with software version 1.1 or greater. See
+        \ref InstallationInstructions for information on updating library
+        versions.
     **/
     ClearCorePins EStopConnector() {
         return m_eStopConnector;
@@ -1309,6 +1456,8 @@ public:
         motor's Input A
 
         \param[in] count The PWM on time
+
+        \note For use with ClearPath-MC.
     **/
     bool MotorInACount(uint16_t count);
 
@@ -1317,6 +1466,8 @@ public:
         motor's Input B
 
         \param[in] count The PWM on time
+
+        \note For use with ClearPath-MC.
     **/
     bool MotorInBCount(uint16_t count);
 

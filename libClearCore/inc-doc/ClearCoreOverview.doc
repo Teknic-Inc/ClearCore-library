@@ -6,9 +6,10 @@ namespace ClearCore {
 # Introduction
     ClearCore is an industrial motion and I/O controller featuring flexible, software-configurable I/O with a rich C++ Motion and I/O library. This document serves as a reference guide for the library and the variety of functions used to interface with and control your ClearCore in a motion control application.
     
-    For ClearCore hardware documentation, including device specifications and I/O wiring examples, see the <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf">ClearCore Hardware Manual</a>.
+    For ClearCore hardware documentation, including device specifications and I/O wiring examples, see the <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf">ClearCore System Diagram</a>.
     
-# Informational Pages    - \ref ConnectorMain
+# Informational Pages
+    - \ref InstallationInstructions    - \ref ConnectorMain
     - \ref MotorDriverMain
         - \ref MoveGen
     - \ref UsbMain
@@ -64,7 +65,7 @@ namespace ClearCore {
     - \ref ArduinoRef
 
 # Hardware Reference
-    - Refer to the <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf">ClearCore Hardware Manual</a>.
+    - Refer to the <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf">ClearCore System Diagram</a>.
         - Jump to:
             - <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=1">Overview</a>
             - <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf#page=2">Connector Wiring</a>
@@ -238,21 +239,32 @@ This table is a quick way to tell which connectors support which functionalities
 
 <table>
 <caption>Connector functionality checklist</caption>
-<tr><td><th>Digital input<th>Analog input (0-10V)<th>Digital output<th>PWM output<th>H-Bridge digital output<th>Tone output<th>WAV file output<th>Bidirectional DC motor<th>Analog output (4-20mA and 0-20mA)
-<tr><td>#ConnectorIO0 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><td><td><td><td><center>x</center>
-<tr><td>#ConnectorIO1 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><td><td><td><td>
-<tr><td>#ConnectorIO2 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><td><td><td><td>
-<tr><td>#ConnectorIO3 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><td><td><td><td>
-<tr><td>#ConnectorIO4 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td>
-<tr><td>#ConnectorIO5 <td><center>x</center><td><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td><center>x</center><td>
-<tr><td>#ConnectorDI6 <td><center>x</center><td><td><td><td><td><td><td><td>
-<tr><td>#ConnectorDI7 <td><center>x</center><td><td><td><td><td><td><td><td>
-<tr><td>#ConnectorDI8 <td><center>x</center><td><td><td><td><td><td><td><td>
-<tr><td>#ConnectorA9 <td><center>x</center><td><center>x</center><td><td><td><td><td><td><td>
-<tr><td>#ConnectorA10 <td><center>x</center><td><center>x</center><td><td><td><td><td><td><td>
-<tr><td>#ConnectorA11 <td><center>x</center><td><center>x</center><td><td><td><td><td><td><td>
-<tr><td>#ConnectorA12 <td><center>x</center><td><center>x</center><td><td><td><td><td><td><td>
+<tr><td><th>Digital Input<th>Digital Output<sup>1</sup><th>0-10V Analog Input<th>4-20 mA Output<sup>2</sup><th>Servos or Steppers<th>Speaker Tones<th>DC Motor Drive
+<tr><td>#ConnectorIO0 <td><center>yes</center><td><center>yes</center><td><td><center>yes</center><td><td><td>
+<tr><td>#ConnectorIO1 <td><center>yes</center><td><center>yes</center><td><td><td><td><td>
+<tr><td>#ConnectorIO2 <td><center>yes</center><td><center>yes</center><td><td><td><td><td>
+<tr><td>#ConnectorIO3 <td><center>yes</center><td><center>yes</center><td><td><td><td><td>
+<tr><td>#ConnectorIO4 <td><center>yes</center><td><center>yes</center><td><td><td><td><center>yes</center><td><center>yes</center>
+<tr><td>#ConnectorIO5 <td><center>yes</center><td><center>yes</center><td><td><td><td><center>yes</center><td><center>yes</center>
+<tr><td>#ConnectorDI6 <td><center>yes</center><td><td><td><td><td><td>
+<tr><td>#ConnectorDI7 <td><center>yes</center><td><td><td><td><td><td>
+<tr><td>#ConnectorDI8 <td><center>yes</center><td><td><td><td><td><td>
+<tr><td>#ConnectorA9 <td><center>yes</center><td><td><center>yes</center><td><td><td><td>
+<tr><td>#ConnectorA10 <td><center>yes</center><td><td><center>yes</center><td><td><td><td>
+<tr><td>#ConnectorA11 <td><center>yes</center><td><td><center>yes</center><td><td><td><td>
+<tr><td>#ConnectorA12 <td><center>yes</center><td><td><center>yes</center><td><td><td><td>
+<tr><td>#ConnectorM0 <td><td><td><td><td><center>yes<sup>3</sup></center><td><td>
+<tr><td>#ConnectorM1 <td><td><td><td><td><center>yes<sup>3</sup></center><td><td>
+<tr><td>#ConnectorM2 <td><td><td><td><td><center>yes<sup>3</sup></center><td><td>
+<tr><td>#ConnectorM3 <td><td><td><td><td><center>yes<sup>3</sup></center><td><td>
+<tr><td>CCIO-8<sup>4</sup><td><center>yes</center><td><center>yes</center><td><td><td><td><td>
 </table>
+<ul>
+    <li> Note 1: All digital outputs are PWM capable (except for those on the CCIO-8 expansion board).
+    <li> Note 2: This output can also provide 0-20mA, which is less commonly used.
+    <li> Note 3: Each motor connector has 3 digital outputs (step, dir., enable) and 1 digital input.
+    <li> Note 4: There are 8 of these I/O points on the CCIO-8 expansion module.
+</ul>
 **/
 //********************************************************************************************
 }
