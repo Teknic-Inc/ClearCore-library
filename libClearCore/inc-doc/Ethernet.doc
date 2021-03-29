@@ -139,7 +139,7 @@ namespace ClearCore {
                 EthernetTcpClient client = server.Available();
                 if (client.Connected()) {
                     // The server has returned a connected client with incoming data available.
-                    while (client.Available() > 0) {
+                    while (client.BytesAvailable() > 0) {
                         // Send the data received from the client over a serial port.
                         ConnectorCOM0.Send(client.Read());
                     }
