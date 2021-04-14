@@ -8,6 +8,11 @@ namespace ClearCore {
     
     For ClearCore hardware documentation, including device specifications and I/O wiring examples, see the <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf">ClearCore System Diagram</a>.
     
+    To get started, follow the ClearCore \ref InstallationInstructions.
+    SDK example projects and a Project Template can be found in the PC program
+    files after installing for Microchip Studio.
+    <pre style="font-family: Times">C:\Program Files (x86)\Teknic\ClearCore-Library x.x [where x.x is the version number]</pre>
+    
 # Informational Pages
     - \ref InstallationInstructions    - \ref ConnectorMain
     - \ref MotorDriverMain
