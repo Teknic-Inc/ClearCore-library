@@ -99,7 +99,7 @@ As part of the Arduino installation package a number of examples sketches are in
     - <a href="https://www.arduino.cc/reference/en/language/functions/digital-io/digitalread/" >Arduino.cc Reference</a>
     
 <h3> digitalWrite(pin, value) </h3>
-    - Valid pins: IO0, IO1, IO2, IO3, IO4, IO5, M0INA, M0INB, M1INA, M1INB, M2INA, M2INB, M3INA, M3INB
+    - Valid pins: IO0, IO1, IO2, IO3, IO4, IO5, M0_INA, M0_INB, M1_INA, M1_INB, M2_INA, M2_INB, M3_INA, M3_INB
     - Write a HIGH or a LOW value to a digital pin.
     - <a href="https://www.arduino.cc/reference/en/language/functions/digital-io/digitalwrite/" >Arduino.cc Reference</a>
     
