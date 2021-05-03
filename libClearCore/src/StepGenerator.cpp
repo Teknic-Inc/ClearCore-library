@@ -49,12 +49,13 @@ void StepGenerator::StepsCalculated() {
                          << FRACT_BITS;
 
         if (m_velocityMove) {
-            if (m_velTargetQx && m_velCurrentQx && m_direction != m_dirCommanded) {
+            if (m_altVelLimitQx && m_velCurrentQx && m_direction != m_dirCommanded) {
                 m_velTargetQx = 0;
                 m_moveDirChange = true;
             }
             else {
                 m_velTargetQx = m_altVelLimitQx;
+                m_moveDirChange = false;
             }
             if (m_velTargetQx) {
                 // Notify the system of the direction of the issued move
