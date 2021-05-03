@@ -72,12 +72,12 @@ public:
 
         \note When making absolute moves, ClearCore tracks the current position
         based on the zero position at program-start. If there is a move in
-        progress when a new Move is issued, the target position will be adjusted
-        according to the moveTarget parameter, the new acceleration and velocity
+        progress when a new move is issued, the target position will be adjusted
+        according to the \a moveTarget parameter, the new acceleration and velocity
         limits will be applied, and the new move is merged seamlessly with the
         previous motion. If you want to make sure that the previous move fully
-        completes without being merged with a new command, wait for StepsComplete
-        to return true.
+        completes without being merged with a new command, wait for
+        #StepsComplete() to return true.
 
         \code{.cpp}
         // Interrupt any on-going move and move to the absolute position 5000
