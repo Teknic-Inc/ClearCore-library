@@ -2,7 +2,8 @@ namespace ClearCore {
 /**
 \page SdkExamples SDK Examples for Microchip Studio
 <h1> Overview </h1>
-    
+These examples and a helpful Project Template will be located in your program files after installing for Microchip Studio.
+<pre style="font-family: Times">C:\Program Files (x86)\Teknic\ClearCore-Library x.x [where x.x is the version number]</pre>
     
 <h2>Analog I/O Examples</h2>
     - [Read Analog Input](@ref AnalogIOExamples/ReadAnalogInput/ReadAnalogInput.cpp)

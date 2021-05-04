@@ -226,9 +226,6 @@ private:
         WRITE_DATA,
     } WriteCacheState;
 
-    // Set to false outside of constructor too in case of read/write call before
-    // constructor is called.
-    bool m_cacheInitialized = false;
     // Page cache is a byte array.
     int8_t m_nvmPageCache[NVMCTRL_PAGE_SIZE];
     // The page cache gets written to NVM as 32-bit pieces
@@ -245,8 +242,7 @@ private:
     NvmManager();
 
     /**
-        \brief Populates the nvmPageCache from NVM and sets m_cacheInitialized
-        flag
+        \brief Populates the nvmPageCache from NVM
 
         \note Will try to lock the mutex, make sure the calling function has
         released the lock.

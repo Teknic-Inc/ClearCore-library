@@ -179,7 +179,10 @@ bool MoveAtVelocity(double velocity) {
     // new velocity is greater or less than the previously commanded velocity
     // If greater, Input A begins the quadrature. If less, Input B begins the
     // quadrature.
-    for (int32_t i = 0; i < abs(velocity - commandedVelocity) / velocityResolution; i++) {
+    int32_t currentVelocityRounded = round(commandedVelocity / velocityResolution);
+    int32_t targetVelocityRounded = round(velocity / velocityResolution);
+    int32_t velocityDifference = labs(targetVelocityRounded - currentVelocityRounded);
+    for (int32_t i = 0; i < velocityDifference; i++) {
         if (velocity > commandedVelocity) {
             // Toggle Input A to begin the quadrature signal.
             motor.MotorInAState(true);

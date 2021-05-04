@@ -14,10 +14,12 @@
  * 1. A ClearPath-SD motor must be connected to Connector M-0.
  * 2. The connected ClearPath motor must be configured through the MSP software
  *    for Step and Direction mode (In MSP select Mode>>Step and Direction).
- * 3. The ClearPath motor must be set to use the HLFB mode "ASG-Position"
- *    through the MSP software (select Advanced>>High Level Feedback [Mode]...
- *    then choose "All Systems Go (ASG) - Position" from the dropdown and hit
- *    the OK button).
+ * 3. The ClearPath motor must be set to use the HLFB mode "ASG-Position
+ *    w/Measured Torque" with a PWM carrier frequency of 482 Hz through the MSP
+ *    software (select Advanced>>High Level Feedback [Mode]... then choose
+ *    "ASG-Position w/Measured Torque" from the dropdown, make sure that 482 Hz
+ *    is selected in the "PWM Carrier Frequency" dropdown, and hit the OK
+ *    button).
  * 4. Set the Input Format in MSP for "Step + Direction".
  * 5. An external encoder much be wired to the CL-ENCRD-DFIN Encoder Adapter Board, 
  *    and the board connected to the ClearCore I/O Header. See the ClearCore User 
@@ -83,6 +85,13 @@ int main(void) {
 
     // Motor setup:
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL, Connector::CPM_MODE_STEP_AND_DIR);
+
+    // Set the motor's HLFB mode to bipolar PWM
+    ConnectorM0.HlfbMode(MotorDriver::HLFB_MODE_HAS_BIPOLAR_PWM);
+    // Set the HFLB carrier frequency to 482 Hz
+    ConnectorM0.HlfbCarrier(MotorDriver::HLFB_CARRIER_482_HZ);
+
+    // Set velocity and acceleration limits for each move
     ConnectorM0.VelMax(velocityLimit);
     ConnectorM0.AccelMax(accelerationLimit);
 
@@ -134,6 +143,12 @@ int main(void) {
         }
 
         lastIndexPosition = indexPosition;
+
+        // Check if an alert is currently preventing motion
+        if (ConnectorM0.StatusReg().bit.AlertsPresent) {
+            ConnectorUsb.SendLine("Motor status: 'In Alert'. Move Canceled.");
+            continue;
+        }
 
         if (followPosition) {
             // Move the motor to the current position read by the encoder
