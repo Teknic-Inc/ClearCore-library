@@ -27,7 +27,7 @@ namespace ClearCore {
     <i>Checking your current version number</i>
     <ol>
         <li> The library version can be found by checking this folder name:<br>
-        <pre style="font-family: Times">C:\Program Files (x86)\Teknic\ClearCore-Library <b>x.x</b></pre>
+        C:\\Program Files (x86)\\Teknic\\ClearCore-Library <b>x.x</b>
         where "x.x" is the version number.
     </ol>
     
@@ -39,8 +39,8 @@ namespace ClearCore {
         <li> Under the most recent release, download the Source Code .zip file.<br>
         <img src="assets.jpg">
         
-        <li> Extract this .zip file to this location:
-        <pre style="font-family: Times">C:\Program Files (x86)\Teknic</pre>
+        <li> Extract this .zip file to this location:<br>
+        C:\\Program Files (x86)\\Teknic
         
         <li> The newer version will now be included in your program files. Note: any older version is not removed by this process.<br>
         <img src="installed_versions.jpg">
