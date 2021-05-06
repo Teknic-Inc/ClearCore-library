@@ -1,0 +1,5 @@
+<map id="ClearCore::DigitalInOutAnalogOut" name="ClearCore::DigitalInOutAnalogOut">
+<area shape="rect" id="node2" href="$class_clear_core_1_1_digital_in_out.html" title="ClearCore digital output connector class. " alt="" coords="39,155,206,181"/>
+<area shape="rect" id="node3" href="$class_clear_core_1_1_digital_in.html" title="ClearCore digital input connector class. " alt="" coords="51,80,195,107"/>
+<area shape="rect" id="node4" href="$class_clear_core_1_1_connector.html" title="Base class for interacting with all ClearCore connector objects. " alt="" coords="43,5,202,32"/>
+</map>

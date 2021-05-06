@@ -1,0 +1,10 @@
+<map id="EthernetManager.h" name="EthernetManager.h">
+<area shape="rect" id="node4" href="$_ethernet_api_8h_source.html" title="EthernetApi.h" alt="" coords="146,80,255,107"/>
+<area shape="rect" id="node5" href="$_hardware_mapping_8h.html" title="HardwareMapping.h" alt="" coords="279,80,429,107"/>
+<area shape="rect" id="node10" href="$_ip_address_8h.html" title="IpAddress.h" alt="" coords="453,80,551,107"/>
+<area shape="rect" id="node12" href="$_phy_8h.html" title="Phy.h" alt="" coords="627,80,681,107"/>
+<area shape="rect" id="node13" href="$_sys_utils_8h.html" title="ClearCore common utility functions. " alt="" coords="671,155,757,181"/>
+<area shape="rect" id="node6" href="$_peripheral_route_8h.html" title="Defines the Peripheral Route structure, used in HardwareMapping. " alt="" coords="253,155,388,181"/>
+<area shape="rect" id="node7" href="$_connector_8h.html" title="Base class for all connector classes. " alt="" coords="413,155,511,181"/>
+<area shape="rect" id="node8" href="$_sys_connectors_8h.html" title="SysConnectors.h" alt="" coords="397,229,527,256"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="ClearCore::SerialBase" name="ClearCore::SerialBase">
+<area shape="rect" id="node3" href="$class_clear_core_1_1_sd_card_driver.html" title="ClearCore SD card interface. " alt="" coords="5,155,184,181"/>
+<area shape="rect" id="node4" href="$class_clear_core_1_1_serial_driver.html" title="ClearCore Serial UART/SPI Connector class. " alt="" coords="209,155,375,181"/>
+<area shape="rect" id="node5" href="$class_clear_core_1_1_x_bee_driver.html" title="ClearCore XBee Interface. " alt="" coords="399,155,563,181"/>
+<area shape="rect" id="node2" href="$class_clear_core_1_1_i_serial.html" title="Base class for interacting with all ClearCore serial. " alt="" coords="226,5,358,32"/>
+</map>

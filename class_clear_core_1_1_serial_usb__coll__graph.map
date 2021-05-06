@@ -1,0 +1,4 @@
+<map id="ClearCore::SerialUsb" name="ClearCore::SerialUsb">
+<area shape="rect" id="node2" href="$class_clear_core_1_1_i_serial.html" title="Base class for interacting with all ClearCore serial. " alt="" coords="5,5,137,32"/>
+<area shape="rect" id="node3" href="$class_clear_core_1_1_connector.html" title="Base class for interacting with all ClearCore connector objects. " alt="" coords="161,5,320,32"/>
+</map>

@@ -1,0 +1,12 @@
+<map id="ClearCore::Connector" name="ClearCore::Connector">
+<area shape="rect" id="node2" href="$class_clear_core_1_1_ccio_pin.html" title="Connector class for an individual CCIO&#45;8 pin. " alt="" coords="226,5,365,32"/>
+<area shape="rect" id="node3" href="$class_clear_core_1_1_digital_in.html" title="ClearCore digital input connector class. " alt="" coords="223,56,367,83"/>
+<area shape="rect" id="node9" href="$class_clear_core_1_1_led_driver.html" title="ClearCore LED control class. " alt="" coords="218,107,373,133"/>
+<area shape="rect" id="node10" href="$class_clear_core_1_1_serial_driver.html" title="ClearCore Serial UART/SPI Connector class. " alt="" coords="212,157,379,184"/>
+<area shape="rect" id="node11" href="$class_clear_core_1_1_serial_usb.html" title="ClearCore Serial USB Connector class. " alt="" coords="218,208,373,235"/>
+<area shape="rect" id="node4" href="$class_clear_core_1_1_digital_in_analog_in.html" title="ClearCore analog input connector class. " alt="" coords="427,5,625,32"/>
+<area shape="rect" id="node5" href="$class_clear_core_1_1_digital_in_out.html" title="ClearCore digital output connector class. " alt="" coords="443,56,609,83"/>
+<area shape="rect" id="node8" href="$class_clear_core_1_1_motor_driver.html" title="ClearCore motor connector class. " alt="" coords="442,107,610,133"/>
+<area shape="rect" id="node6" href="$class_clear_core_1_1_digital_in_out_analog_out.html" title="ClearCore digital input/output with analog current output Connector class. " alt="" coords="673,31,908,57"/>
+<area shape="rect" id="node7" href="$class_clear_core_1_1_digital_in_out_h_bridge.html" title="ClearCore H&#45;Bridge digital output connector class. " alt="" coords="681,81,900,108"/>
+</map>

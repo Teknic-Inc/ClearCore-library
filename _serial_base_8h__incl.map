@@ -1,0 +1,5 @@
+<map id="SerialBase.h" name="SerialBase.h">
+<area shape="rect" id="node4" href="$_dma_manager_8h.html" title="DMA Peripheral Manager for the ClearCore Board. " alt="" coords="23,80,143,107"/>
+<area shape="rect" id="node5" href="$_i_serial_8h.html" title="A standardized ClearCore Serial interface. " alt="" coords="379,80,452,107"/>
+<area shape="rect" id="node9" href="$_peripheral_route_8h.html" title="Defines the Peripheral Route structure, used in HardwareMapping. " alt="" coords="168,80,303,107"/>
+</map>

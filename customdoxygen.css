@@ -1,0 +1,173 @@
+@charset "utf-8";
+/* CSS Document */
+
+body, p, a, li, ul, table, tl, tr, h1, h2, h3, h4, div, dl, dt, .title, .top, .header, .directory , .entry, .sm, .sm-dox a, .sm-dox a:focus, .sm-dox a:hover, .sm-dox a:active, .memberdecls, p.definition, .navpath li.navelem a, #projectname, #projectbrief, #main-nav, #main-menu {
+    font-family: "Times New Roman", Times, serif;
+}
+
+.accord_container_acc {
+	width: 350px;
+	margin-top: 30px;
+	font-family: "Times New Roman", Times, serif;
+	text-align: center;
+	margin-left: 35%;
+}
+
+
+.access-label {
+
+  position: relative;
+  padding: .5em 1em;
+  margin-bottom: 0;
+  display: block;
+  cursor: pointer;
+  background-color: #ececec;
+  transition: background-color .15s ease-in-out;
+  box-shadow:  1px 1px 1px #626060;
+  /*border-radius: 8px;*/
+}
+
+
+ .access-label:checked + label, .access-label:hover {
+  background-color: #bdbdbd;
+  box-shadow: inset 1px 1px 1px #626060;
+  -webkit-transition: background-color 0.4s ease;
+            -moz-transition: background-color 0.2s ease-in-out;
+            -o-transition: background-color 0.2s ease-in-out;
+            -ms-transition: background-color 0.2s ease-in-out;
+            transition: background-color 0.2s ease-in-out;
+}
+
+
+.accord_container_acc .access-label:after, .access-label:checked + .access-label:after {
+	content: url(Websites/plus_icon.png);
+	align-content: middle;
+  	position: absolute;
+ 	display: block;
+  	right: 100%;
+  	top: 8px;
+  	width: 2em;
+  	
+ 	line-height: 2.25em;
+  	text-align: center;
+  	transition: background-color .25s ease-in-out;
+	
+}
+
+.accord_container_acc .access-label_2:after, .access-label_2:checked + .access-label_2:after {
+	content: url(/images/minus_icon_navy.png);
+	align-content: middle;
+  	position: absolute;
+ 	display: block;
+  	right: 100%;
+  	top: 8px;
+  	width: 2em;
+  	
+ 	line-height: 2.25em;
+  	text-align: center;
+  	transition: background-color .25s ease-in-out;
+	
+}
+
+
+.accord_container_acc .access-label:checked + .access-label:after {
+	content: url(/images/minus_icon_navy.png);
+	align-content: middle;
+  	position: absolute;
+ 	display: block;
+  	right: 100%;
+  	top: 8px;
+  	width: 2em;
+  
+ 	line-height: 2.25em;
+  	text-align: center;
+  	
+}
+
+
+
+.accord_container_acc .access-label:after, .access-label:checked + .access-label:after {
+  content: url(/images/plus_icon_navy.png); 
+  position: absolute;
+  display: block;
+  top: 14px;
+  right: 100%;
+  width: 2em;
+  height: 100%;
+  line-height: 2.25em;
+  text-align: center;
+  transition: background-color .25s ease-in-out;
+  
+}
+
+.accord_container_acc .access-label:checked + .access-label:after {
+  content: url(/images/minus_icon_navy.png);
+
+}
+
+.access-input {
+  display: none;
+}
+
+ .access-text {
+  opacity: 0;
+  height: 0;
+  margin-bottom: 1em;
+  transition: opacity .5s ease-in-out;
+  overflow: hidden;
+}
+
+
+ .access-input:checked ~ .access-text { 
+  opacity: 1;
+  height: auto;
+}
+
+.access-input_2:checked ~ .access-text_2 { 
+  opacity: 0;
+  height: 0;
+}
+
+.new_table td {
+	border: 1px solid #000;
+}
+
+.new_table {
+	width: 350px;
+	position: relative;
+
+}
+
+div.image img[src="cpmAlertReg.png"]{ 
+    width:800px; 
+}
+div.image img[src="commonAlertFlds.png"]{ 
+    width:800px; 
+}
+div.image img[src="cpmAlertFlds.png"]{ 
+    width:800px; 
+}
+div.image img[src="SC_Status_Reg.png"]{ 
+    width:800px; 
+}
+div.dynheader {
+    user-select: auto;
+}
+
+<style type="text/css">
+	table.tableizer-table {
+		font-size: 12px;
+		border: 3px solid #CCC; 
+		font-family: "Times New Roman", Times, serif;
+	} 
+	.tableizer-table td {
+		padding: 4px;
+		margin: 3px;
+		border: 2px solid #CCC;
+	}
+	.tableizer-table th {
+		background-color: #FFFFFF; 
+		border: 3px solid #CCC;
+		font-weight: bold;
+	}
+</style>

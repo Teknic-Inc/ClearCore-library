@@ -1,0 +1,23 @@
+<map id="SysConnectors.h" name="SysConnectors.h">
+<area shape="rect" id="node2" href="$_connector_8h.html" title="Base class for all connector classes. " alt="" coords="853,80,952,107"/>
+<area shape="rect" id="node3" href="$_ccio_pin_8h.html" title="Connector class for an individual CCIO&#45;8 pin. " alt="" coords="283,155,363,181"/>
+<area shape="rect" id="node4" href="$_ccio_board_manager_8h.html" title="CcioBoardManager.h" alt="" coords="5,229,160,256"/>
+<area shape="rect" id="node19" href="$_sys_manager_8h.html" title="SysManager.h" alt="" coords="1312,155,1424,181"/>
+<area shape="rect" id="node21" href="$_input_manager_8h.html" title="ClearCore input state access. " alt="" coords="1083,80,1205,107"/>
+<area shape="rect" id="node22" href="$_status_manager_8h_source.html" title="StatusManager.h" alt="" coords="1448,155,1579,181"/>
+<area shape="rect" id="node6" href="$_serial_driver_8h.html" title="SerialDriver.h" alt="" coords="488,155,595,181"/>
+<area shape="rect" id="node8" href="$_digital_in_8h.html" title="ClearCore Digital Input Connector class. " alt="" coords="1101,155,1187,181"/>
+<area shape="rect" id="node9" href="$_digital_in_analog_in_8h.html" title="Connector class for analog and digital inputs. " alt="" coords="725,229,865,256"/>
+<area shape="rect" id="node10" href="$_digital_in_out_8h.html" title="ClearCore Digital Output Connector class. " alt="" coords="941,229,1049,256"/>
+<area shape="rect" id="node11" href="$_digital_in_out_analog_out_8h.html" title="ClearCore Analog Output Connector class. " alt="" coords="839,304,1014,331"/>
+<area shape="rect" id="node12" href="$_digital_in_out_h_bridge_8h.html" title="DigitalInOutHBridge Connector class for IO4 and IO5. " alt="" coords="1090,304,1249,331"/>
+<area shape="rect" id="node13" href="$_motor_driver_8h.html" title="MotorDriver.h" alt="" coords="1313,229,1421,256"/>
+<area shape="rect" id="node15" href="$_hardware_mapping_8h.html" title="HardwareMapping.h" alt="" coords="184,229,333,256"/>
+<area shape="rect" id="node18" href="$_led_driver_8h.html" title="Connector LED shift register access. " alt="" coords="358,229,453,256"/>
+<area shape="rect" id="node20" href="$_serial_usb_8h.html" title="SerialUsb.h" alt="" coords="518,304,613,331"/>
+<area shape="rect" id="node5" href="$_clear_core_8h_source.html" title="ClearCore.h" alt="" coords="790,379,887,405"/>
+<area shape="rect" id="node7" href="$_x_bee_driver_8h.html" title="XBeeDriver.h" alt="" coords="389,304,493,331"/>
+<area shape="rect" id="node14" href="$_motor_manager_8h.html" title="MotorManager.h" alt="" coords="689,304,815,331"/>
+<area shape="rect" id="node16" href="$_ethernet_manager_8h.html" title="EthernetManager.h" alt="" coords="120,304,264,331"/>
+<area shape="rect" id="node17" href="$_ethernet_tcp_server_8h.html" title="EthernetTcpServer.h" alt="" coords="117,379,267,405"/>
+</map>

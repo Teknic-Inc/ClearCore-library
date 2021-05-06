@@ -1,0 +1,14 @@
+<map id="CcioBoardManager.h" name="CcioBoardManager.h">
+<area shape="rect" id="node4" href="$_ccio_pin_8h.html" title="Connector class for an individual CCIO&#45;8 pin. " alt="" coords="265,80,345,107"/>
+<area shape="rect" id="node7" href="$_sys_connectors_8h.html" title="SysConnectors.h" alt="" coords="51,229,182,256"/>
+<area shape="rect" id="node8" href="$_serial_driver_8h.html" title="SerialDriver.h" alt="" coords="511,80,618,107"/>
+<area shape="rect" id="node19" href="$_sys_timing_8h.html" title="ClearCore timing profiling utility functions. " alt="" coords="429,155,527,181"/>
+<area shape="rect" id="node6" href="$_connector_8h.html" title="Base class for all connector classes. " alt="" coords="255,155,354,181"/>
+<area shape="rect" id="node9" href="$_serial_base_8h.html" title="SerialBase.h" alt="" coords="972,155,1075,181"/>
+<area shape="rect" id="node16" href="$_shift_register_8h.html" title="LED shift register access class. " alt="" coords="640,155,753,181"/>
+<area shape="rect" id="node10" href="$_dma_manager_8h.html" title="DMA Peripheral Manager for the ClearCore Board. " alt="" coords="1025,229,1145,256"/>
+<area shape="rect" id="node11" href="$_i_serial_8h.html" title="A standardized ClearCore Serial interface. " alt="" coords="927,229,1000,256"/>
+<area shape="rect" id="node15" href="$_peripheral_route_8h.html" title="Defines the Peripheral Route structure, used in HardwareMapping. " alt="" coords="1220,229,1355,256"/>
+<area shape="rect" id="node17" href="$atomic__utils_8h_source.html" title="atomic_utils.h" alt="" coords="531,229,641,256"/>
+<area shape="rect" id="node18" href="$_blink_code_driver_8h.html" title="Status blink code driver. " alt="" coords="665,229,800,256"/>
+</map>

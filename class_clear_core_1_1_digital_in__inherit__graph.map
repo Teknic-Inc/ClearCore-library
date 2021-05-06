@@ -1,0 +1,8 @@
+<map id="ClearCore::DigitalIn" name="ClearCore::DigitalIn">
+<area shape="rect" id="node3" href="$class_clear_core_1_1_digital_in_analog_in.html" title="ClearCore analog input connector class. " alt="" coords="5,155,204,181"/>
+<area shape="rect" id="node4" href="$class_clear_core_1_1_digital_in_out.html" title="ClearCore digital output connector class. " alt="" coords="228,155,395,181"/>
+<area shape="rect" id="node7" href="$class_clear_core_1_1_motor_driver.html" title="ClearCore motor connector class. " alt="" coords="419,155,587,181"/>
+<area shape="rect" id="node2" href="$class_clear_core_1_1_connector.html" title="Base class for interacting with all ClearCore connector objects. " alt="" coords="232,5,391,32"/>
+<area shape="rect" id="node5" href="$class_clear_core_1_1_digital_in_out_analog_out.html" title="ClearCore digital input/output with analog current output Connector class. " alt="" coords="69,229,303,256"/>
+<area shape="rect" id="node6" href="$class_clear_core_1_1_digital_in_out_h_bridge.html" title="ClearCore H&#45;Bridge digital output connector class. " alt="" coords="327,229,546,256"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="ClearCore::SerialDriver" name="ClearCore::SerialDriver">
+<area shape="rect" id="node2" href="$class_clear_core_1_1_serial_base.html" title="ClearCore ARM Serial Port base class. " alt="" coords="5,80,167,107"/>
+<area shape="rect" id="node3" href="$class_clear_core_1_1_i_serial.html" title="Base class for interacting with all ClearCore serial. " alt="" coords="20,5,152,32"/>
+<area shape="rect" id="node4" href="$class_clear_core_1_1_connector.html" title="Base class for interacting with all ClearCore connector objects. " alt="" coords="191,80,349,107"/>
+</map>
