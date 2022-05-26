@@ -46,6 +46,86 @@ namespace ClearCore {
         that the ClearCore is online.
         - If instead you see "Reply from <ClearCore_IP_address>: Destination host unreachable", or if the ping otherwise fails, make sure the router/switch is on, the correct IP address was supplied \n
         to ping, and that the ClearCore is running a sketch that called EthernetMgr.Setup(), successfully configured an IP address, and calls EthernetMgr.Refresh() at a reasonable rate.
+        
+
+<h2> Ethernet TCP </h2>
+    The TCP functionality of the ClearCore provides a Client-Server interface, allowing the ClearCore to act as either a client or a server. TCP is connection-oriented and provides built-in error \n
+    checking, guaranteed packet delivery, and delivery of packets in order. TCP is best suited for an application where reliability is more valuable than speed.
+    
+    <h3> TCP Client </h3>
+        From the Client-Server perspective, the client of a TCP connection is the device who initiates the connection.
+        - To initialize the ClearCore as a client connecting to a remote server:
+        \code{.cpp}
+        EthernetTcpClient client;
+        IpAddress serverIp = IpAddress(192, 168, 1, 78);
+        // Start a TCP connection with the server on port 8888.
+        if (client.Connect(serverIp, 8888)) {
+            // Successfully connected to the server.
+        }
+        \endcode
+        \note Ethernet functionality must be initialized before initializing TCP communications.
+        - To communicate with the connected server:
+            - Incoming TCP packets from the server are automatically buffered within the client. To process received data, the client's buffer can be read-from directly at any time by calling \n
+            EthernetTcpClient::Read().
+            - Outgoing TCP packets are automatically created and sent when using the EthernetTcpClient::Send() API. The TCP protocol of acknowledging received packets and resending lost packets is \n
+            handled automatically.
+        
+    <h3> TCP Server </h3>
+        From the Client-Server perspective, the server of a TCP connection is the device that listens for and accepts incoming connection requests. The EthernetTcpServer interface provides two distinct options for managing connected clients. Choose one or the other, but do not mix usage of EthernetTcpServer::Available() and EthernetTcpServer::Accept().
+
+<h3>Automatic Client Management (recommended)</h3>
+
+        - To obtain a reference to a connected client while leaving management of that client up to the server, use EthernetTcpServer::Available()
+	  - Each client reference is an EthernetTcpClient object. 
+	  	- Incoming TCP packets from an individual client are automatically buffered within the client. To process received data, the client's buffer can be read-from directly at any time by
+calling EthernetTcpClient::Read().
+	  	- Outgoing TCP packets to an individual client are automatically created and sent when using the EthernetTcpClient::Send() API. The TCP protocol of acknowledging received packets and
+resending lost packets is handled automatically.
+	  	- Outgoing TCP packets may be sent through the server to all currently connected clients using EthernetTcpServer::Send(). (applicable only when using the server’s automatic Client management).
+
+        \code{.cpp}
+	  // Initialize the ClearCore as a server listening for incoming client connections
+        EthernetTcpServer server = EthernetTcpServer(8888);
+        // Start listening for TCP connections on port 8888.
+        server.Begin();
+        \endcode
+
+	  \code{.cpp}
+// Obtain a reference to a connected client with incoming data                              available.
+        EthernetTcpClient client = server.Available();
+        if (client.Connected()) {
+// The server has returned a connected client with incoming data available.
+           while (client.BytesAvailable() > 0) {
+    // Send the data received from the client over a serial port.
+               ConnectorCOM0.Send(client.Read());
+           }
+        }
+        \endcode
+
+<h3>Manual Client Management</h3>
+        - To obtain a reference to a connected client and stop it from being managed by the server, use EthernetTcpServer::Accept().
+            - Each client reference is an EthernetTcpClient object.
+                - Incoming TCP packets from an individual client are automatically buffered within the client. To process received data, the client's buffer can be read-from directly at any time by \n
+                calling EthernetTcpClient::Read().
+                - Outgoing TCP packets to an individual client are automatically created and sent when using the EthernetTcpClient::Send() API.  The TCP protocol of acknowledging received packets and \n
+                resending lost packets is handled automatically.
+		    \code{.cpp}
+	  // Initialize the ClearCore as a server listening for incoming client connections
+        EthernetTcpServer server = EthernetTcpServer(8888);
+        // Start listening for TCP connections on port 8888.
+        server.Begin();
+        \endcode
+
+                \code{.cpp}
+                // The server will no longer keep track of connected clients returned by Accept().
+                EthernetTcpClient clients[4];
+                clients[0] = server.Accept();
+                if (clients[0].Connected()) {
+                    // Send a TCP packet to the client with a payload containing the string.
+                    clients[0].Send("Hello World");
+                }
+                \endcode                
+
 
 <h2> Ethernet UDP </h2>
     UDP communications are connectionless and do not provide error checking or guaranteed delivery. The EthernetUdp interface manages a local UDP session and provides methods for sending and receiving \n
@@ -81,70 +161,7 @@ namespace ClearCore {
         char[packetSize] packetContents;
         Udp.PacketRead(packetContents, packetSize);
         \endcode
-        
 
-<h2> Ethernet TCP </h2>
-    The TCP functionality of the ClearCore provides a Client-Server interface, allowing the ClearCore to act as either a client or a server. TCP is connection-oriented and provides built in error \n
-    checking, guaranteed packet delivery, and delivery of packets in order. TCP is best suited for an application where reliability is more valuable than speed.
-    
-    <h3> Ethernet Client </h3>
-        From the Client-Server perspective, the client of a TCP connection is the device who initiates the connection.
-        - To initialize the ClearCore as a client connecting to a remote server:
-        \code{.cpp}
-        EthernetTcpClient client;
-        IpAddress serverIp = IpAddress(192, 168, 1, 78);
-        // Start a TCP connection with the server on port 8888.
-        if (client.Connect(serverIp, 8888)) {
-            // Successfully connected to the server.
-        }
-        \endcode
-        \note Ethernet functionality must be initialized before initializing TCP communications.
-        - To communicate with the connected server:
-            - Incoming TCP packets from the server are automatically buffered within the client. To process received data, the client's buffer can be read-from directly at any time by calling \n
-            EthernetTcpClient::Read().
-            - Outgoing TCP packets are automatically created and sent when using the EthernetTcpClient::Send() API. The TCP protocol of acknowledging received packets and resending lost packets is \n
-            handled automatically.
-        
-    <h3> Ethernet Server </h3>
-        From the Client-Server perspective, the server of a TCP connecion is the device that listens for and accepts incoming connection requests.
-        - To initialize the ClearCore as a server listening for incoming client connections:
-        \code{.cpp}
-        EthernetTcpServer server = EthernetTcpServer(8888);
-        // Start listening for TCP connections on port 8888.
-        server.Begin();
-        \endcode
-        - The EthernetTcpServer interface provides two distinct options for managing the server's connected clients. To obtain a reference to a connected client while leaving management of that client \n
-        up to the server, use EthernetTcpServer::Available(). To obtain a reference to a connected client and stop it from being managed by the server, use EthernetTcpServer::Accept(). Regardless of \n
-        the method chosen for managing clients each client reference is an EthernetTcpClient object.
-            - To communicate with an individual connected client (applicable when using either EthernetTcpServer::Available() or EthernetTcpServer::Accept()):
-                - Incoming TCP packets from an individual client are automatically buffered within the client. To process received data, the client's buffer can be read-from directly at any time by \n
-                calling EthernetTcpClient::Read().
-                - Outgoing TCP packets to an individual client are automatically created and sent when using the EthernetTcpClient::Send() API.  The TCP protocol of acknowledging received packets and \n
-                resending lost packets is handled automatically.
-                \code{.cpp}
-                // The server will no longer keep track of connected clients returned by Accept().
-                EthernetTcpClient clients[4];
-                clients[0] = server.Accept();
-                if (clients[0].Connected()) {
-                    // Send a TCP packet to the client with a payload containing the string.
-                    clients[0].Send("Hello World");
-                }
-                \endcode
-            - To communicate with all connected clients (applicable only when using EthernetTcpServer::Available()).
-                - Outgoing TCP packets may be sent through the server to all currently connected clients using EthernetTcpServer::Send(). The TCP protocol of acknowledging received packets and \n
-                resending lost packets is handled automatically.
-                - Incoming TCP packets must be handled on an individual basis.
-                \code{.cpp}
-                // Obtain a reference to a connected client with incoming data available.
-                EthernetTcpClient client = server.Available();
-                if (client.Connected()) {
-                    // The server has returned a connected client with incoming data available.
-                    while (client.BytesAvailable() > 0) {
-                        // Send the data received from the client over a serial port.
-                        ConnectorCOM0.Send(client.Read());
-                    }
-                }
-                \endcode
 **/
 //********************************************************************************************
 }

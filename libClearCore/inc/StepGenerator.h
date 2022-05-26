@@ -44,7 +44,7 @@ namespace ClearCore {
 
 /**
     \class StepGenerator
-    \brief ClearCore motor motion generator class
+    \brief ClearCore Step and Direction generator class
 
     This class manages the generation and communication of movement profiles for
     the MotorDriver connectors.
@@ -119,6 +119,8 @@ public:
         // Command an abrupt stop
         ConnectorM0.MoveStopAbrupt();
         \endcode
+
+        \note For use with Step and Direction mode.
     **/
     void MoveStopAbrupt();
 
@@ -139,6 +141,8 @@ public:
         \param[in] decelMax The new EStop deceleration rate to set instead 
         of the value that was set prior to issuing the move. Passing 0 
         maintains the EStopDecelMax that was previously set.
+
+        \note For use with Step and Direction mode.
     **/
     void MoveStopDecel(uint32_t decelMax = 0);
 
@@ -151,6 +155,8 @@ public:
         \endcode
 
         \param[in] posn The new position to be set.
+
+        \note For use with Step and Direction mode.
     **/
     void PositionRefSet(int32_t posn) {
         m_posnAbsolute = posn;
@@ -166,6 +172,8 @@ public:
         \endcode
 
         \return Returns the absolute commanded position.
+
+        \note For use with Step and Direction mode.
     **/
     volatile const int32_t &PositionRefCommanded() {
         return m_posnAbsolute;
@@ -181,6 +189,8 @@ public:
         \endcode
 
         \return Returns the momentary commanded velocity.
+
+        \note For use with Step and Direction mode.
     **/
     int32_t VelocityRefCommanded();
 
@@ -194,6 +204,8 @@ public:
         \endcode
 
         \param[in] velMax The new velocity limit
+
+        \note For use with Step and Direction mode.
     **/
     void VelMax(uint32_t velMax);
 
@@ -208,6 +220,8 @@ public:
         \endcode
 
         \param[in] accelMax The new acceleration limit
+
+        \note For use with Step and Direction mode.
     **/
     void AccelMax(uint32_t accelMax);
 
@@ -224,6 +238,8 @@ public:
         \endcode
 
         \param[in] decelMax The new e-stop deceleration limit
+
+        \note For use with Step and Direction mode.
     **/
     void EStopDecelMax(uint32_t decelMax);
 
@@ -239,6 +255,8 @@ public:
 
         \return Returns true if there is no valid current command.
         \note The motor may still be moving after steps are done being sent.
+
+        \note For use with Step and Direction mode.
     **/
     bool StepsComplete() {
         return MoveStateGet() == MS_IDLE;
@@ -256,6 +274,8 @@ public:
 
         \return Returns true if there the move is in the cruise state
         \note The motor will still need to decelerate after cruising
+
+        \note For use with Step and Direction mode.
     **/
     bool CruiseVelocityReached() {
         return MoveStateGet() == MS_CRUISE;
