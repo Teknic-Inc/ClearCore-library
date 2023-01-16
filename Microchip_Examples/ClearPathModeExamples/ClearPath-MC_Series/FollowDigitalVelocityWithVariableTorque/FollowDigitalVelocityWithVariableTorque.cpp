@@ -150,12 +150,6 @@ bool CommandVelocity(int32_t commandedVelocity) {
         return false;
     }
 
-    // Check if an alert is currently preventing motion
-    if (motor.StatusReg().bit.AlertsPresent) {
-        SerialPort.SendLine("Motor status: 'In Alert'. Move Canceled.");
-        return false;
-    }
-
     SerialPort.Send("Commanding velocity: ");
     SerialPort.SendLine(commandedVelocity);
 

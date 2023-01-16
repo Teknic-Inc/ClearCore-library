@@ -48,13 +48,24 @@
 // Specify which serial to use: ConnectorUsb, ConnectorCOM0, or ConnectorCOM1.
 #define SerialPort ConnectorUsb
 
+// This example has built-in functionality to automatically clear motor alerts, 
+//	including motor shutdowns. Any uncleared alert will cancel and disallow motion.
+// WARNING: enabling automatic alert handling will clear alerts immediately when 
+//	encountered and return a motor to a state in which motion is allowed. Before 
+//	enabling this functionality, be sure to understand this behavior and ensure 
+//	your system will not enter an unsafe state. 
+// To enable automatic alert handling, #define HANDLE_ALERTS (1)
+// To disable automatic alert handling, #define HANDLE_ALERTS (0)
+#define HANDLE_ALERTS (0)
+
 // Define the acceleration limit to be used for each move
 int32_t accelerationLimit = 100000; // pulses per sec^2
 
-// Declares our user-defined helper function, which is used to command moves to
-// the motor. The definition/implementation of this function is at the  bottom
-// of the example
+// Declares user-defined helper functions.
+// The definition/implementations of these functions are at the bottom of the sketch.
 bool MoveAtVelocity(int32_t velocity);
+void PrintAlerts();
+void HandleAlerts();
 
 int main() {
     // Sets the input clocking rate. This normal rate is ideal for ClearPath
@@ -90,10 +101,25 @@ int main() {
 
     // Waits for HLFB to assert (waits for homing to complete if applicable)
     SerialPort.SendLine("Waiting for HLFB...");
-    while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {
+    while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED &&
+			!motor.StatusReg().bit.AlertsPresent) {
         continue;
     }
-    SerialPort.SendLine("Motor Ready");
+	// Check if motor alert occurred during enabling
+	// Clear alert if configured to do so 
+    if (motor.StatusReg().bit.AlertsPresent) {
+		SerialPort.SendLine("Motor alert detected.");		
+		PrintAlerts();
+		if(HANDLE_ALERTS){
+			HandleAlerts();
+		} else {
+			SerialPort.SendLine("Enable automatic alert handling by setting HANDLE_ALERTS to 1.");
+		}
+		SerialPort.SendLine("Enabling may not have completed as expected. Proceed with caution.");		
+ 		SerialPort.SendLine();
+	} else {
+		SerialPort.SendLine("Motor Ready");	
+	}
 
     while (true) {
         // Move at 1,000 steps/sec for 2000ms
@@ -126,9 +152,18 @@ int main() {
  * Returns: None
  */
 bool MoveAtVelocity(int32_t velocity) {
-    // Check if an alert is currently preventing motion
+    // Check if a motor alert is currently preventing motion
+	// Clear alert if configured to do so 
     if (motor.StatusReg().bit.AlertsPresent) {
-        SerialPort.SendLine("Motor status: 'In Alert'. Move Canceled.");
+		SerialPort.SendLine("Motor alert detected.");		
+		PrintAlerts();
+		if(HANDLE_ALERTS){
+			HandleAlerts();
+		} else {
+			SerialPort.SendLine("Enable automatic alert handling by setting HANDLE_ALERTS to 1.");
+		}
+		SerialPort.SendLine("Move canceled.");		
+		SerialPort.SendLine();
         return false;
     }
 
@@ -144,9 +179,84 @@ bool MoveAtVelocity(int32_t velocity) {
     while (!motor.StatusReg().bit.AtTargetVelocity) {
         continue;
     }
-
-    SerialPort.SendLine("At Speed");
-    return true;
+	// Check if motor alert occurred during move
+	// Clear alert if configured to do so 
+    if (motor.StatusReg().bit.AlertsPresent) {
+		SerialPort.SendLine("Motor alert detected.");		
+		PrintAlerts();
+		if(HANDLE_ALERTS){
+			HandleAlerts();
+		} else {
+			SerialPort.SendLine("Enable automatic fault handling by setting HANDLE_ALERTS to 1.");
+		}
+		SerialPort.SendLine("Motion may not have completed as expected. Proceed with caution.");
+		SerialPort.SendLine();
+		return false;
+    } else {
+		SerialPort.SendLine("Move Done");
+		return true;
+	}
 }
 //------------------------------------------------------------------------------
+
+
+/*------------------------------------------------------------------------------
+ * PrintAlerts
+ *
+ *    Prints active alerts.
+ *
+ * Parameters:
+ *    requires "motor" to be defined as a ClearCore motor connector
+ *
+ * Returns: 
+ *    none
+ */
+ void PrintAlerts(){
+	// report status of alerts
+ 	SerialPort.SendLine("Alerts present: ");
+	if(motor.AlertReg().bit.MotionCanceledInAlert){
+		SerialPort.SendLine("    MotionCanceledInAlert "); }
+	if(motor.AlertReg().bit.MotionCanceledPositiveLimit){
+		SerialPort.SendLine("    MotionCanceledPositiveLimit "); }
+	if(motor.AlertReg().bit.MotionCanceledNegativeLimit){
+		SerialPort.SendLine("    MotionCanceledNegativeLimit "); }
+	if(motor.AlertReg().bit.MotionCanceledSensorEStop){
+		SerialPort.SendLine("    MotionCanceledSensorEStop "); }
+	if(motor.AlertReg().bit.MotionCanceledMotorDisabled){
+		SerialPort.SendLine("    MotionCanceledMotorDisabled "); }
+	if(motor.AlertReg().bit.MotorFaulted){
+		SerialPort.SendLine("    MotorFaulted ");
+	}
+ }
+//------------------------------------------------------------------------------
+
+
+/*------------------------------------------------------------------------------
+ * HandleAlerts
+ *
+ *    Clears alerts, including motor faults. 
+ *    Faults are cleared by cycling enable to the motor.
+ *    Alerts are cleared by clearing the ClearCore alert register directly.
+ *
+ * Parameters:
+ *    requires "motor" to be defined as a ClearCore motor connector
+ *
+ * Returns: 
+ *    none
+ */
+ void HandleAlerts(){
+	if(motor.AlertReg().bit.MotorFaulted){
+		// if a motor fault is present, clear it by cycling enable
+		SerialPort.SendLine("Faults present. Cycling enable signal to motor to clear faults.");
+		motor.EnableRequest(false);
+		Delay_ms(10);
+		motor.EnableRequest(true);
+	}
+	// clear alerts
+	SerialPort.SendLine("Clearing alerts.");
+	motor.ClearAlerts();
+ }
+//------------------------------------------------------------------------------
+
+ 
 

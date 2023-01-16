@@ -9,6 +9,12 @@ Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "ClearCore", "..\..\libClear
 EndProject
 Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "LwIP", "..\..\LwIP\LwIP.cppproj", "{C373696C-5D45-4B91-AD62-A21552361596}"
 EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "EthernetTcpServerHelloWorld_manual", "EthernetTcpServerHelloWorld_manual\EthernetTcpServerHelloWorld_manual.cppproj", "{AA02A8C2-2672-456F-BBD9-2D87195F8292}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "EthernetTcpClientHelloWorld", "EthernetTcpClientHelloWorld\EthernetTcpClientHelloWorld.cppproj", "{EB373D13-2EC0-42DA-BDE8-EB9F90421805}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "EthernetTcpServerHelloWorld_automatic", "EthernetTcpServerHelloWorld_automatic\EthernetTcpServerHelloWorld_automatic.cppproj", "{5A820189-8BE3-4E9B-BD9B-1D1EA7B11099}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -27,6 +33,18 @@ Global
 		{C373696C-5D45-4B91-AD62-A21552361596}.Debug|ARM.Build.0 = Debug|ARM
 		{C373696C-5D45-4B91-AD62-A21552361596}.Release|ARM.ActiveCfg = Release|ARM
 		{C373696C-5D45-4B91-AD62-A21552361596}.Release|ARM.Build.0 = Release|ARM
+		{AA02A8C2-2672-456F-BBD9-2D87195F8292}.Debug|ARM.ActiveCfg = Debug|ARM
+		{AA02A8C2-2672-456F-BBD9-2D87195F8292}.Debug|ARM.Build.0 = Debug|ARM
+		{AA02A8C2-2672-456F-BBD9-2D87195F8292}.Release|ARM.ActiveCfg = Release|ARM
+		{AA02A8C2-2672-456F-BBD9-2D87195F8292}.Release|ARM.Build.0 = Release|ARM
+		{EB373D13-2EC0-42DA-BDE8-EB9F90421805}.Debug|ARM.ActiveCfg = Debug|ARM
+		{EB373D13-2EC0-42DA-BDE8-EB9F90421805}.Debug|ARM.Build.0 = Debug|ARM
+		{EB373D13-2EC0-42DA-BDE8-EB9F90421805}.Release|ARM.ActiveCfg = Release|ARM
+		{EB373D13-2EC0-42DA-BDE8-EB9F90421805}.Release|ARM.Build.0 = Release|ARM
+		{5A820189-8BE3-4E9B-BD9B-1D1EA7B11099}.Debug|ARM.ActiveCfg = Debug|ARM
+		{5A820189-8BE3-4E9B-BD9B-1D1EA7B11099}.Debug|ARM.Build.0 = Debug|ARM
+		{5A820189-8BE3-4E9B-BD9B-1D1EA7B11099}.Release|ARM.ActiveCfg = Release|ARM
+		{5A820189-8BE3-4E9B-BD9B-1D1EA7B11099}.Release|ARM.Build.0 = Release|ARM
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

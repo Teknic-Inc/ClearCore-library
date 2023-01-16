@@ -49,7 +49,7 @@
  * ** ClearPath Manual (DC Power): https://www.teknic.com/files/downloads/clearpath_user_manual.pdf
  * ** ClearPath Manual (AC Power): https://www.teknic.com/files/downloads/ac_clearpath-mc-sd_manual.pdf
  *
- * 
+ *
  * Copyright (c) 2020 Teknic Inc. This work is free to use, copy and distribute under the terms of
  * the standard MIT permissive software license which can be found at https://opensource.org/licenses/MIT
  */
@@ -117,12 +117,30 @@ int main() {
     Delay_ms(2000);
     // Then slows down to 1000 pulses/sec until clamping into the hard stop
     motor.MoveVelocity(1000);
+	
+	// Check if an alert occurred during motion
+    if (motor.StatusReg().bit.AlertsPresent) {
+        // In this case, we can't proceed with homing. Print the alert and bail.
+        SerialPort.SendLine("Motor alert occurred during motion. Homing canceled.");
+        // The end...
+        while (true) {
+            continue;
+        }
+    }	
+
 
     // Delay so HLFB has time to deassert
     Delay_ms(10);
     // Waits for HLFB to assert again, meaning the hardstop has been reached
     while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {
-        continue;
+        if (motor.StatusReg().bit.AlertsPresent) {
+			// In this case, we can't proceed with homing. Print the alert and bail.
+			SerialPort.SendLine("Motor alert detected. Homing canceled.");
+			// The end...
+			while (true) {
+				continue;
+			}
+		}
     }
 
     // Stop the velocity move now that the hardstop is reached
@@ -139,8 +157,18 @@ int main() {
     while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {
         continue;
     }
-    SerialPort.SendLine("Homing Complete. Motor Ready.");
-
+	
+	// Check if an alert occurred during offset move
+    if (motor.StatusReg().bit.AlertsPresent) {
+        // In this case, we can't proceed with homing. Print the alert and bail.
+        SerialPort.SendLine("Motor alert occurred during offset move. Homing canceled.");
+        // The end...
+        while (true) {
+            continue;
+        }
+    } else {
+		SerialPort.SendLine("Homing Complete. Motor Ready.");
+	}
     // Zero the motor's reference position after homing to allow for accurate
     // absolute position moves
     motor.PositionRefSet(0);

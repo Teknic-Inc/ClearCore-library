@@ -83,11 +83,21 @@
 // Specify which serial to use: ConnectorUsb, ConnectorCOM0, or ConnectorCOM1.
 #define SerialPort ConnectorUsb
 
-// Declares our user-defined callback and helper functions, which are used to
-// pass the state of the home switch to the motor, and to send move commands. The
-// definitions/implementations of these functions are at the bottom of the sketch.
+// This example has built-in functionality to automatically clear motor faults. 
+//	Any uncleared fault will cancel and disallow motion.
+// WARNING: enabling automatic fault handling will clear faults immediately when 
+//	encountered and return a motor to a state in which motion is allowed. Before 
+//	enabling this functionality, be sure to understand this behavior and ensure 
+//	your system will not enter an unsafe state. 
+// To enable automatic fault handling, #define HANDLE_MOTOR_FAULTS (1)
+// To disable automatic fault handling, #define HANDLE_MOTOR_FAULTS (0)
+#define HANDLE_MOTOR_FAULTS (0)
+
+// Declares user-defined helper functions.
+// The definition/implementations of these functions are at the bottom of the sketch.
 void HomingSensorCallback();
 bool MoveIncrements(uint32_t numberOfIncrements, int32_t positionIncrement);
+void HandleMotorFaults();
 
 int main() {
     // Sets all motor connectors to the correct mode for Incremental Distance
@@ -129,11 +139,25 @@ int main() {
 
     // Waits for HLFB to assert (waits for homing to complete if applicable)
     SerialPort.SendLine("Waiting for HLFB...");
-    while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {
+    while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED &&
+			!motor.StatusReg().bit.MotorInFault) {
         continue;
     }
-    SerialPort.SendLine("Motor Ready");
-
+	// Check if a motor faulted during enabling
+	// Clear fault if configured to do so 
+    if (motor.StatusReg().bit.MotorInFault) {
+		SerialPort.SendLine("Motor fault detected.");		
+		if(HANDLE_MOTOR_FAULTS){
+			HandleMotorFaults();
+		} else {
+			SerialPort.SendLine("Enable automatic fault handling by setting HANDLE_MOTOR_FAULTS to 1.");
+		}
+		SerialPort.SendLine("Enabling may not have completed as expected. Proceed with caution.");		
+ 		SerialPort.SendLine();
+	} else {
+		SerialPort.SendLine("Motor Ready");	
+	}
+	
     while (true) {
         // Move a distance equal to 1 * POSITION_INCREMENT_1 = 1000 counts.
         // See below for the detailed function definition.
@@ -174,9 +198,15 @@ int main() {
  * Returns: True/False depending on whether the move was successfully triggered.
  */
 bool MoveIncrements(uint32_t numberOfIncrements, int32_t positionIncrement) {
-    // Check if an alert is currently preventing motion
-    if (motor.StatusReg().bit.AlertsPresent) {
-        SerialPort.SendLine("Motor status: 'In Alert'. Move Canceled.");
+    // Check if a motor fault is currently preventing motion
+	// Clear fault if configured to do so 
+    if (motor.StatusReg().bit.MotorInFault) {
+		if(HANDLE_MOTOR_FAULTS){
+			SerialPort.SendLine("Motor fault detected. Move canceled.");
+			HandleMotorFaults();
+		} else {
+			SerialPort.SendLine("Motor fault detected. Move canceled. Enable automatic fault handling by setting HANDLE_MOTOR_FAULTS to 1.");
+		}
         return false;
     }
 
@@ -207,11 +237,27 @@ bool MoveIncrements(uint32_t numberOfIncrements, int32_t positionIncrement) {
     // Sends trigger pulses to the motor
     motor.EnableTriggerPulse(numberOfIncrements, TRIGGER_PULSE_TIME, true);
 
-    // Waits for HLFB to assert (signaling the move has successfully completed)
-    SerialPort.SendLine("Moving... Waiting for HLFB");
-    while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {
+    SerialPort.SendLine("Moving.. Waiting for HLFB");
+    while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED &&
+			!motor.StatusReg().bit.MotorInFault) {
         continue;
     }
+	// Check if a motor faulted during move
+	// Clear fault if configured to do so 
+    if (motor.StatusReg().bit.MotorInFault) {
+		SerialPort.SendLine("Motor fault detected.");		
+		if(HANDLE_MOTOR_FAULTS){
+			HandleMotorFaults();
+		} else {
+			SerialPort.SendLine("Enable automatic fault handling by setting HANDLE_MOTOR_FAULTS to 1.");
+		}
+		SerialPort.SendLine("Motion may not have completed as expected. Proceed with caution.");
+		SerialPort.SendLine();
+		return false;
+    } else {
+		SerialPort.SendLine("Move Done");
+		return true;
+	}
 
     SerialPort.SendLine("Move Done");
     return true;
@@ -230,3 +276,25 @@ void HomingSensorCallback() {
     motor.MotorInBState(HomingSensor.State());
 }
 //------------------------------------------------------------------------------
+ 
+/*------------------------------------------------------------------------------
+ * HandleMotorFaults
+ *
+ *    Clears motor faults by cycling enable to the motor.
+ *    Assumes motor is in fault 
+ *      (this function is called when motor.StatusReg.MotorInFault == true)
+ *
+ * Parameters:
+ *    requires "motor" to be defined as a ClearCore motor connector
+ *
+ * Returns: 
+ *    none
+ */
+ void HandleMotorFaults(){
+ 	SerialPort.SendLine("Handling fault: clearing faults by cycling enable signal to motor.");
+	motor.EnableRequest(false);
+    Delay_ms(3*TRIGGER_PULSE_TIME);
+	motor.EnableRequest(true);
+	Delay_ms(100);
+ }
+//------------------------------------------------------------------------------ 

@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>7.0</ProjectVersion>
     <ToolchainName>com.Atmel.ARMGCC.CPP</ToolchainName>
-    <ProjectGuid>{bc799fb3-5751-404e-9ac3-1f78cec17147}</ProjectGuid>
+    <ProjectGuid>{eb373d13-2ec0-42da-bde8-eb9f90421805}</ProjectGuid>
     <avrdevice>ATSAME53N19A</avrdevice>
     <avrdeviceseries>none</avrdeviceseries>
     <OutputType>Executable</OutputType>
@@ -13,7 +13,7 @@
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
     <AssemblyName>Examples</AssemblyName>
-    <Name>PeriodicInterrupt</Name>
+    <Name>EthernetTcpHelloWorld</Name>
     <RootNamespace>Examples</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
@@ -30,15 +30,15 @@
     <EraseKey />
     <AsfFrameworkConfig>
       <framework-data>
-  <options />
-  <configurations />
-  <files />
-  <documentation help="" />
-  <offline-documentation help="" />
-  <dependencies>
-    <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.42.0" />
-  </dependencies>
-</framework-data>
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.42.0" />
+        </dependencies>
+      </framework-data>
     </AsfFrameworkConfig>
     <avrtool>custom</avrtool>
     <avrtoolserialnumber>
@@ -248,7 +248,7 @@
       <SubType>compile</SubType>
       <Link>Device_Startup\startup_same53.c</Link>
     </Compile>
-    <Compile Include="PeriodicInterrupt.cpp">
+    <Compile Include="EthernetTcpClientHelloWorld.cpp">
       <SubType>compile</SubType>
     </Compile>
     <None Include="..\Device_Startup\flash_without_bootloader.ld">

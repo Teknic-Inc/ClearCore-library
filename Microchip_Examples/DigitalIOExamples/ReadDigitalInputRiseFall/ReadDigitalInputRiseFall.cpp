@@ -39,6 +39,9 @@ bool risen, fallen;
 #define SerialPort ConnectorUsb
 
 int main() {
+
+	InputConnector.Mode(Connector::INPUT_DIGITAL);  //Set the input as a digital Input
+
     // Set up serial communication at a baud rate of 9600 bps then wait up to
     // 5 seconds for a port to open.
     // Serial communication is not required for this example to run, however the

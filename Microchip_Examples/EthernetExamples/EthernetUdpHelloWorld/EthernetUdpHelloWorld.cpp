@@ -85,7 +85,6 @@ int main() {
         }
         else {
             ConnectorUsb.SendLine("DHCP configuration was unsuccessful!");
-            ConnectorUsb.SendLine("Try again using a manual configuration...");
             while (true) {
                 // UDP will not work without a configured IP address.
                 continue;

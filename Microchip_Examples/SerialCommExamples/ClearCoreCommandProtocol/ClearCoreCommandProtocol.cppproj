@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>7.0</ProjectVersion>
     <ToolchainName>com.Atmel.ARMGCC.CPP</ToolchainName>
-    <ProjectGuid>{bc799fb3-5751-404e-9ac3-1f78cec17147}</ProjectGuid>
+    <ProjectGuid>{0687b856-a7e3-4044-8f64-54dc5bcebd7d}</ProjectGuid>
     <avrdevice>ATSAME53N19A</avrdevice>
     <avrdeviceseries>none</avrdeviceseries>
     <OutputType>Executable</OutputType>
@@ -13,7 +13,7 @@
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
     <AssemblyName>Examples</AssemblyName>
-    <Name>PeriodicInterrupt</Name>
+    <Name>ClearCoreCommandProtocol</Name>
     <RootNamespace>Examples</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
@@ -248,7 +248,7 @@
       <SubType>compile</SubType>
       <Link>Device_Startup\startup_same53.c</Link>
     </Compile>
-    <Compile Include="PeriodicInterrupt.cpp">
+    <Compile Include="ClearCoreCommandProtocol.cpp">
       <SubType>compile</SubType>
     </Compile>
     <None Include="..\Device_Startup\flash_without_bootloader.ld">

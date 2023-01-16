@@ -64,48 +64,117 @@ int main() {
         for (uint8_t i = 0; i < motorConnectorCount; i++) {
             MotorDriver *motor = motorConnectors[i];
             volatile const MotorDriver::StatusRegMotor &statusReg = motor->StatusReg();
+			volatile const MotorDriver::AlertRegMotor &alertReg = motor->AlertReg();
 
-            SerialPort.Send("Motor Status Register for ");
-            SerialPort.Send(motorConnectorNames[i]);
-            SerialPort.SendLine(":");
+            SerialPort.Send("Motor status register for motor M");
+			SerialPort.Send(i);
+			SerialPort.Send(": ");
+			SerialPort.SendLine(statusReg.reg, 2); // prints the status register in binary
+	
+			SerialPort.Send("AtTargetPosition:	");
+			SerialPort.SendLine(statusReg.bit.AtTargetPosition);
 
-            SerialPort.Send("Enabled:\t\t");
-            if (statusReg.bit.Enabled) {
-                SerialPort.SendLine('1');
-            }
-            else {
-                SerialPort.SendLine('0');
-            }
+			SerialPort.Send("StepsActive:     	");
+			SerialPort.SendLine(statusReg.bit.StepsActive);
 
-            SerialPort.Send("Move direction:\t\t");
-            if (statusReg.bit.MoveDirection) {
-                SerialPort.SendLine('+');
-            }
-            else {
-                SerialPort.SendLine('-');
-            }
+			SerialPort.Send("AtTargetVelocity:	");
+			SerialPort.SendLine(statusReg.bit.AtTargetVelocity);
+		
+			SerialPort.Send("MoveDirection:   	");
+			SerialPort.SendLine(statusReg.bit.MoveDirection);
 
-            SerialPort.Send("Steps active:\t\t");
-            if (statusReg.bit.StepsActive) {
-                SerialPort.SendLine('1');
-            }
-            else {
-                SerialPort.SendLine('0');
-            }
+			SerialPort.Send("MotorInFault:    	");
+			SerialPort.SendLine(statusReg.bit.MotorInFault);
 
-            SerialPort.Send("At velocity target:\t");
-            if (statusReg.bit.AtTargetVelocity) {
-                SerialPort.SendLine('1');
-            }
-            else {
-                SerialPort.SendLine('0');
-            }
+			SerialPort.Send("Enabled:         	");
+			SerialPort.SendLine(statusReg.bit.Enabled);
 
-            SerialPort.Send("Ready state:\t\t");
-            readyStateStr = ReadyStateString(statusReg.bit.ReadyState);
-            SerialPort.SendLine(readyStateStr);
+			SerialPort.Send("PositionalMove:  	");
+			SerialPort.SendLine(statusReg.bit.PositionalMove);
 
-            SerialPort.SendLine("--------------------------------");
+			SerialPort.Send("HLFB State:		");
+			switch (statusReg.bit.HlfbState) {
+				case 0:
+					SerialPort.SendLine("HLFB_DEASSERTED");
+					break;
+				case 1:
+					SerialPort.SendLine("HLFB_ASSERTED");
+					break;
+				case 2:
+					SerialPort.SendLine("HLFB_HAS_MEASUREMENT");
+					break;
+				case 3:
+					SerialPort.SendLine("HLFB_UNKNOWN");
+					break;
+				default:
+					// something has gone wrong if this is printed
+					SerialPort.SendLine("???");
+			}
+
+			SerialPort.Send("AlertsPresent:   	");
+			SerialPort.SendLine(statusReg.bit.AlertsPresent);
+
+			SerialPort.Send("Ready state:		");
+			switch (statusReg.bit.ReadyState) {
+				case MotorDriver::MOTOR_DISABLED:
+					SerialPort.SendLine("Disabled");
+					break;
+				case MotorDriver::MOTOR_ENABLING:
+					SerialPort.SendLine("Enabling");
+					break;
+				case MotorDriver::MOTOR_FAULTED:
+					SerialPort.SendLine("Faulted");
+					break;
+				case MotorDriver::MOTOR_READY:
+					SerialPort.SendLine("Ready");
+					break;
+				case MotorDriver::MOTOR_MOVING:
+					SerialPort.SendLine("Moving");
+					break;
+				default:
+					// something has gone wrong if this is printed
+					SerialPort.SendLine("???");
+			}
+	
+			SerialPort.Send("Triggering:      	");
+			SerialPort.SendLine(statusReg.bit.Triggering);
+
+			SerialPort.Send("InPositiveLimit: 	");
+			SerialPort.SendLine(statusReg.bit.InPositiveLimit);
+
+			SerialPort.Send("InNegativeLimit: 	");
+			SerialPort.SendLine(statusReg.bit.InNegativeLimit);
+
+			SerialPort.Send("InEStopSensor:   	");
+			SerialPort.SendLine(statusReg.bit.InEStopSensor);	
+
+			SerialPort.SendLine("--------------------------------");
+	
+		
+			if (statusReg.bit.AlertsPresent){
+				SerialPort.Send("Alert register:	");
+				SerialPort.SendLine(alertReg.reg, 2); // prints the alert register in binary
+
+				SerialPort.Send("MotionCanceledInAlert:         ");
+				SerialPort.SendLine(alertReg.bit.MotionCanceledInAlert);
+
+				SerialPort.Send("MotionCanceledPositiveLimit:   ");
+				SerialPort.SendLine(alertReg.bit.MotionCanceledPositiveLimit);
+
+				SerialPort.Send("MotionCanceledNegativeLimit:   ");
+				SerialPort.SendLine(alertReg.bit.MotionCanceledNegativeLimit);
+
+				SerialPort.Send("MotionCanceledSensorEStop:     ");
+				SerialPort.SendLine(alertReg.bit.MotionCanceledSensorEStop);
+
+				SerialPort.Send("MotionCanceledMotorDisabled:   ");
+				SerialPort.SendLine(alertReg.bit.MotionCanceledMotorDisabled);
+
+				SerialPort.Send("MotorFaulted:                  ");
+				SerialPort.SendLine(alertReg.bit.MotorFaulted);
+
+				SerialPort.SendLine("--------------------------------");
+			}
         }
 
         // Wait a few seconds then repeat...
