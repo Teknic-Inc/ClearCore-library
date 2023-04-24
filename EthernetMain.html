@@ -43,7 +43,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
-      <li><a href="examples.html"><span>Examples</span></a></li>
+      <li><a href="SdkExamples.html"><span>SDK&#160;Examples</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -160,7 +160,7 @@ An <a class="el" href="class_clear_core_1_1_ethernet_udp.html" title="ClearCore 
 <li>To communicate with all connected clients (applicable only when using <a class="el" href="class_clear_core_1_1_ethernet_tcp_server.html#a95b9a2ca715e800a58dadef37820abfa" title="Return a reference to a client that has incoming data. ">EthernetTcpServer::Available()</a>).<ul>
 <li>Outgoing TCP packets may be sent through the server to all currently connected clients using <a class="el" href="class_clear_core_1_1_ethernet_tcp_server.html#a5c1c5a3dfdeacd10d69c843e3dd1435c" title="Send data to all clients managed by the server. ">EthernetTcpServer::Send()</a>. The TCP protocol of acknowledging received packets and <br />
  resending lost packets is handled automatically.</li>
-<li>Incoming TCP packets must be handled on an individual basis. <div class="fragment"><div class="line"><span class="comment">// Obtain a reference to a connected client with incoming data available.</span></div><div class="line">EthernetTcpClient client = server.Available();</div><div class="line"><span class="keywordflow">if</span> (client.Connected()) {</div><div class="line">    <span class="comment">// The server has returned a connected client with incoming data available.</span></div><div class="line">    <span class="keywordflow">while</span> (client.BytesAvailable() &gt; 0) {</div><div class="line">        <span class="comment">// Send the data received from the client over a serial port.</span></div><div class="line">        <a class="code" href="namespace_clear_core.html#a748569765cfde0a971ddb9eebb89e327">ConnectorCOM0</a>.<a class="code" href="class_clear_core_1_1_i_serial.html#aa609f4a056cecb71d7ebe13fc74937fd">Send</a>(client.Read());</div><div class="line">    }</div><div class="line">}</div></div><!-- fragment --> </li>
+<li>Incoming TCP packets must be handled on an individual basis. <div class="fragment"><div class="line"><span class="comment">// Obtain a reference to a connected client with incoming data available.</span></div><div class="line">EthernetTcpClient client = server.Available();</div><div class="line"><span class="keywordflow">if</span> (client.Connected()) {</div><div class="line">    <span class="comment">// The server has returned a connected client with incoming data available.</span></div><div class="line">    <span class="keywordflow">while</span> (client.Available() &gt; 0) {</div><div class="line">        <span class="comment">// Send the data received from the client over a serial port.</span></div><div class="line">        <a class="code" href="namespace_clear_core.html#a748569765cfde0a971ddb9eebb89e327">ConnectorCOM0</a>.<a class="code" href="class_clear_core_1_1_i_serial.html#aa609f4a056cecb71d7ebe13fc74937fd">Send</a>(client.Read());</div><div class="line">    }</div><div class="line">}</div></div><!-- fragment --> </li>
 </ul>
 </li>
 </ul>

@@ -4,7 +4,7 @@ var searchData=
   ['ccio_5foverload_5ftrip_5fticks',['CCIO_OVERLOAD_TRIP_TICKS',['../_ccio_board_manager_8h.html#aa4b8a03ac105cd8ee60ad03e5c775543',1,'CcioBoardManager.h']]],
   ['ccio_5fpin_5fcnt',['CCIO_PIN_CNT',['../_ccio_board_manager_8h.html#a7c4618aba1e673057d9144506e83eff8',1,'CcioBoardManager.h']]],
   ['ccio_5fpins_5fper_5fboard',['CCIO_PINS_PER_BOARD',['../_ccio_board_manager_8h.html#ab2e97a71b14adb684f70b25898ea8618',1,'CcioBoardManager.h']]],
-  ['clock_5fenable',['CLOCK_ENABLE',['../_sys_utils_8h.html#a384b1c6173712a92e02d737f017f6223',1,'SysUtils.h']]],
+  ['clock_5fenable',['CLOCK_ENABLE',['../_sys_utils_8h.html#aeb1313750faa7e9d6d928a8b8b380c0d',1,'SysUtils.h']]],
   ['cpm_5fenable_5fdelay',['CPM_ENABLE_DELAY',['../_motor_driver_8h.html#acc945d839aedb91219d099b84d256050',1,'MotorDriver.h']]],
   ['cpm_5fhlfb_5fcap_5fhistory',['CPM_HLFB_CAP_HISTORY',['../_motor_driver_8h.html#a5ee9ed28578e3e33c4b3fbd79071a167',1,'MotorDriver.h']]],
   ['cpu_5fclk',['CPU_CLK',['../_sys_timing_8h.html#a830fd4b906cd391487712d11740c065f',1,'SysTiming.h']]],

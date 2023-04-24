@@ -43,7 +43,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
-      <li><a href="examples.html"><span>Examples</span></a></li>
+      <li><a href="SdkExamples.html"><span>SDK&#160;Examples</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -91,15 +91,19 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="class_clear_core_1_1_step_generator-members.html">List of all members</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
-<a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="class_clear_core_1_1_step_generator-members.html">List of all members</a>  </div>
+<a href="#pub-methods">Public Member Functions</a>  </div>
   <div class="headertitle">
 <div class="title">ClearCore::StepGenerator Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
-
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p><a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> motor motion generator class. </p>
+<p>This class manages the generation and communication of movement profiles for the <a class="el" href="class_clear_core_1_1_motor_driver.html" title="ClearCore motor connector class. ">MotorDriver</a> connectors.</p>
+<p>For more detailed information on the <a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> Motor Control and Motion Generation systems, check out the <a class="el" href="MotorDriverMain.html">Motor Control System</a> and <a class="el" href="MoveGen.html">Step and Direction Control</a> informational pages. </p>
+</div>
 <p><a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> motor motion generator class.  
  <a href="class_clear_core_1_1_step_generator.html#details">More...</a></p>
 
@@ -159,11 +163,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a976f3110b44dd2efbff2ebd469cde01b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to check if the commanded move is at the cruising velocity - Acceleration portion of movement has finished.  <a href="#a976f3110b44dd2efbff2ebd469cde01b">More...</a><br /></td></tr>
 <tr class="separator:a976f3110b44dd2efbff2ebd469cde01b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> motor motion generator class. </p>
-<p>This class manages the generation and communication of movement profiles for the <a class="el" href="class_clear_core_1_1_motor_driver.html" title="ClearCore motor connector class. ">MotorDriver</a> connectors.</p>
-<p>For more detailed information on the <a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> Motor Control and Motion Generation systems, check out the <a class="el" href="MotorDriverMain.html">Motor Control System</a> and <a class="el" href="MoveGen.html">Step and Direction Control</a> informational pages. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="ab50860cec54ba7388f97174f8faf1f3d"></a>
 <div class="memitem">
 <div class="memproto">
@@ -186,7 +186,7 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="_encoder_input_examples_2_follow_encoder_2_follow_encoder_8cpp-example.html#a10">EncoderInputExamples/FollowEncoder/FollowEncoder.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="_encoder_input_examples_2_follow_encoder_2_follow_encoder_8cpp-example.html#a8">EncoderInputExamples/FollowEncoder/FollowEncoder.cpp</a>.</dd>
 </dl>
 </div>
 </div>
@@ -275,7 +275,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Issues a positional move for the specified distance. </p>
-<dl class="section note"><dt>Note</dt><dd>When making absolute moves, <a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> tracks the current position based on the zero position at program-start. If there is a move in progress when a new move is issued, the target position will be adjusted according to the <em>moveTarget</em> parameter, the new acceleration and velocity limits will be applied, and the new move is merged seamlessly with the previous motion. If you want to make sure that the previous move fully completes without being merged with a new command, wait for <a class="el" href="class_clear_core_1_1_step_generator.html#afa4dea531c378cbcd936e658c7c1ad6a" title="Function to check if no steps are currently being commanded to the motor. ">StepsComplete()</a> to return true.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>When making absolute moves, <a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> tracks the current position based on the zero position at program-start. If there is a move in progress when a new Move is issued, the target position will be adjusted according to the moveTarget parameter, the new acceleration and velocity limits will be applied, and the new move is merged seamlessly with the previous motion. If you want to make sure that the previous move fully completes without being merged with a new command, wait for StepsComplete to return true.</dd></dl>
 <div class="fragment"><div class="line"><span class="comment">// Interrupt any on-going move and move to the absolute position 5000</span></div><div class="line"><a class="code" href="namespace_clear_core.html#a77eb80cb3ee806db95908517f4106540">ConnectorM0</a>.<a class="code" href="class_clear_core_1_1_motor_driver.html#aff3166d7fe0f0797625708e6281a4398">Move</a>(5000, StepGenerator::MOVE_TARGET_ABSOLUTE);</div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">dist</td><td>The distance of the move in step pulses </td></tr>
@@ -474,7 +474,7 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="_encoder_input_examples_2_follow_encoder_2_follow_encoder_8cpp-example.html#a9">EncoderInputExamples/FollowEncoder/FollowEncoder.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="_encoder_input_examples_2_follow_encoder_2_follow_encoder_8cpp-example.html#a7">EncoderInputExamples/FollowEncoder/FollowEncoder.cpp</a>.</dd>
 </dl>
 </div>
 </div>

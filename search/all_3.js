@@ -124,7 +124,7 @@ var searchData=
   ['clearcorepins',['ClearCorePins',['../_sys_connectors_8h.html#af1a8764d388a4f3ad7e60813993a4b34',1,'SysConnectors.h']]],
   ['clearcoreports',['ClearCorePorts',['../_peripheral_route_8h.html#acebc48eb081608da97ad56fe91d3cea8',1,'PeripheralRoute.h']]],
   ['clearquadratureerror',['ClearQuadratureError',['../class_clear_core_1_1_encoder_input.html#afa8e8add1931a9176596fdb42b849555',1,'ClearCore::EncoderInput']]],
-  ['clock_5fenable',['CLOCK_ENABLE',['../_sys_utils_8h.html#a384b1c6173712a92e02d737f017f6223',1,'SysUtils.h']]],
+  ['clock_5fenable',['CLOCK_ENABLE',['../_sys_utils_8h.html#aeb1313750faa7e9d6d928a8b8b380c0d',1,'SysUtils.h']]],
   ['clock_5frate_5fhigh',['CLOCK_RATE_HIGH',['../class_clear_core_1_1_motor_manager.html#afe63283cb73e96a397df1243137b9690a4eea1db23af00b9d00b476fd2b5ba6c0',1,'ClearCore::MotorManager']]],
   ['clock_5frate_5flow',['CLOCK_RATE_LOW',['../class_clear_core_1_1_motor_manager.html#afe63283cb73e96a397df1243137b9690a35d489604e4eff09a806794ab65cdbdc',1,'ClearCore::MotorManager']]],
   ['clock_5frate_5fnormal',['CLOCK_RATE_NORMAL',['../class_clear_core_1_1_motor_manager.html#afe63283cb73e96a397df1243137b9690a97f38952e95211841e479f7cbe64f8f8',1,'ClearCore::MotorManager']]],

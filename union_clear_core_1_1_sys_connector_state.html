@@ -43,7 +43,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
-      <li><a href="examples.html"><span>Examples</span></a></li>
+      <li><a href="SdkExamples.html"><span>SDK&#160;Examples</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -91,14 +91,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="union_clear_core_1_1_sys_connector_state-members.html">List of all members</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="union_clear_core_1_1_sys_connector_state-members.html">List of all members</a>  </div>
+<a href="#pub-attribs">Public Attributes</a>  </div>
   <div class="headertitle">
 <div class="title">ClearCore::SysConnectorState Union Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p><a class="el" href="union_clear_core_1_1_sys_connector_state.html">SysConnectorState</a> union allocating 1 bit per connector.</p>
+<p>This union is used to hold a bitmask of state information at a system level instead of having to query each connector individually.</p>
+<dl class="section note"><dt>Note</dt><dd>Names in the bitfield match the <a class="el" href="_sys_connectors_8h.html#af1a8764d388a4f3ad7e60813993a4b34" title="ClearCore PIN definitions. ">ClearCorePins</a> enum. </dd>
+<dd>
+This interface does not include any attached CCIO-8 pins. To read all CCIO-8 pins see <a class="el" href="class_clear_core_1_1_ccio_board_manager.html#a1f6dd7e50d6c04fbdfb04b7f5fe6841a" title="Accessor for all the CCIO-8 pins&#39; output states. ">CcioBoardManager::OutputState()</a>. </dd></dl>
+</div>
 <p><code>#include &lt;<a class="el" href="_sys_connectors_8h_source.html">SysConnectors.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -179,13 +185,7 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:aa679833db3baf232982af67c7651ebd0"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="union_clear_core_1_1_sys_connector_state.html#aa679833db3baf232982af67c7651ebd0">bit</a></td></tr>
 <tr class="separator:aa679833db3baf232982af67c7651ebd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="union_clear_core_1_1_sys_connector_state.html">SysConnectorState</a> union allocating 1 bit per connector.</p>
-<p>This union is used to hold a bitmask of state information at a system level instead of having to query each connector individually.</p>
-<dl class="section note"><dt>Note</dt><dd>Names in the bitfield match the <a class="el" href="_sys_connectors_8h.html#af1a8764d388a4f3ad7e60813993a4b34" title="ClearCore PIN definitions. ">ClearCorePins</a> enum. </dd>
-<dd>
-This interface does not include any attached CCIO-8 pins. To read all CCIO-8 pins see <a class="el" href="class_clear_core_1_1_ccio_board_manager.html#a1f6dd7e50d6c04fbdfb04b7f5fe6841a" title="Accessor for all the CCIO-8 pins&#39; output states. ">CcioBoardManager::OutputState()</a>. </dd></dl>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a010bca63d89a56c38cc3499a57e31553"></a>
 <div class="memitem">
 <div class="memproto">

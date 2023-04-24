@@ -5,6 +5,6 @@ var searchData=
   ['sercom_5fnvic_5frx_5fpriority',['SERCOM_NVIC_RX_PRIORITY',['../_serial_base_8h.html#aa26108870599aa29dfa5379e4268f31c',1,'SerialBase.h']]],
   ['sercom_5fnvic_5ftx_5fpriority',['SERCOM_NVIC_TX_PRIORITY',['../_serial_base_8h.html#a504ecd625615ed8529130680f48ff1ef',1,'SerialBase.h']]],
   ['serial_5fbuffer_5fsize',['SERIAL_BUFFER_SIZE',['../_serial_base_8h.html#aaa07390e6158db5d82d40510d2ae02d5',1,'SerialBase.h']]],
-  ['set_5fclock_5fsource',['SET_CLOCK_SOURCE',['../_sys_utils_8h.html#ac0317ce16dc2461b7b879cc31b9b1bac',1,'SysUtils.h']]],
-  ['syncbusy_5fwait',['SYNCBUSY_WAIT',['../_sys_utils_8h.html#af5bb41db268cd0b5d9467b122c0cf956',1,'SysUtils.h']]]
+  ['set_5fclock_5fsource',['SET_CLOCK_SOURCE',['../_sys_utils_8h.html#a961c6fb629d72388c80904ab328f7e6e',1,'SysUtils.h']]],
+  ['syncbusy_5fwait',['SYNCBUSY_WAIT',['../_sys_utils_8h.html#a4b91e9f23831f7b4b32bcd27e71fb1e1',1,'SysUtils.h']]]
 ];

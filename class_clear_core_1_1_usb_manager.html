@@ -43,7 +43,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
-      <li><a href="examples.html"><span>Examples</span></a></li>
+      <li><a href="SdkExamples.html"><span>SDK&#160;Examples</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -91,13 +91,19 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="class_clear_core_1_1_usb_manager-members.html">List of all members</a>  </div>
+<a href="class_clear_core_1_1_usb_manager-members.html">List of all members</a> &#124;
+<a href="#pub-methods">Public Member Functions</a>  </div>
   <div class="headertitle">
 <div class="title">ClearCore::UsbManager Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>USB manager Class. </p>
+<p>Generates a mask for all of the items in the USB_STATUS_REG_LIST. Appends the text "Mask" to the item in the list.</p>
+<p>e.g. The mask for TimeoutRead is TimeoutReadMask Implements a CDC (Communications Device Class) USB device. The CDC uses an abstract control model (ACM) to emulate a serial port.</p>
+<p>Reading: Upon receiving data (interrupt based), the data is copied into a circular buffer. When the buffer is full, the receipt of data is acknowledged, but not copied into the buffer. Data is drained from the buffer via the Read function. To Query the number of available bytes call Available().</p>
+<p>Writing: Small transfers (less than a packet size) are copied into a buffer and sent in the background. Larger transfers are still sent in the background, but are not buffered. This means that the pointer to the data must remain valid during the sending procedure. </p>
+</div>
 <p>USB manager Class.  
  <a href="class_clear_core_1_1_usb_manager.html#details">More...</a></p>
 
@@ -148,13 +154,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>WaitForWriteFinish</b
 const volatile usb_cdc_control_signal_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>LineState</b> ()</td></tr>
 <tr class="separator:ac74f0160ad27db1f999ff39fbbaafd10"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>USB manager Class. </p>
-<p>Generates a mask for all of the items in the USB_STATUS_REG_LIST. Appends the text "Mask" to the item in the list.</p>
-<p>e.g. The mask for TimeoutRead is TimeoutReadMask Implements a CDC (Communications Device Class) USB device. The CDC uses an abstract control model (ACM) to emulate a serial port.</p>
-<p>Reading: Upon receiving data (interrupt based), the data is copied into a circular buffer. When the buffer is full, the receipt of data is acknowledged, but not copied into the buffer. Data is drained from the buffer via the Read function. To Query the number of available bytes call Available().</p>
-<p>Writing: Small transfers (less than a packet size) are copied into a buffer and sent in the background. Larger transfers are still sent in the background, but are not buffered. This means that the pointer to the data must remain valid during the sending procedure. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="af72336c3c9eb4eda67dca3c0c050beeb"></a>
 <div class="memitem">
 <div class="memproto">

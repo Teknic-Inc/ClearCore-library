@@ -43,7 +43,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
-      <li><a href="examples.html"><span>Examples</span></a></li>
+      <li><a href="SdkExamples.html"><span>SDK&#160;Examples</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -91,14 +91,23 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="class_clear_core_1_1_digital_in_out_h_bridge-members.html">List of all members</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
-<a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="class_clear_core_1_1_digital_in_out_h_bridge-members.html">List of all members</a>  </div>
+<a href="#pub-methods">Public Member Functions</a>  </div>
   <div class="headertitle">
 <div class="title">ClearCore::DigitalInOutHBridge Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p><a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> H-Bridge digital output connector class. </p>
+<p>This manages a connector on the <a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> board that supports H-Bridge digital output functionality, including sine tone generation. This connector can also be configured as a digital input or digital output.</p>
+<p>The following connector instances support H-Bridge digital output functionality:</p><ul>
+<li><a class="el" href="namespace_clear_core.html#a7a51929d525d80a76c82935af736387f" title="IO-4 connector instance. ">ConnectorIO4</a></li>
+<li><a class="el" href="namespace_clear_core.html#aa1949cc6e0cf6476095f52a6e3988937" title="IO-5 connector instance. ">ConnectorIO5</a></li>
+</ul>
+<p>For more detailed information on the <a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> <a class="el" href="class_clear_core_1_1_connector.html" title="Base class for interacting with all ClearCore connector objects. ">Connector</a> interface, check out the <a class="el" href="ConnectorMain.html">ClearCore Connector System</a> informational page.</p>
+<dl class="section note"><dt>Note</dt><dd>If overloaded, these connectors will need to be reset using the <a class="el" href="class_clear_core_1_1_status_manager.html#acbe76358b6f14cc697ae8ed5fefe0014" title="Starts a reset pulse to the DigitalInOutHBridge connectors. ">StatusManager::HBridgeReset</a> function. This applies when running in H-bridge mode or digital input/output modes. </dd></dl>
+</div>
 <p><a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> H-Bridge digital output connector class.  
  <a href="class_clear_core_1_1_digital_in_out_h_bridge.html#details">More...</a></p>
 
@@ -276,16 +285,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a5950f850a83fd93b6de72fc2600ffd26 inherit pub_methods_class_clear_core_1_1_connector"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a bit mask representing this connector.  <a href="#a5950f850a83fd93b6de72fc2600ffd26">More...</a><br /></td></tr>
 <tr class="separator:a5950f850a83fd93b6de72fc2600ffd26 inherit pub_methods_class_clear_core_1_1_connector"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> H-Bridge digital output connector class. </p>
-<p>This manages a connector on the <a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> board that supports H-Bridge digital output functionality, including sine tone generation. This connector can also be configured as a digital input or digital output.</p>
-<p>The following connector instances support H-Bridge digital output functionality:</p><ul>
-<li><a class="el" href="namespace_clear_core.html#a7a51929d525d80a76c82935af736387f" title="IO-4 connector instance. ">ConnectorIO4</a></li>
-<li><a class="el" href="namespace_clear_core.html#aa1949cc6e0cf6476095f52a6e3988937" title="IO-5 connector instance. ">ConnectorIO5</a></li>
-</ul>
-<p>For more detailed information on the <a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> <a class="el" href="class_clear_core_1_1_connector.html" title="Base class for interacting with all ClearCore connector objects. ">Connector</a> interface, check out the <a class="el" href="ConnectorMain.html">ClearCore Connector System</a> informational page.</p>
-<dl class="section note"><dt>Note</dt><dd>If overloaded, these connectors will need to be reset using the <a class="el" href="class_clear_core_1_1_status_manager.html#acbe76358b6f14cc697ae8ed5fefe0014" title="Starts a reset pulse to the DigitalInOutHBridge connectors. ">StatusManager::HBridgeReset</a> function. This applies when running in H-bridge mode or digital input/output modes. </dd></dl>
-</div><h2 class="groupheader">Member Enumeration Documentation</h2>
+<h2 class="groupheader">Member Enumeration Documentation</h2>
 <a class="anchor" id="a799f53469aa925a20bc6b43497f8ac83"></a>
 <div class="memitem">
 <div class="memproto">
