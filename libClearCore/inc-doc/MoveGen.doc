@@ -19,8 +19,8 @@ namespace ClearCore {
         - The MotorModeSet() function sets a pair of motor connectors into the specified mode. Choose the pair that includes the connector you'd like to use. The pairs are M-0/M-1 and M-2/M-3.
 
 <h2> Motion Parameters </h2>
-    The StepGenerator generates a move profile using pre-defined motion parameters set by the user. These parameters may be changed "on the fly"; newly commanded moves will immediately \n interrupt any currently active move.
-    An easy way to check the move's state, provided by StepGenerator, is by polling the StepGenerator#StepsComplete() function. This \n
+    The StepGenerator generates a move profile using pre-defined motion parameters set by the user. These parameters may be changed "on the fly"; newly commanded moves will immediately interrupt any currently active move.
+    An easy way to check the move's state, provided by StepGenerator, is by polling the StepGenerator#StepsComplete() function. This
     will return a boolean value representing whether the StepGenerator is outputting steps. Note that depending on your mechanics the motor shaft may still be moving even if the value is false.
 
 <h3> Position Reference </h3>
@@ -49,7 +49,7 @@ namespace ClearCore {
 
 <h3> Positional Move </h3>
     - Generates a triangle movement profile that obeys the set maximum velocity and acceleration limits.
-    - The function returns the movement success as a boolean value. The move will be rejected if the commanded position reference would result \n
+    - The function returns true if the movement can start. The move will be rejected if the commanded position reference would result \n
     in no motion or if an alert is present in the motor's Alert Register.
     - The StepGenerator#Move() function by default commands a relative move.
         \code{.cpp}
@@ -65,7 +65,7 @@ namespace ClearCore {
 <h3> Velocity Move </h3>
     - Begins a continuous move at the specified velocity using the pre-defined max acceleration.
     - Calling StepGenerator#MoveVelocity() will overwrite any currently active positional move.
-    - The function returns the movement success as a boolean value. The move will be rejected if the commanded position reference would result \n
+    - The function returns true if the movement can start. The move will be rejected if the commanded position reference would result \n
     in no motion or if an alert is present in the motor's Alert Register.
         \code{.cpp}
         // Move the motor 50000 step pulses
