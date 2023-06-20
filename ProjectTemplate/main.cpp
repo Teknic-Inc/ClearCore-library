@@ -2,7 +2,7 @@
 #include "ClearCore.h"
 
 int main(void) {
-    /* Replace with your application code */
+    /* Replace with your application code below */
     bool ledState = true;
     while (1)
     {
