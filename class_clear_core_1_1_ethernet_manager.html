@@ -184,7 +184,7 @@ Public Member Functions</h2></td></tr>
 <p>Set up DHCP connection to retrieve local IP. </p>
 <p>Attempts to perform DHCP negotiation to be supplied an IP address.</p>
 <dl class="section return"><dt>Returns</dt><dd>Returns true if DHCP supplied an IP address. </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="_ethernet_examples_2_ethernet_udp_hello_world_2_ethernet_udp_hello_world_8cpp-example.html#a8">EthernetExamples/EthernetUdpHelloWorld/EthernetUdpHelloWorld.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="_ethernet_examples_2_ethernet_tcp_client_hello_world_2_ethernet_tcp_client_hello_world_8cpp-example.html#a9">EthernetExamples/EthernetTcpClientHelloWorld/EthernetTcpClientHelloWorld.cpp</a>, <a class="el" href="_ethernet_examples_2_ethernet_tcp_server_hello_world_automatic_2_ethernet_tcp_server_hello_world_automatic_8cpp-example.html#a9">EthernetExamples/EthernetTcpServerHelloWorld_automatic/EthernetTcpServerHelloWorld_automatic.cpp</a>, <a class="el" href="_ethernet_examples_2_ethernet_tcp_server_hello_world_manual_2_ethernet_tcp_server_hello_world_manual_8cpp-example.html#a8">EthernetExamples/EthernetTcpServerHelloWorld_manual/EthernetTcpServerHelloWorld_manual.cpp</a>, and <a class="el" href="_ethernet_examples_2_ethernet_udp_hello_world_2_ethernet_udp_hello_world_8cpp-example.html#a8">EthernetExamples/EthernetUdpHelloWorld/EthernetUdpHelloWorld.cpp</a>.</dd>
 </dl>
 </div>
 </div>
@@ -311,7 +311,7 @@ Doesn't have any effect when using DHCP. </dd></dl>
 
 <p>Get the local IP address. </p>
 <dl class="section return"><dt>Returns</dt><dd>Returns the local IP address. </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="_ethernet_examples_2_ethernet_udp_hello_world_2_ethernet_udp_hello_world_8cpp-example.html#a10">EthernetExamples/EthernetUdpHelloWorld/EthernetUdpHelloWorld.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="_ethernet_examples_2_ethernet_tcp_client_hello_world_2_ethernet_tcp_client_hello_world_8cpp-example.html#a11">EthernetExamples/EthernetTcpClientHelloWorld/EthernetTcpClientHelloWorld.cpp</a>, <a class="el" href="_ethernet_examples_2_ethernet_tcp_server_hello_world_automatic_2_ethernet_tcp_server_hello_world_automatic_8cpp-example.html#a11">EthernetExamples/EthernetTcpServerHelloWorld_automatic/EthernetTcpServerHelloWorld_automatic.cpp</a>, <a class="el" href="_ethernet_examples_2_ethernet_tcp_server_hello_world_manual_2_ethernet_tcp_server_hello_world_manual_8cpp-example.html#a10">EthernetExamples/EthernetTcpServerHelloWorld_manual/EthernetTcpServerHelloWorld_manual.cpp</a>, and <a class="el" href="_ethernet_examples_2_ethernet_udp_hello_world_2_ethernet_udp_hello_world_8cpp-example.html#a10">EthernetExamples/EthernetUdpHelloWorld/EthernetUdpHelloWorld.cpp</a>.</dd>
 </dl>
 </div>
 </div>
@@ -417,7 +417,7 @@ The netmask IP must be provided when using a static local IP. </dd></dl>
 <p>Check the link status from the PHY. </p>
 <dl class="section return"><dt>Returns</dt><dd>Returns true if the PHY has indicated link up. Returns false if the PHY has indicated link down.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>The PHY link should be confirmed before activating transmit and receive of frames through the GMAC. </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="_ethernet_examples_2_ethernet_udp_hello_world_2_ethernet_udp_hello_world_8cpp-example.html#a4">EthernetExamples/EthernetUdpHelloWorld/EthernetUdpHelloWorld.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="_ethernet_examples_2_ethernet_tcp_client_hello_world_2_ethernet_tcp_client_hello_world_8cpp-example.html#a5">EthernetExamples/EthernetTcpClientHelloWorld/EthernetTcpClientHelloWorld.cpp</a>, <a class="el" href="_ethernet_examples_2_ethernet_tcp_server_hello_world_automatic_2_ethernet_tcp_server_hello_world_automatic_8cpp-example.html#a5">EthernetExamples/EthernetTcpServerHelloWorld_automatic/EthernetTcpServerHelloWorld_automatic.cpp</a>, <a class="el" href="_ethernet_examples_2_ethernet_tcp_server_hello_world_manual_2_ethernet_tcp_server_hello_world_manual_8cpp-example.html#a4">EthernetExamples/EthernetTcpServerHelloWorld_manual/EthernetTcpServerHelloWorld_manual.cpp</a>, and <a class="el" href="_ethernet_examples_2_ethernet_udp_hello_world_2_ethernet_udp_hello_world_8cpp-example.html#a4">EthernetExamples/EthernetUdpHelloWorld/EthernetUdpHelloWorld.cpp</a>.</dd>
 </dl>
 </div>
 </div>
@@ -465,7 +465,8 @@ The netmask IP must be provided when using a static local IP. </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Must be called regularly when actively using Ethernet. </dd>
 <dd>
 Must NOT be called from an interrupt context. </dd></dl>
-
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="_ethernet_examples_2_ethernet_tcp_client_hello_world_2_ethernet_tcp_client_hello_world_8cpp-example.html#a14">EthernetExamples/EthernetTcpClientHelloWorld/EthernetTcpClientHelloWorld.cpp</a>, <a class="el" href="_ethernet_examples_2_ethernet_tcp_server_hello_world_automatic_2_ethernet_tcp_server_hello_world_automatic_8cpp-example.html#a14">EthernetExamples/EthernetTcpServerHelloWorld_automatic/EthernetTcpServerHelloWorld_automatic.cpp</a>, and <a class="el" href="_ethernet_examples_2_ethernet_tcp_server_hello_world_manual_2_ethernet_tcp_server_hello_world_manual_8cpp-example.html#a12">EthernetExamples/EthernetTcpServerHelloWorld_manual/EthernetTcpServerHelloWorld_manual.cpp</a>.</dd>
+</dl>
 </div>
 </div>
 <a class="anchor" id="a0c725b9cf5a1c19579d11aff70bd51c2"></a>
@@ -600,7 +601,7 @@ Must NOT be called from an interrupt context. </dd></dl>
 
 <p>Setup LwIP with the local network interface. </p>
 <dl class="section note"><dt>Note</dt><dd>Should only be called once. </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="_ethernet_examples_2_ethernet_udp_hello_world_2_ethernet_udp_hello_world_8cpp-example.html#a7">EthernetExamples/EthernetUdpHelloWorld/EthernetUdpHelloWorld.cpp</a>.</dd>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="_ethernet_examples_2_ethernet_tcp_client_hello_world_2_ethernet_tcp_client_hello_world_8cpp-example.html#a8">EthernetExamples/EthernetTcpClientHelloWorld/EthernetTcpClientHelloWorld.cpp</a>, <a class="el" href="_ethernet_examples_2_ethernet_tcp_server_hello_world_automatic_2_ethernet_tcp_server_hello_world_automatic_8cpp-example.html#a8">EthernetExamples/EthernetTcpServerHelloWorld_automatic/EthernetTcpServerHelloWorld_automatic.cpp</a>, <a class="el" href="_ethernet_examples_2_ethernet_tcp_server_hello_world_manual_2_ethernet_tcp_server_hello_world_manual_8cpp-example.html#a7">EthernetExamples/EthernetTcpServerHelloWorld_manual/EthernetTcpServerHelloWorld_manual.cpp</a>, and <a class="el" href="_ethernet_examples_2_ethernet_udp_hello_world_2_ethernet_udp_hello_world_8cpp-example.html#a7">EthernetExamples/EthernetUdpHelloWorld/EthernetUdpHelloWorld.cpp</a>.</dd>
 </dl>
 </div>
 </div>
