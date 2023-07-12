@@ -25,7 +25,7 @@ C:\\Program Files (x86)\\Teknic\\ClearCore-Library x.x [where x.x is the version
     - [Write CCIO-8 Digital Output](@ref CCIO8Examples/WriteCCIODigitalOutput/WriteCCIODigitalOutput.cpp)
     - [Write CCIO-8 Digital Output Pulses](@ref CCIO8Examples/WriteCCIODigitalOutputPulses/WriteCCIODigitalOutputPulses.cpp)
 
-<h2>ClearCore Board Status Example</h2>
+<h2>Board Status Example</h2>
     - [ClearCore Status Register](@ref ClearCoreBoardStatus/ClearCoreStatusRegister/ClearCoreStatusRegister.cpp)
     
 <h2>ClearPath Mode Examples</h2>
@@ -63,6 +63,9 @@ C:\\Program Files (x86)\\Teknic\\ClearCore-Library x.x [where x.x is the version
     - [Follow Encoder](@ref EncoderInputExamples/FollowEncoder/FollowEncoder.cpp)
 
 <h2>Ethernet Example</h2>
+    - [TCP Client Hello World](@ref EthernetExamples/EthernetTcpClientHelloWorld/EthernetTcpClientHelloWorld.cpp)
+	- [TCP Automatic Server Hello World](@ref EthernetExamples/EthernetTcpServerHelloWorld_automatic/EthernetTcpServerHelloWorld_automatic.cpp)
+	- [TCP Manual Server Hello World](@ref EthernetExamples/EthernetTcpServerHelloWorld_manual/EthernetTcpServerHelloWorld_manual.cpp)
     - [UDP Hello World](@ref EthernetExamples/EthernetUdpHelloWorld/EthernetUdpHelloWorld.cpp)
     
 <h2>Serial Communication Examples</h2>
@@ -71,6 +74,10 @@ C:\\Program Files (x86)\\Teknic\\ClearCore-Library x.x [where x.x is the version
     - [SPI COM-Port Initialization](@ref SerialCommExamples/SpiComPortInitialization/SpiComPortInitialization.cpp)
     - [SPI Serial Display](@ref SerialCommExamples/SpiSerialDisplay/SpiSerialDisplay.cpp)
     - [TTL Serial Display](@ref SerialCommExamples/TtlSerialDisplay/TtlSerialDisplay.cpp)
+	- Serial Command Parser
+		- <a href="ClearCoreCommandProtocol_UserGuide.pdf" target="_blank"><b>User Guide</b></a>
+		- [Code](@ref SerialCommExamples/ClearCoreCommandProtocol/ClearCoreCommandProtocol.cpp)
+
     
 <h2>Step And Direction Example (non-ClearPath)</h2>
     - [Step And Direction](@ref StepAndDirectionExamplesNonClearPath/StepAndDirectionNonClearPath/StepAndDirection.cpp)
@@ -229,10 +236,26 @@ C:\\Program Files (x86)\\Teknic\\ClearCore-Library x.x [where x.x is the version
 **/
 
 /**
+    \example EthernetExamples/EthernetTcpClientHelloWorld/EthernetTcpClientHelloWorld.cpp
+    Return to \ref SdkExamples
+**/
+/**
+    \example EthernetExamples/EthernetTcpServerHelloWorld_automatic/EthernetTcpServerHelloWorld_automatic.cpp
+    Return to \ref SdkExamples
+**/
+/**
+    \example EthernetExamples/EthernetTcpServerHelloWorld_manual/EthernetTcpServerHelloWorld_manual.cpp
+    Return to \ref SdkExamples
+**/
+/**
     \example EthernetExamples/EthernetUdpHelloWorld/EthernetUdpHelloWorld.cpp
     Return to \ref SdkExamples
 **/
 
+/**
+    \example SerialCommExamples/ClearCoreCommandProtocol/ClearCoreCommandProtocol.cpp
+    Return to \ref SdkExamples
+**/
 /**
     \example SerialCommExamples/SerialPrint/SerialPrint.cpp
     Return to \ref SdkExamples
