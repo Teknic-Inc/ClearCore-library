@@ -14,5 +14,5 @@
 <area shape="rect" id="node13" href="$class_clear_core_1_1_serial_base.html" title="ClearCore ARM Serial Port base class. " alt="" coords="210,347,361,373"/>
 <area shape="rect" id="node14" href="$class_clear_core_1_1_sd_card_driver.html" title="ClearCore SD card interface. " alt="" coords="429,333,591,360"/>
 <area shape="rect" id="node15" href="$class_clear_core_1_1_x_bee_driver.html" title="ClearCore XBee Interface. " alt="" coords="435,384,585,411"/>
-<area shape="rect" id="node16" href="$class_clear_core_1_1_step_generator.html" title="ClearCore motor motion generator class. " alt="" coords="200,144,371,171"/>
+<area shape="rect" id="node16" href="$class_clear_core_1_1_step_generator.html" title="ClearCore Step and Direction generator class. " alt="" coords="200,144,371,171"/>
 </map>

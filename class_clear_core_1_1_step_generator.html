@@ -100,11 +100,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> motor motion generator class. </p>
+<div class="textblock"><p><a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> Step and Direction generator class. </p>
 <p>This class manages the generation and communication of movement profiles for the <a class="el" href="class_clear_core_1_1_motor_driver.html" title="ClearCore motor connector class. ">MotorDriver</a> connectors.</p>
 <p>For more detailed information on the <a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> Motor Control and Motion Generation systems, check out the <a class="el" href="MotorDriverMain.html">Motor Control System</a> and <a class="el" href="MoveGen.html">Step and Direction Control</a> informational pages. </p>
 </div>
-<p><a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> motor motion generator class.  
+<p><a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> Step and Direction generator class.  
  <a href="class_clear_core_1_1_step_generator.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_step_generator_8h_source.html">StepGenerator.h</a>&gt;</code></p>
@@ -142,10 +142,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a15e9a149ff7bc1865425a71816e0d246"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the absolute commanded position to the given value.  <a href="#a15e9a149ff7bc1865425a71816e0d246">More...</a><br /></td></tr>
 <tr class="separator:a15e9a149ff7bc1865425a71816e0d246"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab0623233c26af3984c5ccd9b01133ea4"><td class="memItemLeft" align="right" valign="top">volatile const int32_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_clear_core_1_1_step_generator.html#ab0623233c26af3984c5ccd9b01133ea4">PositionRefCommanded</a> ()</td></tr>
-<tr class="memdesc:ab0623233c26af3984c5ccd9b01133ea4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accessor for the <a class="el" href="class_clear_core_1_1_step_generator.html" title="ClearCore motor motion generator class. ">StepGenerator</a>'s position reference.  <a href="#ab0623233c26af3984c5ccd9b01133ea4">More...</a><br /></td></tr>
+<tr class="memdesc:ab0623233c26af3984c5ccd9b01133ea4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accessor for the <a class="el" href="class_clear_core_1_1_step_generator.html" title="ClearCore Step and Direction generator class. ">StepGenerator</a>'s position reference.  <a href="#ab0623233c26af3984c5ccd9b01133ea4">More...</a><br /></td></tr>
 <tr class="separator:ab0623233c26af3984c5ccd9b01133ea4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae854c54641c6d3f8b1a075c26eac04f4"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_clear_core_1_1_step_generator.html#ae854c54641c6d3f8b1a075c26eac04f4">VelocityRefCommanded</a> ()</td></tr>
-<tr class="memdesc:ae854c54641c6d3f8b1a075c26eac04f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accessor for the <a class="el" href="class_clear_core_1_1_step_generator.html" title="ClearCore motor motion generator class. ">StepGenerator</a>'s momentary velocity.  <a href="#ae854c54641c6d3f8b1a075c26eac04f4">More...</a><br /></td></tr>
+<tr class="memdesc:ae854c54641c6d3f8b1a075c26eac04f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accessor for the <a class="el" href="class_clear_core_1_1_step_generator.html" title="ClearCore Step and Direction generator class. ">StepGenerator</a>'s momentary velocity.  <a href="#ae854c54641c6d3f8b1a075c26eac04f4">More...</a><br /></td></tr>
 <tr class="separator:ae854c54641c6d3f8b1a075c26eac04f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adf0ee47005b410ac29a3d4e200fea440"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_clear_core_1_1_step_generator.html#adf0ee47005b410ac29a3d4e200fea440">VelMax</a> (uint32_t velMax)</td></tr>
 <tr class="memdesc:adf0ee47005b410ac29a3d4e200fea440"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the maximum velocity for position moves, in step pulses per second.  <a href="#adf0ee47005b410ac29a3d4e200fea440">More...</a><br /></td></tr>
@@ -182,11 +182,12 @@ Public Member Functions</h2></td></tr>
 <p>Value will be clipped if out of bounds</p>
 <div class="fragment"><div class="line"><span class="comment">// Set the StepGenerator&#39;s maximum velocity to 15000 step pulses/sec^2</span></div><div class="line"><a class="code" href="namespace_clear_core.html#a77eb80cb3ee806db95908517f4106540">ConnectorM0</a>.<a class="code" href="class_clear_core_1_1_step_generator.html#ab50860cec54ba7388f97174f8faf1f3d">AccelMax</a>(15000);</div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">accelMax</td><td>The new acceleration limit </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">accelMax</td><td>The new acceleration limit</td></tr>
   </table>
   </dd>
 </dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="_encoder_input_examples_2_follow_encoder_2_follow_encoder_8cpp-example.html#a8">EncoderInputExamples/FollowEncoder/FollowEncoder.cpp</a>.</dd>
+<dl class="section note"><dt>Note</dt><dd>For use with Step and Direction mode. </dd></dl>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="_encoder_input_examples_2_follow_encoder_2_follow_encoder_8cpp-example.html#a10">EncoderInputExamples/FollowEncoder/FollowEncoder.cpp</a>.</dd>
 </dl>
 </div>
 </div>
@@ -213,7 +214,9 @@ Public Member Functions</h2></td></tr>
 
 <p>Function to check if the commanded move is at the cruising velocity - Acceleration portion of movement has finished. </p>
 <div class="fragment"><div class="line"><span class="keywordflow">if</span> (<a class="code" href="namespace_clear_core.html#a77eb80cb3ee806db95908517f4106540">ConnectorM0</a>.<a class="code" href="class_clear_core_1_1_step_generator.html#a976f3110b44dd2efbff2ebd469cde01b">CruiseVelocityReached</a>) {</div><div class="line">    <span class="comment">// The commanded move is at the cruising velocity</span></div><div class="line">}</div></div><!-- fragment --><dl class="section return"><dt>Returns</dt><dd>Returns true if there the move is in the cruise state </dd></dl>
-<dl class="section note"><dt>Note</dt><dd>The motor will still need to decelerate after cruising </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The motor will still need to decelerate after cruising</dd>
+<dd>
+For use with Step and Direction mode. </dd></dl>
 
 </div>
 </div>
@@ -235,10 +238,11 @@ Public Member Functions</h2></td></tr>
 <p>Value will be clipped if out of bounds</p>
 <div class="fragment"><div class="line"><span class="comment">// Set the StepGenerator&#39;s maximum E-stop deceleration to 15000 step pulses/sec^2</span></div><div class="line"><a class="code" href="namespace_clear_core.html#a77eb80cb3ee806db95908517f4106540">ConnectorM0</a>.<a class="code" href="class_clear_core_1_1_step_generator.html#ab639e63317a490b23713eeab09744810">EStopDecelMax</a>(15000);</div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">decelMax</td><td>The new e-stop deceleration limit </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">decelMax</td><td>The new e-stop deceleration limit</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section note"><dt>Note</dt><dd>For use with Step and Direction mode. </dd></dl>
 
 </div>
 </div>
@@ -275,7 +279,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Issues a positional move for the specified distance. </p>
-<dl class="section note"><dt>Note</dt><dd>When making absolute moves, <a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> tracks the current position based on the zero position at program-start. If there is a move in progress when a new Move is issued, the target position will be adjusted according to the moveTarget parameter, the new acceleration and velocity limits will be applied, and the new move is merged seamlessly with the previous motion. If you want to make sure that the previous move fully completes without being merged with a new command, wait for StepsComplete to return true.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>When making absolute moves, <a class="el" href="namespace_clear_core.html" title="Namespace to encompass the ClearCore board API. ">ClearCore</a> tracks the current position based on the zero position at program-start. If there is a move in progress when a new move is issued, the target position will be adjusted according to the <em>moveTarget</em> parameter, the new acceleration and velocity limits will be applied, and the new move is merged seamlessly with the previous motion. If you want to make sure that the previous move fully completes without being merged with a new command, wait for <a class="el" href="class_clear_core_1_1_step_generator.html#afa4dea531c378cbcd936e658c7c1ad6a" title="Function to check if no steps are currently being commanded to the motor. ">StepsComplete()</a> to return true.</dd></dl>
 <div class="fragment"><div class="line"><span class="comment">// Interrupt any on-going move and move to the absolute position 5000</span></div><div class="line"><a class="code" href="namespace_clear_core.html#a77eb80cb3ee806db95908517f4106540">ConnectorM0</a>.<a class="code" href="class_clear_core_1_1_motor_driver.html#aff3166d7fe0f0797625708e6281a4398">Move</a>(5000, StepGenerator::MOVE_TARGET_ABSOLUTE);</div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">dist</td><td>The distance of the move in step pulses </td></tr>
@@ -302,7 +306,8 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Interrupts the current move; the motor may stop abruptly.</p>
-<div class="fragment"><div class="line"><span class="comment">// Command an abrupt stop</span></div><div class="line"><a class="code" href="namespace_clear_core.html#a77eb80cb3ee806db95908517f4106540">ConnectorM0</a>.<a class="code" href="class_clear_core_1_1_step_generator.html#aaf0245968be5cd3af163c90890c227b6">MoveStopAbrupt</a>();</div></div><!-- fragment --> 
+<div class="fragment"><div class="line"><span class="comment">// Command an abrupt stop</span></div><div class="line"><a class="code" href="namespace_clear_core.html#a77eb80cb3ee806db95908517f4106540">ConnectorM0</a>.<a class="code" href="class_clear_core_1_1_step_generator.html#aaf0245968be5cd3af163c90890c227b6">MoveStopAbrupt</a>();</div></div><!-- fragment --><dl class="section note"><dt>Note</dt><dd>For use with Step and Direction mode. </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="a2fdb443de53a19e0652ccdaea78a2996"></a>
@@ -325,10 +330,11 @@ Public Member Functions</h2></td></tr>
 <p>This function's <em>decelMax</em> parameter can be used to update the <a class="el" href="class_clear_core_1_1_step_generator.html#ab639e63317a490b23713eeab09744810" title="Sets the maximum deceleration for E-stop Deceleration in step pulses per second^2. This is only for MoveStopDecel. ">EStopDecelMax</a> value used for stopping.</p>
 <div class="fragment"><div class="line"><span class="comment">// Ramp to a stop at a decel rate of 100000 pulses/sec^2</span></div><div class="line"><a class="code" href="namespace_clear_core.html#a77eb80cb3ee806db95908517f4106540">ConnectorM0</a>.<a class="code" href="class_clear_core_1_1_step_generator.html#a2fdb443de53a19e0652ccdaea78a2996">MoveStopDecel</a>(100000);</div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">decelMax</td><td>The new EStop deceleration rate to set instead of the value that was set prior to issuing the move. Passing 0 maintains the EStopDecelMax that was previously set. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">decelMax</td><td>The new EStop deceleration rate to set instead of the value that was set prior to issuing the move. Passing 0 maintains the EStopDecelMax that was previously set.</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section note"><dt>Note</dt><dd>For use with Step and Direction mode. </dd></dl>
 
 </div>
 </div>
@@ -389,8 +395,9 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Accessor for the <a class="el" href="class_clear_core_1_1_step_generator.html" title="ClearCore motor motion generator class. ">StepGenerator</a>'s position reference. </p>
-<div class="fragment"><div class="line"><span class="keywordflow">if</span> (<a class="code" href="namespace_clear_core.html#a77eb80cb3ee806db95908517f4106540">ConnectorM0</a>.<a class="code" href="class_clear_core_1_1_step_generator.html#ab0623233c26af3984c5ccd9b01133ea4">PositionRefCommanded</a>() &gt; 5000) {</div><div class="line">    <span class="comment">// M-0&#39;s position reference is above 5000</span></div><div class="line">}</div></div><!-- fragment --><dl class="section return"><dt>Returns</dt><dd>Returns the absolute commanded position. </dd></dl>
+<p>Accessor for the <a class="el" href="class_clear_core_1_1_step_generator.html" title="ClearCore Step and Direction generator class. ">StepGenerator</a>'s position reference. </p>
+<div class="fragment"><div class="line"><span class="keywordflow">if</span> (<a class="code" href="namespace_clear_core.html#a77eb80cb3ee806db95908517f4106540">ConnectorM0</a>.<a class="code" href="class_clear_core_1_1_step_generator.html#ab0623233c26af3984c5ccd9b01133ea4">PositionRefCommanded</a>() &gt; 5000) {</div><div class="line">    <span class="comment">// M-0&#39;s position reference is above 5000</span></div><div class="line">}</div></div><!-- fragment --><dl class="section return"><dt>Returns</dt><dd>Returns the absolute commanded position.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>For use with Step and Direction mode. </dd></dl>
 
 </div>
 </div>
@@ -419,10 +426,11 @@ Public Member Functions</h2></td></tr>
 <p>Sets the absolute commanded position to the given value. </p>
 <div class="fragment"><div class="line"><span class="comment">// Set the StepGenerator&#39;s position reference to -5000</span></div><div class="line"><a class="code" href="namespace_clear_core.html#a77eb80cb3ee806db95908517f4106540">ConnectorM0</a>.<a class="code" href="class_clear_core_1_1_step_generator.html#a15e9a149ff7bc1865425a71816e0d246">PositionRefSet</a>(-5000);</div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">posn</td><td>The new position to be set. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">posn</td><td>The new position to be set.</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section note"><dt>Note</dt><dd>For use with Step and Direction mode. </dd></dl>
 
 </div>
 </div>
@@ -449,7 +457,9 @@ Public Member Functions</h2></td></tr>
 
 <p>Function to check if no steps are currently being commanded to the motor. </p>
 <div class="fragment"><div class="line"><span class="keywordflow">if</span> (<a class="code" href="namespace_clear_core.html#a77eb80cb3ee806db95908517f4106540">ConnectorM0</a>.<a class="code" href="class_clear_core_1_1_step_generator.html#afa4dea531c378cbcd936e658c7c1ad6a">StepsComplete</a>()) {</div><div class="line">    <span class="comment">// No more steps are being commanded</span></div><div class="line">}</div></div><!-- fragment --><dl class="section return"><dt>Returns</dt><dd>Returns true if there is no valid current command. </dd></dl>
-<dl class="section note"><dt>Note</dt><dd>The motor may still be moving after steps are done being sent. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The motor may still be moving after steps are done being sent.</dd>
+<dd>
+For use with Step and Direction mode. </dd></dl>
 
 </div>
 </div>
@@ -470,11 +480,12 @@ Public Member Functions</h2></td></tr>
 <p>Sets the maximum velocity for position moves, in step pulses per second. </p>
 <div class="fragment"><div class="line"><span class="comment">// Set the StepGenerator&#39;s maximum velocity to 1200 step pulses/sec</span></div><div class="line"><a class="code" href="namespace_clear_core.html#a77eb80cb3ee806db95908517f4106540">ConnectorM0</a>.<a class="code" href="class_clear_core_1_1_step_generator.html#adf0ee47005b410ac29a3d4e200fea440">VelMax</a>(1200);</div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">velMax</td><td>The new velocity limit </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">velMax</td><td>The new velocity limit</td></tr>
   </table>
   </dd>
 </dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="_encoder_input_examples_2_follow_encoder_2_follow_encoder_8cpp-example.html#a7">EncoderInputExamples/FollowEncoder/FollowEncoder.cpp</a>.</dd>
+<dl class="section note"><dt>Note</dt><dd>For use with Step and Direction mode. </dd></dl>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="_encoder_input_examples_2_follow_encoder_2_follow_encoder_8cpp-example.html#a9">EncoderInputExamples/FollowEncoder/FollowEncoder.cpp</a>.</dd>
 </dl>
 </div>
 </div>
@@ -491,8 +502,9 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Accessor for the <a class="el" href="class_clear_core_1_1_step_generator.html" title="ClearCore motor motion generator class. ">StepGenerator</a>'s momentary velocity. </p>
-<div class="fragment"><div class="line"><span class="keywordflow">if</span> (<a class="code" href="namespace_clear_core.html#a77eb80cb3ee806db95908517f4106540">ConnectorM0</a>.<a class="code" href="class_clear_core_1_1_step_generator.html#ae854c54641c6d3f8b1a075c26eac04f4">VelocityRefCommanded</a>() &gt; 1000) {</div><div class="line">    <span class="comment">// M-0&#39;s current velocity is above 1000</span></div><div class="line">}</div></div><!-- fragment --><dl class="section return"><dt>Returns</dt><dd>Returns the momentary commanded velocity. </dd></dl>
+<p>Accessor for the <a class="el" href="class_clear_core_1_1_step_generator.html" title="ClearCore Step and Direction generator class. ">StepGenerator</a>'s momentary velocity. </p>
+<div class="fragment"><div class="line"><span class="keywordflow">if</span> (<a class="code" href="namespace_clear_core.html#a77eb80cb3ee806db95908517f4106540">ConnectorM0</a>.<a class="code" href="class_clear_core_1_1_step_generator.html#ae854c54641c6d3f8b1a075c26eac04f4">VelocityRefCommanded</a>() &gt; 1000) {</div><div class="line">    <span class="comment">// M-0&#39;s current velocity is above 1000</span></div><div class="line">}</div></div><!-- fragment --><dl class="section return"><dt>Returns</dt><dd>Returns the momentary commanded velocity.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>For use with Step and Direction mode. </dd></dl>
 
 </div>
 </div>
