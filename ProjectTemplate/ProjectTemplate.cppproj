@@ -36,7 +36,7 @@
   <documentation help="" />
   <offline-documentation help="" />
   <dependencies>
-    <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.34.1" />
+    <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.44.1" />
   </dependencies>
 </framework-data>
     </AsfFrameworkConfig>
@@ -88,6 +88,7 @@
     <ListValues>
       <Value>%24(PackRepoDir)\atmel\SAME53_DFP\1.1.118\include</Value>
       <Value>%24(PackRepoDir)\arm\CMSIS\4.5.0\CMSIS\Include\</Value>
+      <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
   <armgcc.compiler.optimization.level>Optimize most (-O3)</armgcc.compiler.optimization.level>
@@ -109,6 +110,7 @@
       <Value>../../libClearCore/inc</Value>
       <Value>../../LwIP/LwIP/src/include</Value>
       <Value>../../LwIP/LwIP/port/include</Value>
+      <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
     </ListValues>
   </armgcccpp.compiler.directories.IncludePaths>
   <armgcccpp.compiler.optimization.level>Optimize most (-O3)</armgcccpp.compiler.optimization.level>
@@ -131,11 +133,12 @@
   </armgcccpp.linker.libraries.LibrarySearchPaths>
   <armgcccpp.linker.optimization.GarbageCollectUnusedSections>True</armgcccpp.linker.optimization.GarbageCollectUnusedSections>
   <armgcccpp.linker.memorysettings.ExternalRAM />
-  <armgcccpp.linker.miscellaneous.LinkerFlags>-Tflash_with_bootloader.ld -mfloat-abi=hard -mfpu=fpv4-sp-d16</armgcccpp.linker.miscellaneous.LinkerFlags>
+  <armgcccpp.linker.miscellaneous.LinkerFlags>-Tsame53n19a_flash.ld -mfloat-abi=hard -mfpu=fpv4-sp-d16</armgcccpp.linker.miscellaneous.LinkerFlags>
   <armgcccpp.assembler.general.IncludePaths>
     <ListValues>
       <Value>%24(PackRepoDir)\atmel\SAME53_DFP\1.1.118\include</Value>
       <Value>%24(PackRepoDir)\arm\CMSIS\4.5.0\CMSIS\Include\</Value>
+      <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
     </ListValues>
   </armgcccpp.assembler.general.IncludePaths>
   <armgcccpp.preprocessingassembler.general.DefaultIncludePath>False</armgcccpp.preprocessingassembler.general.DefaultIncludePath>
@@ -143,6 +146,7 @@
     <ListValues>
       <Value>%24(PackRepoDir)\atmel\SAME53_DFP\1.1.118\include</Value>
       <Value>%24(PackRepoDir)\arm\CMSIS\4.5.0\CMSIS\Include\</Value>
+      <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
     </ListValues>
   </armgcccpp.preprocessingassembler.general.IncludePaths>
 </ArmGccCpp>
@@ -217,6 +221,7 @@
     <ListValues>
       <Value>%24(PackRepoDir)\atmel\SAME53_DFP\1.1.118\include</Value>
       <Value>%24(PackRepoDir)\arm\CMSIS\4.5.0\CMSIS\Include\</Value>
+      <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
     </ListValues>
   </armgcccpp.assembler.general.IncludePaths>
   <armgcccpp.assembler.debugging.DebugLevel>Default (-g)</armgcccpp.assembler.debugging.DebugLevel>
@@ -225,6 +230,7 @@
     <ListValues>
       <Value>%24(PackRepoDir)\atmel\SAME53_DFP\1.1.118\include</Value>
       <Value>%24(PackRepoDir)\arm\CMSIS\4.5.0\CMSIS\Include\</Value>
+      <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
     </ListValues>
   </armgcccpp.preprocessingassembler.general.IncludePaths>
   <armgcccpp.preprocessingassembler.debugging.DebugLevel>Default (-Wa,-g)</armgcccpp.preprocessingassembler.debugging.DebugLevel>
