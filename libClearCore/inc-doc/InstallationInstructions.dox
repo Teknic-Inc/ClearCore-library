@@ -5,10 +5,13 @@ namespace ClearCore {
     Download and run the appropriate installer for your development environment below to automatically install all ClearCore libraries:
     <ul>
         <li> Microchip/Atmel Studio<br>
-        https://www.teknic.com/files/downloads/ClearCore_Atmel_Installer.zip
+        https://teknic.com/files/downloads/ClearCore_Microchip_Installer.zip
 
-        <li> Arduino<br>
-        https://www.teknic.com/files/downloads/ClearCore_Arduino_Wrapper_Installer.zip
+        <li> Arduino IDE 2.X<br>
+        https://teknic.com/files/downloads/ClearCore_Arduino_Wrapper_Installer_2.2.1.zip
+
+        <li> Arduino Legacy IDE 1.8.X <br>
+        https://teknic.com/files/downloads/ClearCore_Arduino_Wrapper_Installer_1.8.zip
     </ul>
   
 <h1> Manual Install </h1>
