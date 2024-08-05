@@ -25,28 +25,10 @@ C:\\Program Files (x86)\\Teknic\\ClearCore-Library x.x [where x.x is the version
     - [Write CCIO-8 Digital Output](@ref CCIO8Examples/WriteCCIODigitalOutput/WriteCCIODigitalOutput.cpp)
     - [Write CCIO-8 Digital Output Pulses](@ref CCIO8Examples/WriteCCIODigitalOutputPulses/WriteCCIODigitalOutputPulses.cpp)
 
-<h2>ClearCore Board Status Example</h2>
+<h2>%ClearCore Board Status Example</h2>
     - [ClearCore Status Register](@ref ClearCoreBoardStatus/ClearCoreStatusRegister/ClearCoreStatusRegister.cpp)
     
 <h2>ClearPath Mode Examples</h2>
-    <h3>ClearPath-MC Series</h3>
-        - Absolute Positioning:
-            - [2 Positions Home to Switch](@ref ClearPathModeExamples/ClearPath-MC_Series/Abs2PositionsHomeToSwitch/Abs2PositionsHomeToSwitch.cpp)
-            - [4 Positions Home to HardStop](@ref ClearPathModeExamples/ClearPath-MC_Series/Abs4PositionsHomeToHardStop/Abs4PositionsHomeToHardStop.cpp)
-            - [16 Positions Home to HardStop](@ref ClearPathModeExamples/ClearPath-MC_Series/Abs16PositionsHomeToHardStop/Abs16PositionsHomeToHardStop.cpp)
-            
-        - Incremental Positioning:
-            - [2 Increments Home to Switch](@ref ClearPathModeExamples/ClearPath-MC_Series/Move2IncrementsHomeToSwitch/Move2IncrementsHomeToSwitch.cpp) 
-            - [4 Increments Home to HardStop](@ref ClearPathModeExamples/ClearPath-MC_Series/Move4IncrementsHomeToHardStop/Move4IncrementsHomeToHardStop.cpp)
-            
-        - [Pulse Burst Positioning](@ref ClearPathModeExamples/ClearPath-MC_Series/PulseBurstPositioning/PulseBurstPositioning.cpp)
-        - [Follow Digital Position Command, Unipolar PWM Command](@ref ClearPathModeExamples/ClearPath-MC_Series/FollowDigitalPosition/FollowDigitalPosition.cpp)
-        - [Follow Digital Torque Command, Unipolar PWM Command](@ref ClearPathModeExamples/ClearPath-MC_Series/FollowDigitalTorque/FollowDigitalTorque.cpp)
-        - [Follow Digital Velocity Command, Unipolar PWM Command](@ref ClearPathModeExamples/ClearPath-MC_Series/FollowDigitalVelocity/FollowDigitalVelocity.cpp)
-        - [Follow Digital Velocity Command, Bipolar PWM Command w/ Variable Torque](@ref ClearPathModeExamples/ClearPath-MC_Series/FollowDigitalVelocityWithVariableTorque/FollowDigitalVelocityWithVariableTorque.cpp)
-        - [Manual Velocity Control](@ref ClearPathModeExamples/ClearPath-MC_Series/ManualVelocity/ManualVelocity.cpp)
-        - [Ramp Up/Down To Selected Velocity](@ref ClearPathModeExamples/ClearPath-MC_Series/RampUpDownToSelectedVelocity/RampUpDownToSelectedVelocity.cpp)
-    
     <h3>ClearPath-SD Series</h3>
         - [SingleAxis, MovePositionAbsolute](@ref ClearPathModeExamples/ClearPath-SD_Series/MovePositionAbsolute/MovePositionAbsolute.cpp)
         - [SingleAxis, MovePositionRelative](@ref ClearPathModeExamples/ClearPath-SD_Series/MovePositionRelative/MovePositionRelative.cpp)
@@ -54,6 +36,32 @@ C:\\Program Files (x86)\\Teknic\\ClearCore-Library x.x [where x.x is the version
         - [Dual Axis, Synchronized Motion](@ref ClearPathModeExamples/ClearPath-SD_Series/DualAxisSynchronized/DualAxisSynchronized.cpp)
         - [Homing, User Seeks Home](@ref ClearPathModeExamples/ClearPath-SD_Series/UserSeeksHome/UserSeeksHome.cpp)
         - [Motor Status Register](@ref ClearPathModeExamples/ClearPath-SD_Series/MotorStatusRegister/MotorStatusRegister.cpp)
+
+    <h3>ClearPath-MC Series</h3>
+        \note ClearPath-MC servos are only recommended with ClearLink for applications that require variable torque control and have no precise positioning requirements. If the application requires positioning and/or velocity control, consider using the [ClearPath-SD](https://teknic.com/products/clearpath-brushless-dc-servo-motors/clearpath-sd-stepper-replacement/) servo motors instead
+
+        - [Follow Digital Torque Command, Unipolar PWM Command](@ref ClearPathModeExamples/ClearPath-MC_Series/FollowDigitalTorque/FollowDigitalTorque.cpp)
+        
+        <details>
+            <summary>See additional examples</summary>
+            - Absolute Positioning:
+                - [2 Positions Home to Switch](@ref ClearPathModeExamples/ClearPath-MC_Series/Abs2PositionsHomeToSwitch/Abs2PositionsHomeToSwitch.cpp)
+                - [4 Positions Home to HardStop](@ref ClearPathModeExamples/ClearPath-MC_Series/Abs4PositionsHomeToHardStop/Abs4PositionsHomeToHardStop.cpp)
+                - [16 Positions Home to HardStop](@ref ClearPathModeExamples/ClearPath-MC_Series/Abs16PositionsHomeToHardStop/Abs16PositionsHomeToHardStop.cpp)
+            
+            - Incremental Positioning:
+                - [2 Increments Home to Switch](@ref ClearPathModeExamples/ClearPath-MC_Series/Move2IncrementsHomeToSwitch/Move2IncrementsHomeToSwitch.cpp) 
+                - [4 Increments Home to HardStop](@ref ClearPathModeExamples/ClearPath-MC_Series/Move4IncrementsHomeToHardStop/Move4IncrementsHomeToHardStop.cpp)
+                
+            - [Pulse Burst Positioning](@ref ClearPathModeExamples/ClearPath-MC_Series/PulseBurstPositioning/PulseBurstPositioning.cpp)
+            - [Follow Digital Position Command, Unipolar PWM Command](@ref ClearPathModeExamples/ClearPath-MC_Series/FollowDigitalPosition/FollowDigitalPosition.cpp)
+            
+            - [Follow Digital Velocity Command, Unipolar PWM Command](@ref ClearPathModeExamples/ClearPath-MC_Series/FollowDigitalVelocity/FollowDigitalVelocity.cpp)
+            - [Follow Digital Velocity Command, Bipolar PWM Command w/ Variable Torque](@ref ClearPathModeExamples/ClearPath-MC_Series/FollowDigitalVelocityWithVariableTorque/FollowDigitalVelocityWithVariableTorque.cpp)
+            - [Manual Velocity Control](@ref ClearPathModeExamples/ClearPath-MC_Series/ManualVelocity/ManualVelocity.cpp)
+            - [Ramp Up/Down To Selected Velocity](@ref ClearPathModeExamples/ClearPath-MC_Series/RampUpDownToSelectedVelocity/RampUpDownToSelectedVelocity.cpp)
+        </details>
+        
         
     <h3>High-Level Feedback (HLFB)</h3>
         - [ASG With Measured Torque](@ref ClearPathModeExamples/High-Level_Feedback_HLFB/AsgWithMeasuredTorque/AsgWithMeasuredTorque.cpp)
@@ -74,7 +82,7 @@ C:\\Program Files (x86)\\Teknic\\ClearCore-Library x.x [where x.x is the version
     - [SPI COM-Port Initialization](@ref SerialCommExamples/SpiComPortInitialization/SpiComPortInitialization.cpp)
     - [SPI Serial Display](@ref SerialCommExamples/SpiSerialDisplay/SpiSerialDisplay.cpp)
     - [TTL Serial Display](@ref SerialCommExamples/TtlSerialDisplay/TtlSerialDisplay.cpp)
-	- ClearCore Command Parser:
+	- %ClearCore Command Parser:
             - [Example code](@ref SerialCommExamples/ClearCoreCommandProtocol/ClearCoreCommandProtocol.cpp) 
             - <a href="ClearCoreCommandProtocol_UserGuide.pdf" target="_blank"><b>Overview</b></a>
     

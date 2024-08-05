@@ -20,13 +20,32 @@ table.memberdecls .mdescLeft {
 	border-bottom-left-radius: var(--border-radius-small);
 }
 
-table.memberdecls .mdescLeft, table.memberdecls .mdescRight {
+table.memberdecls .mdescLeft,
+table.memberdecls .mdescRight {
 	border-color: var(--separator-color);
 	border-width: 1px;
 }
+
 /* ----------------------------------- */
 
 /* complex css selector to not show borders for descriptions on collapsed public types */
-table.memberdecls tr.inherit:not(tr.inherit[style="display: table-row;"]) + tr > .mdescLeft, table.memberdecls tr.inherit:not(tr.inherit[style="display: table-row;"]) + tr > .mdescRight {
+table.memberdecls tr.inherit:not(tr.inherit[style="display: table-row;"])+tr>.mdescLeft,
+table.memberdecls tr.inherit:not(tr.inherit[style="display: table-row;"])+tr>.mdescRight {
 	border: 0;
+}
+
+/* styling the expandle details/summary elements */
+details>summary {
+	cursor: pointer;
+	background-color: var(--fragment-background);
+	padding: var(--spacing-medium);
+}
+
+details>summary::before {
+	content: "\25B6";
+}
+
+details {
+	border: 1px solid var(--separator-color);
+	border-radius: var(--border-radius-small);
 }
