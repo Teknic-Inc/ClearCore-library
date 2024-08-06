@@ -5,8 +5,17 @@
 }
 
 /* Make navbar items stand out a bit more */
-#main-menu li a {
-	font-size: var(--navigation-font-size) + 50%;
+#main-menu > li > a {
+	margin: var(--spacing-small);
+	background-color: var(--note-color);
+	color: var(--note-color-darker);
+	border: 1px solid var(--separator-color);
+}
+
+#main-menu > li > a:hover {
+	background-color: var(--note-color-darker);
+	color: var(--note-color-darker);
+	border-color: var(--note-color-darker);
 }
 
 /* show border to make it clear which element the description is associated with */
