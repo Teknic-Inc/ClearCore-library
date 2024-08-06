@@ -33,6 +33,10 @@ table.memberdecls .mdescLeft,
 table.memberdecls .mdescRight {
 	border-color: var(--separator-color);
 	border-width: 1px;
+	background-color: var(--fragment-background);
+	padding-top: 0;
+	transform: translate(0, -0.5rem);
+
 }
 
 /* ----------------------------------- */
@@ -41,6 +45,7 @@ table.memberdecls .mdescRight {
 table.memberdecls tr.inherit:not(tr.inherit[style="display: table-row;"])+tr>.mdescLeft,
 table.memberdecls tr.inherit:not(tr.inherit[style="display: table-row;"])+tr>.mdescRight {
 	border: 0;
+	background-color: var(--page-background-color);
 }
 
 /* styling the expandle details/summary elements */
@@ -57,4 +62,17 @@ details>summary::before {
 details {
 	border: 1px solid var(--separator-color);
 	border-radius: var(--border-radius-small);
+}
+
+/* make class blocks standout */
+html {
+	--memtitle-font-size: 24px;
+}
+
+h2.memtitle {
+	font-weight: bold;
+}
+
+div.memitem {
+	box-shadow: rgba(0, 113, 187, 0.12) 0px 2px 4px 0px, rgba(0, 113, 187, 0.32) 0px 2px 16px 0px !important;
 }
