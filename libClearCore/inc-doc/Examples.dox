@@ -38,29 +38,26 @@ C:\\Program Files (x86)\\Teknic\\ClearCore-Library x.x [where x.x is the version
         - [Motor Status Register](@ref ClearPathModeExamples/ClearPath-SD_Series/MotorStatusRegister/MotorStatusRegister.cpp)
 
     <h3>ClearPath-MC Series</h3>
-        \note ClearPath-MC servos are only recommended with ClearLink for applications that require variable torque control and have no precise positioning requirements. If the application requires positioning and/or velocity control, consider using the [ClearPath-SD](https://teknic.com/products/clearpath-brushless-dc-servo-motors/clearpath-sd-stepper-replacement/) servo motors instead
+        \note Consider using the [ClearPath-SD](https://teknic.com/products/clearpath-brushless-dc-servo-motors/clearpath-sd-stepper-replacement/) servo motors if your application requires positioning and/or velocity control. Step and Direction provides more flexibility in positioning and velocity applications compared to ClearPath-MC operational modes.
+        \note <br>ClearPath-MC servos are recommended for applications that require variable torque control with no positioning requirements.
 
         - [Follow Digital Torque Command, Unipolar PWM Command](@ref ClearPathModeExamples/ClearPath-MC_Series/FollowDigitalTorque/FollowDigitalTorque.cpp)
+        - [Follow Digital Velocity Command, Bipolar PWM Command w/ Variable Torque](@ref ClearPathModeExamples/ClearPath-MC_Series/FollowDigitalVelocityWithVariableTorque/FollowDigitalVelocityWithVariableTorque.cpp)
+        - Absolute Positioning:
+            - [2 Positions Home to Switch](@ref ClearPathModeExamples/ClearPath-MC_Series/Abs2PositionsHomeToSwitch/Abs2PositionsHomeToSwitch.cpp)
+            - [4 Positions Home to HardStop](@ref ClearPathModeExamples/ClearPath-MC_Series/Abs4PositionsHomeToHardStop/Abs4PositionsHomeToHardStop.cpp)
+            - [16 Positions Home to HardStop](@ref ClearPathModeExamples/ClearPath-MC_Series/Abs16PositionsHomeToHardStop/Abs16PositionsHomeToHardStop.cpp)
         
-        <details>
-            <summary>See additional examples</summary>
-            - Absolute Positioning:
-                - [2 Positions Home to Switch](@ref ClearPathModeExamples/ClearPath-MC_Series/Abs2PositionsHomeToSwitch/Abs2PositionsHomeToSwitch.cpp)
-                - [4 Positions Home to HardStop](@ref ClearPathModeExamples/ClearPath-MC_Series/Abs4PositionsHomeToHardStop/Abs4PositionsHomeToHardStop.cpp)
-                - [16 Positions Home to HardStop](@ref ClearPathModeExamples/ClearPath-MC_Series/Abs16PositionsHomeToHardStop/Abs16PositionsHomeToHardStop.cpp)
+        - Incremental Positioning:
+            - [2 Increments Home to Switch](@ref ClearPathModeExamples/ClearPath-MC_Series/Move2IncrementsHomeToSwitch/Move2IncrementsHomeToSwitch.cpp) 
+            - [4 Increments Home to HardStop](@ref ClearPathModeExamples/ClearPath-MC_Series/Move4IncrementsHomeToHardStop/Move4IncrementsHomeToHardStop.cpp)
             
-            - Incremental Positioning:
-                - [2 Increments Home to Switch](@ref ClearPathModeExamples/ClearPath-MC_Series/Move2IncrementsHomeToSwitch/Move2IncrementsHomeToSwitch.cpp) 
-                - [4 Increments Home to HardStop](@ref ClearPathModeExamples/ClearPath-MC_Series/Move4IncrementsHomeToHardStop/Move4IncrementsHomeToHardStop.cpp)
-                
-            - [Pulse Burst Positioning](@ref ClearPathModeExamples/ClearPath-MC_Series/PulseBurstPositioning/PulseBurstPositioning.cpp)
-            - [Follow Digital Position Command, Unipolar PWM Command](@ref ClearPathModeExamples/ClearPath-MC_Series/FollowDigitalPosition/FollowDigitalPosition.cpp)
-            
-            - [Follow Digital Velocity Command, Unipolar PWM Command](@ref ClearPathModeExamples/ClearPath-MC_Series/FollowDigitalVelocity/FollowDigitalVelocity.cpp)
-            - [Follow Digital Velocity Command, Bipolar PWM Command w/ Variable Torque](@ref ClearPathModeExamples/ClearPath-MC_Series/FollowDigitalVelocityWithVariableTorque/FollowDigitalVelocityWithVariableTorque.cpp)
-            - [Manual Velocity Control](@ref ClearPathModeExamples/ClearPath-MC_Series/ManualVelocity/ManualVelocity.cpp)
-            - [Ramp Up/Down To Selected Velocity](@ref ClearPathModeExamples/ClearPath-MC_Series/RampUpDownToSelectedVelocity/RampUpDownToSelectedVelocity.cpp)
-        </details>
+        - [Pulse Burst Positioning](@ref ClearPathModeExamples/ClearPath-MC_Series/PulseBurstPositioning/PulseBurstPositioning.cpp)
+        - [Follow Digital Position Command, Unipolar PWM Command](@ref ClearPathModeExamples/ClearPath-MC_Series/FollowDigitalPosition/FollowDigitalPosition.cpp)
+        
+        - [Follow Digital Velocity Command, Unipolar PWM Command](@ref ClearPathModeExamples/ClearPath-MC_Series/FollowDigitalVelocity/FollowDigitalVelocity.cpp)
+        - [Manual Velocity Control](@ref ClearPathModeExamples/ClearPath-MC_Series/ManualVelocity/ManualVelocity.cpp)
+        - [Ramp Up/Down To Selected Velocity](@ref ClearPathModeExamples/ClearPath-MC_Series/RampUpDownToSelectedVelocity/RampUpDownToSelectedVelocity.cpp)
         
         
     <h3>High-Level Feedback (HLFB)</h3>
