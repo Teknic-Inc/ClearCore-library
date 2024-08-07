@@ -1024,10 +1024,6 @@ public:
     /**
         \brief Set the associated positive limit switch connector.
 
-        When the input is deasserted (LED off) on the connector associated with
-        this limit, all motion in the positive direction will be stopped (i.e.
-        use a Normally Closed (NC) switch on this connector).
-
         \code{.cpp}
         if (ConnectorM0.LimitSwitchPos(CLEARCORE_PIN_IO2)) {
             // M-0's positive limit switch is now set to IO-2 and enabled.
@@ -1039,6 +1035,22 @@ public:
             // M-0's positive limit switch is now disabled.
         }
         \endcode
+
+        \note The input configured as a limit switch must be Normally Close (NC)
+        to function correctly with this feature.
+        
+        If motion is commanded in the positive direction and the configured input is de-asserted,
+        the specified motor will be commanded to decelerate immediatley
+        (at the greater deceleration rate of [EStopDecelMax](@ref ClearCore::StepGenerator::EStopDecelMax) or [AccelMax](@ref ClearCore::StepGenerator::AccelMax))
+        
+        Next, the [MotionCanceledPositiveLimit](@ref ClearCore::MotorDriver::AlertRegMotor::MotionCanceledPositiveLimit) alert
+        will be set to TRUE. Any alerts will prevent further motion (in any direction) until cleared.
+
+        \attention To recover from reaching a limit switch:
+        1. Ensure you are not activley commanding any further motion. Any new motion command in the same direction
+        as the limit will cause the alert to persist or reappear (even commanding 0 velocity or commanding to hold the current position).
+        2. Use ClearAlerts() to clear the alerts register. This allows further motion to be commanded.
+        Ensure this motion is in the <ins>opposite</ins> direction of this limit switch.
 
         \param[in] pin The pin representing the connector to use as the
         positive limit switch for this motor. If CLEARCORE_PIN_INVALID
@@ -1059,10 +1071,6 @@ public:
 
     /**
         \brief Get the associated positive limit switch output connector.
-
-        When the input is deasserted (LED off) on the connector associated with
-        this limit, all motion in the positive direction will be stopped (i.e.
-        use a Normally Closed (NC) switch on this connector).
 
         \code{.cpp}
         if (ConnectorM0.LimitSwitchPos() == CLEARCORE_PIN_IO2) {
@@ -1093,10 +1101,6 @@ public:
     /**
         \brief Set the associated negative limit switch connector.
 
-        When the input is deasserted (LED off) on the connector associated with
-        this limit, all motion in the negative direction will be stopped (i.e.
-        use a Normally Closed (NC) switch on this connector).
-
         \code{.cpp}
         if (ConnectorM0.LimitSwitchNeg(CLEARCORE_PIN_IO2)) {
             // M-0's negative limit switch is now set to IO-2 and enabled.
@@ -1108,6 +1112,22 @@ public:
             // M-0's negative limit switch is now disabled.
         }
         \endcode
+
+        \note The input configured as a limit switch must be Normally Close (NC)
+        to function correctly with this feature.
+        
+        If motion is commanded in the negative direction and the configured input is de-asserted,
+        the specified motor will be commanded to decelerate immediatley
+        (at the greater deceleration rate of [EStopDecelMax](@ref ClearCore::StepGenerator::EStopDecelMax) or [AccelMax](@ref ClearCore::StepGenerator::AccelMax))
+        
+        Next, the [MotionCanceledNegativeLimit](@ref ClearCore::MotorDriver::AlertRegMotor::MotionCanceledNegativeLimit) alert
+        will be set to TRUE. Any alerts will prevent further motion (in any direction) until cleared.
+
+        \attention To recover from reaching a limit switch:
+        1. Ensure you are not activley commanding any further motion. Any new motion command in the same direction
+        as the limit will cause the alert to persist or reappear (even commanding 0 velocity or commanding to hold the current position).
+        2. Use ClearAlerts() to clear the alerts register. This allows further motion to be commanded.
+        Ensure this motion is in the <ins>opposite</ins> direction of this limit switch.
 
         \param[in] pin The pin representing the connector to use as the
         negative limit switch for this motor. If CLEARCORE_PIN_INVALID
@@ -1128,10 +1148,6 @@ public:
 
     /**
         \brief Get the associated negative limit switch output connector.
-
-        When the input is deasserted (LED off) on the connector associated with
-        this limit, all motion in the negative direction will be stopped (i.e.
-        use a Normally Closed (NC) switch on this connector).
 
         \code{.cpp}
         if (ConnectorM0.LimitSwitchNeg() == CLEARCORE_PIN_IO2) {
@@ -1326,14 +1342,21 @@ public:
             // input signal for motor M-0.
         }
         \endcode
-        
-        When an EStopConnector is de-asserted, the specified motor connector will be commanded to decelerate immediately
-        (at the greatest deceleration rate of [EStopDecelMax](@ref ClearCore::StepGenerator::EStopDecelMax) or [AccelMax](@ref ClearCore::StepGenerator::AccelMax)).
-        The [MotionCanceledSensorEStop](@ref ClearCore::MotorDriver::AlertRegMotor::MotionCanceledSensorEStop) alert will be set to TRUE preventing further motion until that alert is cleared.
 
-        \attention To recover from an E-Stop, you must use the following procedure in order:
-        1. Ensure the EStopConnector is asserted again
-        2. Now, [ClearAlerts](@ref ClearAlerts) on your specified motor connector to allow motion to be commanded again
+        \note The input configured as an E-Stop must be Normally Close (NC)
+        to function correctly with this feature.
+        
+        If motion is commanded in any direction and the configured input is de-asserted,
+        the specified motor will be commanded to decelerate immediatley
+        (at the greater deceleration rate of [EStopDecelMax](@ref ClearCore::StepGenerator::EStopDecelMax) or [AccelMax](@ref ClearCore::StepGenerator::AccelMax))
+        
+        Next, the [MotionCanceledSensorEStop](@ref ClearCore::MotorDriver::AlertRegMotor::MotionCanceledSensorEStop) alert
+        will be set to TRUE. Any alerts will prevent further motion (in any direction) until cleared.
+
+        \attention To recover from an E-Stop:
+        1. Ensure you are not activley commanding any further motion. Any new motion command in any direction
+        will cause the alert to persist or reappear (even commanding 0 velocity or commanding to hold the current position).
+        2. Use ClearAlerts() to clear the alerts register. This allows further motion to be commanded.
 
         \param[in] pin The pin representing the digital input connector that
         will act as an E-Stop signal for this motor.
