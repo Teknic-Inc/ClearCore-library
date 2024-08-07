@@ -1315,7 +1315,7 @@ public:
     /**
         Set the digital input connector used as an E-Stop signal.
 
-        \code {.cppp}
+        \code{.cpp}
         if (ConnectorM0.EStopConnector(CLEARCORE_PIN_DI6)) {
             // Connector DI-6 was successfully configured to act as an E-Stop
             // input signal for motor M-0.
