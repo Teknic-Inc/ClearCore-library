@@ -75,11 +75,11 @@ As part of the Arduino installation package a number of examples sketches are in
 
 <h3> Pin Mode </h3>
     - Digital pins can be used as INPUT, INPUT_PULLUP, or OUTPUT. Changing a pin with pinMode() changes the electrical behavior of the pin.
-    - More information can be found <a href="https://www.arduino.cc/reference/en/language/variables/constants/constants/" >here</a>.
+    - More information can be found <a href="https://www.arduino.cc/reference/en/language/variables/constants/inputoutputpullup/" >here</a>.
 
 <h3> Pin Status </h3>
     - When reading or writing to a digital pin there are only two possible values a pin can take/be-set-to: HIGH and LOW.
-    - More information can be found <a href="https://www.arduino.cc/reference/en/language/variables/constants/constants/" >here</a>.
+    - More information can be found <a href="https://www.arduino.cc/reference/en/language/variables/constants/highlow/" >here</a>.
 
 <h3> Serial </h3>
     - Used for communication between the Arduino board and a computer or other devices. All Arduino boards have at least one serial port (also known as a UART or USART), and some have several.
