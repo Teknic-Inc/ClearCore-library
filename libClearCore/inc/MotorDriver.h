@@ -410,11 +410,7 @@ public:
         is a configuration setting or error that would (or should) prevent
         motion.
 
-        \note For use with Step and Direction mode.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
+        <div class="sd-disclaimer">For use with Step and Direction mode.</div>
     **/
     bool ValidateMove(bool negDirection);
 
@@ -488,7 +484,7 @@ public:
 
         \return The current state of Input A
 
-        \note For use with ClearPath-MC.
+        <div class="mc-disclaimer">For use with ClearPath-MC.</div>
     **/
     bool MotorInAState();
 
@@ -502,7 +498,7 @@ public:
 
         \param[in] value The boolean state to be passed to the input
 
-        \note For use with ClearPath-MC.
+        <div class="mc-disclaimer">For use with ClearPath-MC.</div>
     **/
     bool MotorInAState(bool value);
 
@@ -517,7 +513,7 @@ public:
 
         \return The current state of Input B
 
-        \note For use with ClearPath-MC.
+        <div class="mc-disclaimer">For use with ClearPath-MC.</div>
     **/
     bool MotorInBState();
 
@@ -531,7 +527,7 @@ public:
 
         \param[in] value The boolean state to be passed to the input
 
-        \note For use with ClearPath-MC.
+        <div class="mc-disclaimer">For use with ClearPath-MC.</div>
     **/
     bool MotorInBState(bool value);
 
@@ -575,7 +571,7 @@ public:
 
         \param[in] duty The PWM duty cycle
 
-        \note For use with ClearPath-MC.
+        <div class="mc-disclaimer">For use with ClearPath-MC.</div>
     **/
     bool MotorInADuty(uint8_t duty);
 
@@ -590,7 +586,7 @@ public:
 
         \param[in] duty The PWM duty cycle
 
-        \note For use with ClearPath-MC.
+        <div class="mc-disclaimer">For use with ClearPath-MC.</div>
     **/
     bool MotorInBDuty(uint8_t duty);
 
@@ -773,10 +769,6 @@ public:
         \endcode
 
         \return True if the HLFB carrier frequency was correctly set
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
     **/
     bool HlfbCarrier(HlfbCarrierFrequency freq) {
         switch (freq) {
@@ -812,10 +804,6 @@ public:
         \endcode
 
         \return The HLFB carrier frequency.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
     **/
     HlfbCarrierFrequency HlfbCarrier() {
         return m_hlfbCarrierFrequency;
@@ -980,10 +968,6 @@ public:
         \return True if the brake output was successfully set and enabled, or
         successfully disabled; false if a pin other than CLEARCORE_PIN_INVALID
         was supplied that isn't a valid digital output pin.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
     **/
     bool BrakeOutput(ClearCorePins pin);
 
@@ -1012,10 +996,6 @@ public:
         \return The pin representing the digital output connector configured to
         be this motor's brake output, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
     **/
     ClearCorePins BrakeOutput() {
         return m_brakeOutputPin;
@@ -1061,11 +1041,7 @@ public:
         CLEARCORE_PIN_INVALID was supplied that isn't a valid digital
         input pin.
 
-        \note For use with Step and Direction mode.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
+        <div class="sd-disclaimer">For use with Step and Direction mode.</div>
     **/
     bool LimitSwitchPos(ClearCorePins pin);
 
@@ -1088,11 +1064,7 @@ public:
         be this motor's positive limit, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
 
-        \note For use with Step and Direction mode.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
+        <div class="sd-disclaimer">For use with Step and Direction mode.</div>
     **/
     ClearCorePins LimitSwitchPos() {
         return m_limitSwitchPos;
@@ -1138,11 +1110,7 @@ public:
         CLEARCORE_PIN_INVALID was supplied that isn't a valid digital
         input pin.
 
-        \note For use with Step and Direction mode.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
+        <div class="sd-disclaimer">For use with Step and Direction mode.</div>
     **/
     bool LimitSwitchNeg(ClearCorePins pin);
 
@@ -1165,11 +1133,7 @@ public:
         be this motor's negative limit, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
 
-        \note For use with Step and Direction mode.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
+        <div class="sd-disclaimer">For use with Step and Direction mode.</div>
     **/
     ClearCorePins LimitSwitchNeg() {
         return m_limitSwitchNeg;
@@ -1205,10 +1169,6 @@ public:
         will control the state of this motor's enable signal.
 
         \return True if the enable connector was configured successfully.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
     **/
     bool EnableConnector(ClearCorePins pin);
 
@@ -1226,10 +1186,6 @@ public:
         \return The pin representing the digital input connector configured to
         control this motor's enable signal, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
     **/
     ClearCorePins EnableConnector() {
         return m_enableConnector;
@@ -1251,11 +1207,7 @@ public:
 
         \return True if the Input A connector was configured successfully.
 
-        \note For use with ClearPath-MC.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
+        <div class="mc-disclaimer">For use with ClearPath-MC.</div>
     **/
     bool InputAConnector(ClearCorePins pin);
 
@@ -1274,11 +1226,7 @@ public:
         control this motor's Input A signal, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
 
-        \note For use with ClearPath-MC.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
+        <div class="mc-disclaimer">For use with ClearPath-MC.</div>
     **/
     ClearCorePins InputAConnector() {
         return m_inputAConnector;
@@ -1300,11 +1248,7 @@ public:
 
         \return True if the Input B connector was configured successfully.
 
-        \note For use with ClearPath-MC.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
+        <div class="mc-disclaimer">For use with ClearPath-MC.</div>
     **/
     bool InputBConnector(ClearCorePins pin);
 
@@ -1323,11 +1267,7 @@ public:
         control this motor's Input B signal, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
 
-        \note For use with ClearPath-MC.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
+        <div class="mc-disclaimer">For use with ClearPath-MC.</div>
     **/
     ClearCorePins InputBConnector() {
         return m_inputBConnector;
@@ -1363,11 +1303,7 @@ public:
 
         \return True if the E-Stop connector was configured successfully.
 
-        \note For use with Step and Direction mode.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
+        <div class="sd-disclaimer">For use with Step and Direction mode.</div>
     **/
     bool EStopConnector(ClearCorePins pin);
 
@@ -1386,11 +1322,7 @@ public:
         an E-Stop input for this motor, or CLEARCORE_PIN_INVALID if no such
         connector has been configured.
 
-        \note For use with Step and Direction mode.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
+        <div class="sd-disclaimer">For use with Step and Direction mode.</div>
     **/
     ClearCorePins EStopConnector() {
         return m_eStopConnector;
@@ -1493,7 +1425,7 @@ public:
 
         \param[in] count The PWM on time
 
-        \note For use with ClearPath-MC.
+        <div class="mc-disclaimer">For use with ClearPath-MC.</div>
     **/
     bool MotorInACount(uint16_t count);
 
@@ -1503,7 +1435,7 @@ public:
 
         \param[in] count The PWM on time
 
-        \note For use with ClearPath-MC.
+        <div class="mc-disclaimer">For use with ClearPath-MC.</div>
     **/
     bool MotorInBCount(uint16_t count);
 

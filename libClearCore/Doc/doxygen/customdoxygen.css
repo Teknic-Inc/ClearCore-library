@@ -76,3 +76,25 @@ h2.memtitle {
 div.memitem {
 	box-shadow: rgba(0, 113, 187, 0.12) 0px 2px 4px 0px, rgba(0, 113, 187, 0.32) 0px 2px 16px 0px !important;
 }
+
+/* step and direction disclaimer */
+.sd-disclaimer {
+	font-weight: bold;
+	background-color: #00338d;
+	padding: 0.5rem;
+	color: white;
+	border-radius: var(--border-radius-large);
+	margin-bottom: 1rem;
+	display: inline-block;
+}
+
+/* clearpath mc disclaimer */
+.mc-disclaimer {
+	font-weight: bold;
+	background-color: #049075;
+	padding: 0.5rem;
+	color: white;
+	border-radius: var(--border-radius-large);
+	margin-bottom: 1rem;
+	display: inline-block;
+}
