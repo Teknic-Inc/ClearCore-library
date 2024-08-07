@@ -953,10 +953,15 @@ public:
         to energize or de-energize a connected brake. HLFB must be configured
         for either "ASG with Measured Torque" or "Servo On" for the automatic
         brake to function correctly. The motor connectors M-0 through M-3
-        can be mapped to any of the ClearCore outputs IO-0 through IO-5, or to
+        can be mapped to any of the %ClearCore outputs IO-0 through IO-5, or to
         any attached CCIO-8 output pin.
 
+        \note %ClearCore will energize (disengage) the brake when the configured motor is
+        enabled AND the HLFB reading of that motor is NOT deasserted.
+
         \code{.cpp}
+        // First configure IO-2 to be a digital output
+        ConnectorIO2.Mode(Connector::OUTPUT_DIGITAL); // Arduino: pinMode(IO2, OUTPUT);
         if (ConnectorM0.BrakeOutput(CLEARCORE_PIN_IO2)) {
             // M-0's brake output is now set to IO-2 and enabled.
         }
