@@ -1321,6 +1321,14 @@ public:
             // input signal for motor M-0.
         }
         \endcode
+        
+        When an EStopConnector is de-asserted, the specified motor connector will be commanded to decelerate immediately
+        (at the greatest deceleration rate of [EStopDecelMax](@ref ClearCore::StepGenerator::EStopDecelMax) or [AccelMax](@ref ClearCore::StepGenerator::AccelMax)).
+        The [MotionCanceledSensorEStop](@ref ClearCore::MotorDriver::AlertRegMotor::MotionCanceledSensorEStop) alert will be set to TRUE preventing further motion until that alert is cleared.
+
+        \attention To recover from an E-Stop, you must use the following procedure in order:
+        1. Ensure the EStopConnector is asserted again
+        2. Now, [ClearAlerts](@ref ClearAlerts) on your specified motor connector to allow motion to be commanded again
 
         \param[in] pin The pin representing the digital input connector that
         will act as an E-Stop signal for this motor.
