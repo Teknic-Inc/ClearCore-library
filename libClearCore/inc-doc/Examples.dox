@@ -85,6 +85,9 @@ C:\\Program Files (x86)\\Teknic\\ClearCore-Library x.x [where x.x is the version
     
 <h2>Step And Direction Example (non-ClearPath)</h2>
     - [Step And Direction](@ref StepAndDirectionExamplesNonClearPath/StepAndDirectionNonClearPath/StepAndDirection.cpp)
+
+<h2>XBee Example</h2>
+    - [Write XBee Output](@ref XBeeExamples/WriteXBeeOutput/WriteXBeeOutput.cpp)
 **/
 
 /**
@@ -286,5 +289,11 @@ C:\\Program Files (x86)\\Teknic\\ClearCore-Library x.x [where x.x is the version
     \example StepAndDirectionExamplesNonClearPath/StepAndDirectionNonClearPath/StepAndDirection.cpp
     Return to \ref SdkExamples
 **/
+
+/**
+    \example XBeeExamples/WriteXBeeOutput/WriteXBeeOutput.cpp
+    Return to \ref SdkExamples
+**/
+
 //********************************************************************************************
 }
