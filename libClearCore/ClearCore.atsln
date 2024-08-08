@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Atmel Studio Solution File, Format Version 11.00
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "ClearCore", "ClearCore.cppproj", "{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Release|ARM = Release|ARM
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}.Debug|ARM.ActiveCfg = Debug|ARM
+		{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}.Debug|ARM.Build.0 = Debug|ARM
+		{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}.Release|ARM.ActiveCfg = Release|ARM
+		{2530D5B1-8A40-4A55-95CA-2EC0B63E2088}.Release|ARM.Build.0 = Release|ARM
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

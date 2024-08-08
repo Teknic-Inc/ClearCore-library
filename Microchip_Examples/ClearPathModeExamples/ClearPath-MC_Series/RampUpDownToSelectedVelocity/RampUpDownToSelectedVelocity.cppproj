@@ -119,10 +119,10 @@
     <ListValues>
       <Value>%24(PackRepoDir)\arm\CMSIS\4.5.0\CMSIS\Include\</Value>
       <Value>%24(PackRepoDir)\atmel\SAME53_DFP\1.1.118\include</Value>
-      <Value>../../../../libClearCore/inc</Value>
-      <Value>../../../../LwIP/LwIP/src/include</Value>
-      <Value>../../../../LwIP/LwIP/port/include</Value>
-      <Value>%24(PackRepoDir)\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
+      <Value>../../../../../libClearCore/inc</Value>
+      <Value>../../../../../LwIP/LwIP/src/include</Value>
+      <Value>../../../../../LwIP/LwIP/port/include</Value>
+      <Value>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\arm\CMSIS\5.4.0\CMSIS\Core\Include\</Value>
     </ListValues>
   </armgcccpp.compiler.directories.IncludePaths>
   <armgcccpp.compiler.optimization.level>Optimize most (-O3)</armgcccpp.compiler.optimization.level>
@@ -146,7 +146,7 @@
   </armgcccpp.linker.libraries.LibrarySearchPaths>
   <armgcccpp.linker.optimization.GarbageCollectUnusedSections>True</armgcccpp.linker.optimization.GarbageCollectUnusedSections>
   <armgcccpp.linker.memorysettings.ExternalRAM />
-  <armgcccpp.linker.miscellaneous.LinkerFlags>-Tsame53n19a_flash.ld -mfloat-abi=hard -mfpu=fpv4-sp-d16</armgcccpp.linker.miscellaneous.LinkerFlags>
+  <armgcccpp.linker.miscellaneous.LinkerFlags>-Tflash_with_bootloader.ld -mfloat-abi=hard -mfpu=fpv4-sp-d16</armgcccpp.linker.miscellaneous.LinkerFlags>
   <armgcccpp.assembler.general.IncludePaths>
     <ListValues>
       <Value>%24(PackRepoDir)\atmel\SAME53_DFP\1.1.118\include</Value>
@@ -164,7 +164,7 @@
   </armgcccpp.preprocessingassembler.general.IncludePaths>
 </ArmGccCpp>
     </ToolchainSettings>
-    <PostBuildEvent>"$(SolutionDir)\..\..\Tools\uf2-builder\Release\uf2-builder.exe" "$(OutputDirectory)\$(OutputFileName).bin" "$(OutputDirectory)\$(OutputFileName).uf2"</PostBuildEvent>
+    <PostBuildEvent>"$(SolutionDir)\..\..\..\Tools\uf2-builder\Release\uf2-builder.exe" "$(OutputDirectory)\$(OutputFileName).bin" "$(OutputDirectory)\$(OutputFileName).uf2"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
