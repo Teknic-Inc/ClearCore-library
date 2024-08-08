@@ -38,3 +38,4 @@ jlink.*
 .vs/
 Debug/
 Release/
+.vscode
