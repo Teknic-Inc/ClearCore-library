@@ -149,7 +149,7 @@ bool CommandVelocity(int32_t commandedVelocity) {
     }
 
     // Delays to send the correct filtered direction.
-    Delay_ms(2 + INPUT_A_FILTER);
+    Delay_ms(20 + INPUT_A_FILTER);
 
     // Find the scaling factor of our velocity range mapped to the PWM duty
     // cycle range (255 is the max duty cycle).

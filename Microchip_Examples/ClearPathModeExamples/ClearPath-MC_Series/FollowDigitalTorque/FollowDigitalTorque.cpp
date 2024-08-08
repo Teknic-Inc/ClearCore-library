@@ -161,9 +161,9 @@ bool CommandTorque(int8_t commandedTorque) {
         motor.MotorInAState(false);
     }
 
-    // Ensures this delay is at least 2ms longer than the Input A filter
+    // Ensures this delay is at least 20ms longer than the Input A filter
     // setting in MSP
-    Delay_ms(2 + INPUT_A_FILTER);
+    Delay_ms(20 + INPUT_A_FILTER);
 
     // Command the move
     motor.MotorInBDuty(dutyRequest);
