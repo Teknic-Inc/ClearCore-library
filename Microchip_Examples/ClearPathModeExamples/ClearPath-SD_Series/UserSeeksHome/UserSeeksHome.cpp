@@ -130,7 +130,7 @@ int main() {
 
 
     // Delay so HLFB has time to deassert
-    Delay_ms(10);
+    Delay_ms(20);
     // Waits for HLFB to assert again, meaning the hardstop has been reached
     while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {
         if (motor.StatusReg().bit.AlertsPresent) {
@@ -151,7 +151,7 @@ int main() {
     motor.Move(-1000);
 
     // Delay so HLFB has time to deassert
-    Delay_ms(10);
+    Delay_ms(20);
     // Waits for HLFB to assert, meaning homing is complete
     SerialPort.SendLine("Moving away from hardstop... Waiting for HLFB");
     while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED) {

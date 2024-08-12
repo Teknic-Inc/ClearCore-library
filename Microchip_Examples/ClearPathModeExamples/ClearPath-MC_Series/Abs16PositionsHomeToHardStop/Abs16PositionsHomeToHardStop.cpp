@@ -210,11 +210,8 @@ bool MoveToPosition(uint8_t positionNum) {
         return false;
     }
 
-    // Ensures this delay is at least 2ms longer than the Input A, B filter
-    // setting in MSP
-    Delay_ms(2 );
-
     // Waits for HLFB to assert (signaling the move has successfully completed)
+    Delay_ms(2);
     SerialPort.SendLine("Moving.. Waiting for HLFB");
     while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED &&
 			!motor.StatusReg().bit.MotorInFault) {

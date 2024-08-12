@@ -307,10 +307,10 @@ void MotorDriver::Refresh() {
         brakeOutput->Mode() == ConnectorModes::OUTPUT_DIGITAL) {
             // Using HLFB_MODE_STATIC assumes the motor is in Servo On HLFB mode
             if (m_hlfbMode == HLFB_MODE_STATIC) {
-                brakeOutput->State(static_cast<int16_t>(m_hlfbState == HLFB_ASSERTED));
+                brakeOutput->State(static_cast<int16_t>(m_hlfbState == HLFB_ASSERTED && m_isEnabled));
             }
             else {
-                brakeOutput->State(static_cast<int16_t>(m_hlfbState != HLFB_DEASSERTED));
+                brakeOutput->State(static_cast<int16_t>(m_hlfbState != HLFB_DEASSERTED && m_isEnabled));
             }
         }
     }

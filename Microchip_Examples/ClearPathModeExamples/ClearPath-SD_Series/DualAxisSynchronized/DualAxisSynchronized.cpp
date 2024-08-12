@@ -208,37 +208,36 @@ bool SynchronizedMove(int32_t distance) {
     motor0.Move(distance);
     motor1.Move(distance);
 
+    // Tell the user that the program will wait for HLFB to assert on both motors
+    SerialPort.SendLine("Waiting for HLFB to assert on both motors");
+
     // Wait until both motors complete their moves.
     uint32_t lastStatusTime = Milliseconds();
     while ( (!motor0.StepsComplete() || motor0.HlfbState() != MotorDriver::HLFB_ASSERTED ||
            !motor1.StepsComplete() || motor1.HlfbState() != MotorDriver::HLFB_ASSERTED) &&
 		   !motor0.StatusReg().bit.AlertsPresent && !motor1.StatusReg().bit.AlertsPresent ){
-        // Periodically print out why the application is waiting.
-        if (Milliseconds() - lastStatusTime > 1000) {
-            SerialPort.SendLine("Waiting for HLFB to assert on both motors");
-            lastStatusTime = Milliseconds();
-        }
-
-        // Check if motor alert occurred during move
-		// Clear alert if configured to do so 
-        if (motor0.StatusReg().bit.AlertsPresent || motor1.StatusReg().bit.AlertsPresent){
-            motor0.MoveStopAbrupt();
-            motor1.MoveStopAbrupt();
-			SerialPort.SendLine("Motor alert detected.");		
-			PrintAlerts();
-			if(HANDLE_ALERTS){
-				HandleAlerts();
-			} else {
-				SerialPort.SendLine("Enable automatic fault handling by setting HANDLE_ALERTS to 1.");
-			}
-			SerialPort.SendLine("Motion may not have completed as expected. Proceed with caution.");
-			SerialPort.SendLine();
-			return false;
-		} 
+        continue;
     }
 
-    SerialPort.SendLine("Move Done");
-    return true;
+    // Check if motor alert occurred during move
+    // Clear alert if configured to do so 
+    if (motor0.StatusReg().bit.AlertsPresent || motor1.StatusReg().bit.AlertsPresent){
+        motor0.MoveStopAbrupt();
+        motor1.MoveStopAbrupt();
+        SerialPort.SendLine("Motor alert detected.");		
+        PrintAlerts();
+        if(HANDLE_ALERTS){
+            HandleAlerts();
+        } else {
+            SerialPort.SendLine("Enable automatic fault handling by setting HANDLE_ALERTS to 1.");
+        }
+        SerialPort.SendLine("Motion may not have completed as expected. Proceed with caution.");
+        SerialPort.SendLine();
+        return false;
+    } else {
+        SerialPort.SendLine("Move Done");
+        return true;
+    }
 }
 
 

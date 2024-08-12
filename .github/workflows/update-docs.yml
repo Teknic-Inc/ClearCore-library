@@ -1,0 +1,56 @@
+name: Update Docs
+
+# Only run this action when code is pushed to the master branch
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ./libClearCore/Doc
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: "true"
+  
+      - name: Install Doxygen
+        run: sudo apt-get install doxygen graphviz -y
+  
+      - name: Generate Doxygen Documentation
+        run: doxygen
+        
+      - name: Create .nojekyll (ensures pages with underscores work on gh pages)
+        run: touch html/.nojekyll
+
+      - name: Upload html docs as a build artifact (to later be used by a deploy pages workflow)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload just the docs html
+          path: ./libClearCore/Doc/html
+
+  # Deploy job
+  deploy-docs:
+    # Add a dependency to the build-docs job
+    needs: build-docs
+
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    # Specify runner + deployment step
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4 # or specific "vX.X.X" version tag for this action

@@ -34,7 +34,7 @@
 libClearCore/UnitTests/
 libClearCore/Doc/DoxygenOut/html/
 jlink.*
-*.componentinfo.xml
 .vs/
 Debug/
 Release/
+.vscode

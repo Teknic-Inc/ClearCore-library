@@ -43,7 +43,7 @@
  * ** ClearPath Manual (AC Power): https://www.teknic.com/files/downloads/ac_clearpath-mc-sd_manual.pdf
  * ** ClearPath Mode Informational Video: https://www.teknic.com/watch-video/#OpMode3
  *
- * 
+ *
  * Copyright (c) 2020 Teknic Inc. This work is free to use, copy and distribute under the terms of
  * the standard MIT permissive software license which can be found at https://opensource.org/licenses/MIT
  */
@@ -63,12 +63,12 @@
 // Specify which serial to use: ConnectorUsb, ConnectorCOM0, or ConnectorCOM1.
 #define SerialPort ConnectorUsb
 
-// This example has built-in functionality to automatically clear motor faults. 
+// This example has built-in functionality to automatically clear motor faults.
 //	Any uncleared fault will cancel and disallow motion.
-// WARNING: enabling automatic fault handling will clear faults immediately when 
-//	encountered and return a motor to a state in which motion is allowed. Before 
-//	enabling this functionality, be sure to understand this behavior and ensure 
-//	your system will not enter an unsafe state. 
+// WARNING: enabling automatic fault handling will clear faults immediately when
+//	encountered and return a motor to a state in which motion is allowed. Before
+//	enabling this functionality, be sure to understand this behavior and ensure
+//	your system will not enter an unsafe state.
 // To enable automatic fault handling, #define HANDLE_MOTOR_FAULTS (1)
 // To disable automatic fault handling, #define HANDLE_MOTOR_FAULTS (0)
 #define HANDLE_MOTOR_FAULTS (0)
@@ -78,7 +78,8 @@
 bool MoveToPosition(uint8_t positionNum);
 void HandleMotorFaults();
 
-int main() {
+int main()
+{
     // Sets all motor connectors to the correct mode for Absolute Position mode
     MotorMgr.MotorModeSet(MotorManager::MOTOR_ALL,
                           Connector::CPM_MODE_A_DIRECT_B_DIRECT);
@@ -100,7 +101,8 @@ int main() {
     uint32_t timeout = 5000;
     uint32_t startTime = Milliseconds();
     SerialPort.PortOpen();
-    while (!SerialPort && Milliseconds() - startTime < timeout) {
+    while (!SerialPort && Milliseconds() - startTime < timeout)
+    {
         continue;
     }
 
@@ -111,27 +113,35 @@ int main() {
     // Waits for HLFB to assert (waits for homing to complete if applicable)
     SerialPort.SendLine("Waiting for HLFB...");
     while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED &&
-			!motor.StatusReg().bit.MotorInFault) {
+           !motor.StatusReg().bit.MotorInFault)
+    {
         continue;
     }
-	// Check if a motor faulted during enabling
-	// Clear fault if configured to do so 
-    if (motor.StatusReg().bit.MotorInFault) {
-		SerialPort.SendLine("Motor fault detected.");		
-		if(HANDLE_MOTOR_FAULTS){
-			HandleMotorFaults();
-		} else {
-			SerialPort.SendLine("Enable automatic fault handling by setting HANDLE_MOTOR_FAULTS to 1.");
-		}
-		SerialPort.SendLine("Enabling may not have completed as expected. Proceed with caution.");		
- 		SerialPort.SendLine();
-	} else {
-		SerialPort.SendLine("Motor Ready");	
-	}
+    // Check if a motor faulted during enabling
+    // Clear fault if configured to do so
+    if (motor.StatusReg().bit.MotorInFault)
+    {
+        SerialPort.SendLine("Motor fault detected.");
+        if (HANDLE_MOTOR_FAULTS)
+        {
+            HandleMotorFaults();
+        }
+        else
+        {
+            SerialPort.SendLine("Enable automatic fault handling by setting HANDLE_MOTOR_FAULTS to 1.");
+        }
+        SerialPort.SendLine("Enabling may not have completed as expected. Proceed with caution.");
+        SerialPort.SendLine();
+    }
+    else
+    {
+        SerialPort.SendLine("Motor Ready");
+    }
 
-    while (true) {
+    while (true)
+    {
         // Move to Position 1 defined in MSP.
-        MoveToPosition(1);    // See below for the detailed function definition.
+        MoveToPosition(1); // See below for the detailed function definition.
         // Wait 1000ms.
         Delay_ms(1000);
         MoveToPosition(2);
@@ -166,101 +176,113 @@ int main() {
  * Returns: True/False depending on whether the position was successfully
  *    commanded.
  */
-bool MoveToPosition(uint8_t positionNum) {
+bool MoveToPosition(uint8_t positionNum)
+{
     // Check if a motor fault is currently preventing motion
-	// Clear fault if configured to do so 
-    if (motor.StatusReg().bit.MotorInFault) {
-		if(HANDLE_MOTOR_FAULTS){
-			SerialPort.SendLine("Motor fault detected. Move canceled.");
-			HandleMotorFaults();
-		} else {
-			SerialPort.SendLine("Motor fault detected. Move canceled. Enable automatic fault handling by setting HANDLE_MOTOR_FAULTS to 1.");
-		}
+    // Clear fault if configured to do so
+    if (motor.StatusReg().bit.MotorInFault)
+    {
+        if (HANDLE_MOTOR_FAULTS)
+        {
+            SerialPort.SendLine("Motor fault detected. Move canceled.");
+            HandleMotorFaults();
+        }
+        else
+        {
+            SerialPort.SendLine("Motor fault detected. Move canceled. Enable automatic fault handling by setting HANDLE_MOTOR_FAULTS to 1.");
+        }
         return false;
     }
-	
-	SerialPort.Send("Moving to position: ");
+
+    SerialPort.Send("Moving to position: ");
     SerialPort.Send(positionNum);
 
-    switch (positionNum) {
-        case 1:
-            // Sets Input A and B for position 1
-            motor.MotorInAState(false);
-            motor.MotorInBState(false);
-            SerialPort.SendLine(" (Inputs A Off/B Off)");
-            break;
-        case 2:
-            // Sets Input A and B for position 2
-            motor.MotorInAState(true);
-            motor.MotorInBState(false);
-            SerialPort.SendLine(" (Inputs A On/B Off)");
-            break;
-        case 3:
-            // Sets Input A and B for position 3
-            motor.MotorInAState(false);
-            motor.MotorInBState(true);
-            SerialPort.SendLine(" (Inputs A Off/B On)");
-            break;
-        case 4:
-            // Sets Input A and B for position 4
-            motor.MotorInAState(true);
-            motor.MotorInBState(true);
-            SerialPort.SendLine(" (Inputs A On/B On)");
-            break;
-        default:
-            // If this case is reached then an incorrect positionNum was entered
-            return false;
+    switch (positionNum)
+    {
+    case 1:
+        // Sets Input A and B for position 1
+        motor.MotorInAState(false);
+        motor.MotorInBState(false);
+        SerialPort.SendLine(" (Inputs A Off/B Off)");
+        break;
+    case 2:
+        // Sets Input A and B for position 2
+        motor.MotorInAState(true);
+        motor.MotorInBState(false);
+        SerialPort.SendLine(" (Inputs A On/B Off)");
+        break;
+    case 3:
+        // Sets Input A and B for position 3
+        motor.MotorInAState(false);
+        motor.MotorInBState(true);
+        SerialPort.SendLine(" (Inputs A Off/B On)");
+        break;
+    case 4:
+        // Sets Input A and B for position 4
+        motor.MotorInAState(true);
+        motor.MotorInBState(true);
+        SerialPort.SendLine(" (Inputs A On/B On)");
+        break;
+    default:
+        // If this case is reached then an incorrect positionNum was entered
+        return false;
     }
 
-    // Ensures this delay is at least 2ms longer than the Input A, B filter
+    // Ensures this delay is at least 20ms longer than the Input A, B filter
     // setting in MSP
-    Delay_ms(2 + INPUT_A_B_FILTER);
+    Delay_ms(20 + INPUT_A_B_FILTER);
 
     // Waits for HLFB to assert (signaling the move has successfully completed)
     SerialPort.SendLine("Moving.. Waiting for HLFB");
     while (motor.HlfbState() != MotorDriver::HLFB_ASSERTED &&
-			!motor.StatusReg().bit.MotorInFault) {
+           !motor.StatusReg().bit.MotorInFault)
+    {
         continue;
     }
-	// Check if a motor faulted during move
-	// Clear fault if configured to do so 
-    if (motor.StatusReg().bit.MotorInFault) {
-		SerialPort.SendLine("Motor fault detected.");		
-		if(HANDLE_MOTOR_FAULTS){
-			HandleMotorFaults();
-		} else {
-			SerialPort.SendLine("Enable automatic fault handling by setting HANDLE_MOTOR_FAULTS to 1.");
-		}
-		SerialPort.SendLine("Motion may not have completed as expected. Proceed with caution.");
-		SerialPort.SendLine();
-		return false;
-    } else {
-		SerialPort.SendLine("Move Done");
-		return true;
-	}
+    // Check if a motor faulted during move
+    // Clear fault if configured to do so
+    if (motor.StatusReg().bit.MotorInFault)
+    {
+        SerialPort.SendLine("Motor fault detected.");
+        if (HANDLE_MOTOR_FAULTS)
+        {
+            HandleMotorFaults();
+        }
+        else
+        {
+            SerialPort.SendLine("Enable automatic fault handling by setting HANDLE_MOTOR_FAULTS to 1.");
+        }
+        SerialPort.SendLine("Motion may not have completed as expected. Proceed with caution.");
+        SerialPort.SendLine();
+        return false;
+    }
+    else
+    {
+        SerialPort.SendLine("Move Done");
+        return true;
+    }
 }
 //------------------------------------------------------------------------------
- 
+
 /*------------------------------------------------------------------------------
  * HandleMotorFaults
  *
  *    Clears motor faults by cycling enable to the motor.
- *    Assumes motor is in fault 
+ *    Assumes motor is in fault
  *      (this function is called when motor.StatusReg.MotorInFault == true)
  *
  * Parameters:
  *    requires "motor" to be defined as a ClearCore motor connector
  *
- * Returns: 
+ * Returns:
  *    none
  */
- void HandleMotorFaults(){
- 	SerialPort.SendLine("Handling fault: clearing faults by cycling enable signal to motor.");
-	motor.EnableRequest(false);
-	Delay_ms(10);
-	motor.EnableRequest(true);
-	Delay_ms(100);
- }
+void HandleMotorFaults()
+{
+    SerialPort.SendLine("Handling fault: clearing faults by cycling enable signal to motor.");
+    motor.EnableRequest(false);
+    Delay_ms(10);
+    motor.EnableRequest(true);
+    Delay_ms(100);
+}
 //------------------------------------------------------------------------------
- 
- 

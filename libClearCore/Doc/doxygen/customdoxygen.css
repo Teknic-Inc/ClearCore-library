@@ -1,173 +1,100 @@
-@charset "utf-8";
-/* CSS Document */
-
-body, p, a, li, ul, table, tl, tr, h1, h2, h3, h4, div, dl, dt, .title, .top, .header, .directory , .entry, .sm, .sm-dox a, .sm-dox a:focus, .sm-dox a:hover, .sm-dox a:active, .memberdecls, p.definition, .navpath li.navelem a, #projectname, #projectbrief, #main-nav, #main-menu {
-    font-family: "Times New Roman", Times, serif;
+/* Normal hover behavior looks weird with a shadow, this makes it clear */
+.navpath li.navelem a:hover {
+	text-shadow: none !important;
+	text-decoration: underline;
 }
 
-.accord_container_acc {
-	width: 350px;
-	margin-top: 30px;
-	font-family: "Times New Roman", Times, serif;
-	text-align: center;
-	margin-left: 35%;
+/* Make navbar items stand out a bit more */
+#main-menu > li > a {
+	margin: var(--spacing-small);
+	background-color: var(--note-color);
+	color: var(--note-color-darker);
+	border: 1px solid var(--separator-color);
 }
 
-
-.access-label {
-
-  position: relative;
-  padding: .5em 1em;
-  margin-bottom: 0;
-  display: block;
-  cursor: pointer;
-  background-color: #ececec;
-  transition: background-color .15s ease-in-out;
-  box-shadow:  1px 1px 1px #626060;
-  /*border-radius: 8px;*/
+#main-menu > li > a:hover {
+	background-color: var(--note-color-darker);
+	color: var(--note-color-darker);
+	border-color: var(--note-color-darker);
 }
 
-
- .access-label:checked + label, .access-label:hover {
-  background-color: #bdbdbd;
-  box-shadow: inset 1px 1px 1px #626060;
-  -webkit-transition: background-color 0.4s ease;
-            -moz-transition: background-color 0.2s ease-in-out;
-            -o-transition: background-color 0.2s ease-in-out;
-            -ms-transition: background-color 0.2s ease-in-out;
-            transition: background-color 0.2s ease-in-out;
+/* show border to make it clear which element the description is associated with */
+table.memberdecls .mdescRight {
+	border-style: none solid solid none;
+	border-bottom-right-radius: var(--border-radius-small);
 }
 
-
-.accord_container_acc .access-label:after, .access-label:checked + .access-label:after {
-	content: url(Websites/plus_icon.png);
-	align-content: middle;
-  	position: absolute;
- 	display: block;
-  	right: 100%;
-  	top: 8px;
-  	width: 2em;
-  	
- 	line-height: 2.25em;
-  	text-align: center;
-  	transition: background-color .25s ease-in-out;
-	
+table.memberdecls .mdescLeft {
+	border-style: none none solid solid;
+	border-bottom-left-radius: var(--border-radius-small);
 }
 
-.accord_container_acc .access-label_2:after, .access-label_2:checked + .access-label_2:after {
-	content: url(/images/minus_icon_navy.png);
-	align-content: middle;
-  	position: absolute;
- 	display: block;
-  	right: 100%;
-  	top: 8px;
-  	width: 2em;
-  	
- 	line-height: 2.25em;
-  	text-align: center;
-  	transition: background-color .25s ease-in-out;
-	
-}
-
-
-.accord_container_acc .access-label:checked + .access-label:after {
-	content: url(/images/minus_icon_navy.png);
-	align-content: middle;
-  	position: absolute;
- 	display: block;
-  	right: 100%;
-  	top: 8px;
-  	width: 2em;
-  
- 	line-height: 2.25em;
-  	text-align: center;
-  	
-}
-
-
-
-.accord_container_acc .access-label:after, .access-label:checked + .access-label:after {
-  content: url(/images/plus_icon_navy.png); 
-  position: absolute;
-  display: block;
-  top: 14px;
-  right: 100%;
-  width: 2em;
-  height: 100%;
-  line-height: 2.25em;
-  text-align: center;
-  transition: background-color .25s ease-in-out;
-  
-}
-
-.accord_container_acc .access-label:checked + .access-label:after {
-  content: url(/images/minus_icon_navy.png);
+table.memberdecls .mdescLeft,
+table.memberdecls .mdescRight {
+	border-color: var(--separator-color);
+	border-width: 1px;
+	background-color: var(--fragment-background);
+	padding-top: 0;
+	transform: translate(0, -0.5rem);
 
 }
 
-.access-input {
-  display: none;
+/* ----------------------------------- */
+
+/* complex css selector to not show borders for descriptions on collapsed public types */
+table.memberdecls tr.inherit:not(tr.inherit[style="display: table-row;"])+tr>.mdescLeft,
+table.memberdecls tr.inherit:not(tr.inherit[style="display: table-row;"])+tr>.mdescRight {
+	border: 0;
+	background-color: var(--page-background-color);
 }
 
- .access-text {
-  opacity: 0;
-  height: 0;
-  margin-bottom: 1em;
-  transition: opacity .5s ease-in-out;
-  overflow: hidden;
+/* styling the expandle details/summary elements */
+details>summary {
+	cursor: pointer;
+	background-color: var(--fragment-background);
+	padding: var(--spacing-medium);
 }
 
-
- .access-input:checked ~ .access-text { 
-  opacity: 1;
-  height: auto;
+details>summary::before {
+	content: "\25B6";
 }
 
-.access-input_2:checked ~ .access-text_2 { 
-  opacity: 0;
-  height: 0;
+details {
+	border: 1px solid var(--separator-color);
+	border-radius: var(--border-radius-small);
 }
 
-.new_table td {
-	border: 1px solid #000;
+/* make class blocks standout */
+html {
+	--memtitle-font-size: 24px;
 }
 
-.new_table {
-	width: 350px;
-	position: relative;
-
+h2.memtitle {
+	font-weight: bold;
 }
 
-div.image img[src="cpmAlertReg.png"]{ 
-    width:800px; 
-}
-div.image img[src="commonAlertFlds.png"]{ 
-    width:800px; 
-}
-div.image img[src="cpmAlertFlds.png"]{ 
-    width:800px; 
-}
-div.image img[src="SC_Status_Reg.png"]{ 
-    width:800px; 
-}
-div.dynheader {
-    user-select: auto;
+div.memitem {
+	box-shadow: rgba(0, 113, 187, 0.12) 0px 2px 4px 0px, rgba(0, 113, 187, 0.32) 0px 2px 16px 0px !important;
 }
 
-<style type="text/css">
-	table.tableizer-table {
-		font-size: 12px;
-		border: 3px solid #CCC; 
-		font-family: "Times New Roman", Times, serif;
-	} 
-	.tableizer-table td {
-		padding: 4px;
-		margin: 3px;
-		border: 2px solid #CCC;
-	}
-	.tableizer-table th {
-		background-color: #FFFFFF; 
-		border: 3px solid #CCC;
-		font-weight: bold;
-	}
-</style>
+/* step and direction disclaimer */
+.sd-disclaimer {
+	font-weight: bold;
+	background-color: #00338d;
+	padding: 0.5rem;
+	color: white;
+	border-radius: var(--border-radius-large);
+	margin-bottom: 1rem;
+	display: inline-block;
+}
+
+/* clearpath mc disclaimer */
+.mc-disclaimer {
+	font-weight: bold;
+	background-color: #049075;
+	padding: 0.5rem;
+	color: white;
+	border-radius: var(--border-radius-large);
+	margin-bottom: 1rem;
+	display: inline-block;
+}
