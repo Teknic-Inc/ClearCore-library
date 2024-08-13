@@ -2,19 +2,20 @@
 namespace ClearCore {
 /**
 
-\mainpage 
+\mainpage %ClearCore Library
 # Introduction
-    ClearCore is an industrial motion and I/O controller featuring flexible, software-configurable I/O with a rich C++ Motion and I/O library. This document serves as a reference guide for the library and the variety of functions used to interface with and control your ClearCore in a motion control application.
+    %ClearCore is an industrial motion and I/O controller featuring flexible, software-configurable I/O with a rich C++ Motion and I/O library. This document serves as a reference guide for the library and the variety of functions used to interface with and control your %ClearCore in a motion control application.
     
-    For ClearCore hardware documentation, including device specifications and I/O wiring examples, see the <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf">ClearCore System Diagram</a>.
+    For %ClearCore hardware documentation, including device specifications and I/O wiring examples, see the <a href="https://www.teknic.com/files/downloads/clearcore_system_diagram.pdf">ClearCore System Diagram</a>.
     
-    To get started, follow the ClearCore \ref InstallationInstructions.
+    To get started, follow \ref GettingStarted.
     SDK example projects and a Project Template can be found in the PC program
     files after installing for Microchip Studio. <br>
-    C:\\Program Files (x86)\\Teknic\\ClearCore-Library x.x [where x.x is the version number]
+    `C:\\Program Files (x86)\\Teknic\\ClearCore-Library x.x` [where x.x is the version number]
     
 # Informational Pages
-    - \ref InstallationInstructions    - \ref ConnectorMain
+    - \ref GettingStarted
+    - \ref ConnectorMain
     - \ref MotorDriverMain
         - \ref MoveGen
     - \ref UsbMain
@@ -51,19 +52,19 @@ namespace ClearCore {
 
 # Connector functionality checklist
     - \subpage ConnectorFunctionality
-        - A table view of the different functionalities supported by each ClearCore I/O connector.
+        - A table view of the different functionalities supported by each %ClearCore I/O connector.
 
 # Status
     - \subpage StatusIndicators
         - \subpage BlinkCodes
 
 # Behavior on Powerup / Resetting
-    - When the ClearCore first powers up, the last-uploaded code will start
+    - When the %ClearCore first powers up, the last-uploaded code will start
     executing immediately. If no code has been uploaded yet, or if the chip
-    was erased, the ClearCore will start up in bootloader mode. See 
+    was erased, the %ClearCore will start up in bootloader mode. See 
     \ref InitializationBlinks and \ref BootloaderBlinks for more information.
     - Pressing the reset button once will restart execution of user code. Quickly
-    double-pressing the reset button will reset the ClearCore into bootloader
+    double-pressing the reset button will reset the %ClearCore into bootloader
     mode.
     
 # Arduino Reference
@@ -83,7 +84,7 @@ namespace ClearCore {
 /**
 \page StatusIndicators Status Indicators
 <h1> Status Indicators </h1>
-    ClearCore has several LEDs that reflect the status of the ClearCore hardware.
+    %ClearCore has several LEDs that reflect the status of the %ClearCore hardware.
 
     - \subpage IoLed
     - \subpage ComLed
@@ -118,17 +119,17 @@ namespace ClearCore {
 <h2> COM Port LED States </h2>
     - Off: The port has not been opened for data communications.
     - On: The port has been opened and is ready to transmit and receive data.
-    - Breathing: The port has been configured to communicate with one or more ClearCore I/O Expansion (CCIO-8) Boards and the link established between the ClearCore and the CCIO-8 boards is healthy.
-    - Strobing: The port has been configured to communicate with one or more ClearCore I/O Expansion (CCIO-8) Boards and there is an overload condition on one of the CCIO-8 connectors.
+    - Breathing: The port has been configured to communicate with one or more %ClearCore I/O Expansion (CCIO-8) Boards and the link established between the %ClearCore and the CCIO-8 boards is healthy.
+    - Strobing: The port has been configured to communicate with one or more %ClearCore I/O Expansion (CCIO-8) Boards and there is an overload condition on one of the CCIO-8 connectors.
 **/
 //********************************************************************************************
 /**
 \page UnderGlowLed Under Glow LED Indicator
 <h1> Under Glow LED Indicator </h1>
-    There are LEDs on the bottom side of the ClearCore board that are used to show the running state of the hardware.
+    There are LEDs on the bottom side of the %ClearCore board that are used to show the running state of the hardware.
     
 <h2> Under Glow LED States </h2>
-    - Off: ClearCore is not powered properly.
+    - Off: %ClearCore is not powered properly.
     - Breathing: Normal running state. LEDs slowly fade in and out.  
     - On: Processor has crashed. To recover, double-click the reset button to put the processor into bootloader mode, then upload safe code.
     - Error Code: A series of stobes and solid blinks indicate an error code that has occurred since the last time the processor was reset.
@@ -147,9 +148,9 @@ namespace ClearCore {
 **/
 //********************************************************************************************
 /**
-\page CcioLed ClearCore I/O Expansion Board (CCIO-8) LED Indicators
-<h1> ClearCore I/O Expansion Board (CCIO-8) LED Indicators </h1>
-    Each ClearCore I/O Expansion Board provides 8 I/O connectors that may be individually configured for digital input or digital output modes.
+\page CcioLed %ClearCore I/O Expansion Board (CCIO-8) LED Indicators
+<h1> %ClearCore I/O Expansion Board (CCIO-8) LED Indicators </h1>
+    Each %ClearCore I/O Expansion Board provides 8 I/O connectors that may be individually configured for digital input or digital output modes.
     Near each of the 8 3-pin I/O terminal blocks, there is an LED that will indicate the state of that connector.
     
 <h2> CCIO-8 I/O LED States </h2>
@@ -175,9 +176,9 @@ namespace ClearCore {
 **/
 //********************************************************************************************
 /**
-\page BlinkCodes ClearCore Status Blink Codes
+\page BlinkCodes %ClearCore Status Blink Codes
 <h1> Blink Code Sequencing </h1>
-    The ClearCore can provide multiple status codes using the \ref UnderGlowLed.  These codes use a pattern of strobes and blink pulses indicating error code groups and values.
+    The %ClearCore can provide multiple status codes using the \ref UnderGlowLed.  These codes use a pattern of strobes and blink pulses indicating error code groups and values.
     
 <h2> Reading the Status </h2>
     - Long Strobe: The status LED will strobe for 2.3 seconds, indicating the start of the status code sequence.
@@ -229,11 +230,11 @@ namespace ClearCore {
 /**
 \page OutputOverload I/O Output Overload
 <h1> I/O Output Overload </h1>
-    Each ClearCore digital output can drive resistive or inductive loads up to 9 watts (0.375 A). If the load exceeds the output capacity, the connector detects that the output voltage is not at the \n
+    Each %ClearCore digital output can drive resistive or inductive loads up to 9 watts (0.375 A). If the load exceeds the output capacity, the connector detects that the output voltage is not at the \n
     proper level and signals an overload condition.
     
     When an overload is detected, the connector's \ref IoLed is strobed at 10Hz while the overload condition persists. An error code will be shown on the \ref UnderGlowLed indicating that an overload \n
-    occurred on the given connector and persist until the ClearCore is reset.
+    occurred on the given connector and persist until the %ClearCore is reset.
     
 \see \ref BlinkCodes
 **/

@@ -1,0 +1,59 @@
+namespace ClearCore {
+/**
+\page MicrochipInstall Microchip Studio (formerly Atmel Studio) - Installation/Setup
+
+<h2>Installation Instructions</h3>
+1. Download and run the [ClearCore Microchip Installer](https://teknic.com/files/downloads/ClearCore_Microchip_Installer.zip)
+    \note If the installer above cannot be run, or if a manual installation is preferred: please follow the [Manual Install Instructions](https://www.teknic.com/files/downloads/manual_install_instructions_atmel.pdf)
+2. Open Microchip Studio (run as Administrator for best performance)
+3. Several C++ %ClearCore examples are installed alongside the %ClearCore Motion and I/O Library. To open and run them:
+    1. File > Open > Project/Solution<br>
+    <img src="microchip-open-project.png" />
+    
+    2. First, we will run a digital output example. Navigate to this directory: (replace X with the latest version you have installed)<br>
+    `C:\Program Files (x86)\Teknic\ClearCore-Library 1.X\Microchip_Examples\DigitalIOExamples\WriteDigitalOutput`
+    
+    3. Open the WriteDigitalOutput project<br>
+    <img src="microchip-open-example.png" />
+    
+    4. This WriteDigtalOutput project is contained in a solution with all the other digital I/O
+    examples. Even though we opened the WriteDigitalOutput project file, we must still set
+    it as the "StartUp Project", i.e. the project that will actually run on %ClearCore. Use the
+    Solution Explorer to do this. Right click on the WriteDigitalOutput project heading and
+    click "Set as StartUp Project".<br>
+    <img src="microchip-set-startup.png" />
+    
+    5. Double click on the WriteDigitalOutput.cpp file to see the example code before you
+    upload. All %ClearCore examples have helpful comments, descriptions, and requirements
+    that should be read before you upload. In this case, the example will turn on and off all
+    6 digital outputs, toggling every 1 sec.<br>
+    <img src="microchip-open-cpp.png" />
+
+    6. After reading the example comments, now we can upload. Code can be uploaded either
+    over USB or through an Atmel ICE debugger.<br>
+    Each example project includes a "Custom Programming Tool" that has been coded to
+    facilitate uploading over USB. Each project is also already targeted for %ClearCore's
+    processor. You can see these two things already selected in the toolbar of Microchip
+    Studio:<br>
+    <img src="microchip-custom-prog.png" /><br>
+    None of this needs to change to upload over USB.<br>
+    To use an Atmel ICE debugger instead, change the debugger/programmer.<br>
+    <img src="microchip-debugger.png" />
+
+    7. Click the “Start without debugging” button to begin uploading.<br>
+    <img src="microchip-start.png" /><br>
+    The project will compile, upload, and then begin running on your %ClearCore. Notice the
+    6 I/O LEDs toggling on and off.
+    <img src="microchip-upload.gif" />
+
+4. Use the ProjectTemplate project to begin coding your own program. It has all of the %ClearCore libraries already linked:<br>
+`C:\Program Files (x86)\Teknic\ClearCore-Library 1.X\ProjectTemplate`<br>
+If you want to make multiple projects from this template, copy/paste the entire
+ProjectTemplate solution folder into the same directory. Pasting it into a different directory will
+result in broken references and build errors.<br>
+<img src="microchip-copy-project-template.png" />
+
+**/
+
+//********************************************************************************************
+}
