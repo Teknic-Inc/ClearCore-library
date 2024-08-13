@@ -1,0 +1,31 @@
+namespace ClearCore {
+/**
+\page ArduinoIDEInstall Arduino IDE 2.X - Installation/Setup
+
+1. Download and run the [ClearCore Arduino 2 Wrapper Installer](https://teknic.com/files/downloads/ClearCore_Arduino_Wrapper_Installer_2.2.1.zip)
+    \note If the installer above cannot be run, or if a manual installation is preferred: please follow the [Manual Install Instructions](https://www.teknic.com/files/downloads/manual_install_instructions_arduino.pdf)
+2. Open the Arduino IDE
+3. Select the %ClearCore board in the Arduino IDE. You can select the %ClearCore board in two ways:
+    1. When %ClearCore is connected to your computer via USB, select the board from the drop-down in the top left corner of the Arduino IDE.
+        <img src="arduino-boards-dropdown.png" />
+    2. If no %ClearCore is connected, navigate to the "Tools"->"Board"->"ClearCore"->"Teknic ClearCore". 
+        <img src="arduino-tools-select-clearcore.png" />
+
+4. Once the %ClearCore board is selected, you can access over 40 %ClearCore board examples by navigating to "File"->"Examples". 
+    <img src="arduino-examples-dropdown.png" height="500" />
+    
+
+5. After selecting your desired example, you can upload the program to %ClearCore.
+    1. Ensure %ClearCore is connected to the computer via the USB port.
+    2. Click the upload button in the top left corner of the Arduino IDE. 
+        
+        <img src="arduino-upload-button.png" />
+
+
+6. The project will compile, upload, and then begin running on your %ClearCore. Notice the 6 I/O LEDs toggling on and off.
+<img src="arduino-upload.gif" />
+
+**/
+
+//********************************************************************************************
+}

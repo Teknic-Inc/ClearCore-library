@@ -98,10 +98,6 @@ public:
         \endcode
 
         \return The position count of the Encoder Input module.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
     **/
     int32_t Position();
 
@@ -114,10 +110,6 @@ public:
         \endcode
 
         \return The number of counts that the encoder position was shifted.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
     **/
     int32_t Position(int32_t newPosn);
 
@@ -128,10 +120,6 @@ public:
         // Shift the encoder numberspace upwards by 500 counts
         EncoderIn.AddToPosition(500);
         \endcode
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
     **/
     void AddToPosition(int32_t posnAdjust);
 
@@ -149,10 +137,6 @@ public:
         \endcode
 
         \return The position count of the last Encoder index pulse.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
     **/
     int32_t IndexPosition();
 
@@ -163,10 +147,6 @@ public:
         // Before using the Encoder Input, it has to be enabled.
         EncoderIn.Enable(true);
         \endcode
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
     **/
     void Enable(bool isEnabled);
 
@@ -177,10 +157,6 @@ public:
         // Set the encoder counting direction to match the wiring and code.
         EncoderIn.SwapDirection(true);
         \endcode
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
     **/
     void SwapDirection(bool isSwapped);
 
@@ -193,10 +169,6 @@ public:
         \endcode
 
         \return The encoder input velocity in counts per second.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
     **/
     volatile const int32_t& Velocity() {
         return m_velocity;
@@ -212,10 +184,6 @@ public:
 
         \return True if the index transitioned from deasserted to asserted
         in the last sample time.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
     **/
     volatile const bool& IndexDetected() {
         return m_indexDetected;
@@ -231,10 +199,6 @@ public:
         // Set the index pulse to trigger on the falling input edge.
         bool hadIndex = EncoderIn.IndexInverted(true);
         \endcode
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
     **/
     void IndexInverted(bool invert);
 
@@ -248,10 +212,6 @@ public:
 
         \return The current state of the quadrature error flag in the position
         decoder module.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
     **/
     bool QuadratureError();
 
@@ -264,10 +224,6 @@ public:
             EncoderIn.ClearQuadratureError();
         }
         \endcode
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
     **/
     void ClearQuadratureError();
 
@@ -281,10 +237,6 @@ public:
         \endcode
 
         \return The number of steps received in the last sample time.
-
-        \note Available with software version 1.1 or greater. See
-        \ref InstallationInstructions for information on updating library
-        versions.
     **/
     volatile const int16_t& StepsLastSample() {
         return m_stepsLast;

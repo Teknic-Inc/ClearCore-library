@@ -2,6 +2,10 @@
   <!-- Navigation index tabs for HTML output -->
   <navindex>
     <tab type="mainpage" visible="yes" title="" />
+    <tab type="user" visible="yes" title="Getting Started" url="@ref GettingStarted">
+      <tab type="user" visible="no" title="Getting Started" intro="" url="@ref GettingStarted"/>
+      <tab type="globals" visible="no" title="" intro="" />
+    </tab>
     <tab type="pages" visible="yes" title="" intro="" />
     <tab type="modules" visible="no" title="" intro="" />
     <tab type="classes" visible="yes" title="">
@@ -10,7 +14,7 @@
       <tab type="hierarchy" visible="yes" title="" intro="" />
       <tab type="classmembers" visible="no" title="" intro="" />
     </tab>
-    <tab type="user" visible="yes" title="SDK Examples"url="@ref SdkExamples">
+    <tab type="user" visible="yes" title="SDK Examples" url="@ref SdkExamples">
       <tab type="user" visible="no" title="SDK Examples" intro="" url="@ref SdkExamples"/>
       <tab type="globals" visible="no" title="" intro="" />
     </tab>
