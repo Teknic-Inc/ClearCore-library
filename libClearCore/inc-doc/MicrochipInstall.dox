@@ -2,7 +2,8 @@ namespace ClearCore {
 /**
 \page MicrochipInstall Microchip Studio (formerly Atmel Studio) - Installation/Setup
 
-<h2>Installation Instructions</h3>
+<div class="more-list-spacing">
+
 1. Download and run the [ClearCore Microchip Installer](https://teknic.com/files/downloads/ClearCore_Microchip_Installer.zip)
     \note If the installer above cannot be run, or if a manual installation is preferred: please follow the [Manual Install Instructions](https://www.teknic.com/files/downloads/manual_install_instructions_atmel.pdf)
 2. Open Microchip Studio (run as Administrator for best performance)
@@ -52,6 +53,8 @@ If you want to make multiple projects from this template, copy/paste the entire
 ProjectTemplate solution folder into the same directory. Pasting it into a different directory will
 result in broken references and build errors.<br>
 <img src="microchip-copy-project-template.png" />
+
+</div>
 
 **/
 

@@ -11,16 +11,15 @@ There are two supported development environments for %ClearCore: Arduino IDE and
 <h2>Arduino IDE</h2>
 \note Easy to use development environment that is great for prototyping and beginner programmers.
 
-<h3>Installation/Setup Instructions</h3>
-- [Arduino IDE 2.X](@ref ArduinoIDEInstall) (recommended)
-- [Arduino IDE 1.8.X](@ref ArduinoLegacyInstall) (legacy support)
+\ref ArduinoIDEInstall "Arduino IDE 2.X Installation/Setup Instructions" (recommended)
 
+\ref ArduinoLegacyInstall "Arduino IDE 1.8.X Installation/Setup Instructions" (legacy support)
 
 <h2>Microchip Studio (formerly Atmel Studio)</h2>
 \note Advanced development environment with debugging capabilities designed for experienced programmers
 
-<h3>Installation/Setup Instructions</h3>
-- [Microchip Studio 7](@ref MicrochipInstall)
+\ref MicrochipInstall "Microchip Studio Installation/Setup Instructions"
+
 
 
 **/

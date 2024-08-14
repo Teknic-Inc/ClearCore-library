@@ -2,6 +2,8 @@ namespace ClearCore {
 /**
 \page ArduinoLegacyInstall Arduino IDE 1.8.X (Legacy) - Installation/Setup
 
+<div class="more-list-spacing">
+
 1. Download and run the [ClearCore Arduino 1.8 Wrapper Installer](https://teknic.com/files/downloads/ClearCore_Arduino_Wrapper_Installer_1.8.zip)
     \note If the installer above cannot be run, or if a manual installation is preferred: please follow the [Manual Install Instructions](https://www.teknic.com/files/downloads/manual_install_instructions_arduino.pdf)
 2. Open the Arduino IDE
@@ -12,19 +14,20 @@ namespace ClearCore {
     1. Navigate to the "Tools"->"Port"->"COM# (Teknic ClearCore)"
         <img src="arduino18-select-port.png" />
 
-4. Once the %ClearCore board is selected, you can access over 40 %ClearCore board examples by navigating to "File"->"Examples". 
-    <img src="arduino18-examples.png" height="500" />
+5. Once the %ClearCore board is selected, you can access over 40 %ClearCore board examples by navigating to "File"->"Examples". 
+    <img src="arduino18-examples.png" height="700" />
     
-
-5. After selecting your desired example, you can upload the program to %ClearCore.
+6. After selecting your desired example, you can upload the program to %ClearCore.
     1. Ensure %ClearCore is connected to the computer via the USB port.
     2. Click the upload button in the top left corner of the Arduino IDE. 
         
         <img src="arduino18-upload-button.png" />
 
 
-6. The project will compile, upload, and then begin running on your %ClearCore. Notice the 6 I/O LEDs toggling on and off.
+7. The project will compile, upload, and then begin running on your %ClearCore. Notice the 6 I/O LEDs toggling on and off.
 <img src="arduino18-upload.gif" />
+
+</div>
 
 **/
 

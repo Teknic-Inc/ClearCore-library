@@ -98,3 +98,13 @@ div.memitem {
 	margin-bottom: 1rem;
 	display: inline-block;
 }
+
+/* more spacing between list items */
+div.more-list-spacing li {
+	padding-top: 16px;
+}
+
+div.more-list-spacing img {
+	padding-bottom: 16px;
+	padding-top: 16px;
+}
