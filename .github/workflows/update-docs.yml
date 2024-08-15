@@ -26,6 +26,9 @@ jobs:
       
       - name: Create 404 page to redirect to home
         run: cp html/index.html html/404.html
+
+      - name: Add redirect links for key pages
+        run: cp html/_arduino_ref.html html/ArduinoRef.html && cp html/_sdk_examples.html html/SdkExamples.html
         
       - name: Create .nojekyll (ensures pages with underscores work on gh pages)
         run: touch html/.nojekyll
