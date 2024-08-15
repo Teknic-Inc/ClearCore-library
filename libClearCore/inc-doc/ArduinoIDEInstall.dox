@@ -4,7 +4,7 @@ namespace ClearCore {
 
 <div class="more-list-spacing">
 
-1. Download and run the [ClearCore Arduino 2 Wrapper Installer](https://teknic.com/files/downloads/ClearCore_Arduino_Wrapper_Installer_2.zip)
+1. Download and run the [ClearCore Arduino 2 Wrapper Installer](https://teknic.com/files/downloads/ClearCore_Arduino_Wrapper_Installer.zip)
     \note If the installer above cannot be run, or if a manual installation is preferred: please follow the [Manual Install Instructions](https://www.teknic.com/files/downloads/manual_install_instructions_arduino.pdf)
 2. Open the Arduino IDE
 3. Select the %ClearCore board in the Arduino IDE. You can select the %ClearCore board in two ways:
