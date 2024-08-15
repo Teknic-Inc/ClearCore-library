@@ -23,6 +23,9 @@ jobs:
   
       - name: Generate Doxygen Documentation
         run: doxygen
+      
+      - name: Create 404 page to redirect to home
+        run: cp html/index.html html/404.html
         
       - name: Create .nojekyll (ensures pages with underscores work on gh pages)
         run: touch html/.nojekyll
