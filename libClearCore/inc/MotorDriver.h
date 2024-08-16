@@ -1016,7 +1016,7 @@ public:
         }
         \endcode
 
-        \note The input configured as a limit switch must be Normally Close (NC)
+        \note The input configured as a limit switch must be a Normally Closed (NC) switch or NPN/NC sensor
         to function correctly with this feature.
         
         If motion is commanded in the positive direction and the configured input is de-asserted,
@@ -1085,7 +1085,7 @@ public:
         }
         \endcode
 
-        \note The input configured as a limit switch must be Normally Close (NC)
+        \note The input configured as a limit switch must be a Normally Closed (NC) switch or NPN/NC sensor
         to function correctly with this feature.
         
         If motion is commanded in the negative direction and the configured input is de-asserted,
@@ -1283,7 +1283,7 @@ public:
         }
         \endcode
 
-        \note The input configured as an E-Stop must be Normally Close (NC)
+        \note The input configured as an E-Stop must be Normally Closed (NC)
         to function correctly with this feature.
         
         If motion is commanded in any direction and the configured input is de-asserted,
