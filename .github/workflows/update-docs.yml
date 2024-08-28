@@ -28,7 +28,13 @@ jobs:
         run: cp html/index.html html/404.html
 
       - name: Add redirect links for key pages
-        run: cp html/_arduino_ref.html html/ArduinoRef.html && cp html/_sdk_examples.html html/SdkExamples.html
+        run: |
+          cp html/_arduino_ref.html html/ArduinoRef.html
+          cp html/_blink_codes.html html/BlinkCodes.html
+          cp html/_bootloader_blinks.html html/BootloaderBlinks.html
+          cp html/_bootloader_main.html html/BootloaderMain.html
+          cp html/_c_c_i_o_main.html html/CCIOMain.html
+          cp html/_sdk_examples.html html/SdkExamples.html
         
       - name: Create .nojekyll (ensures pages with underscores work on gh pages)
         run: touch html/.nojekyll
