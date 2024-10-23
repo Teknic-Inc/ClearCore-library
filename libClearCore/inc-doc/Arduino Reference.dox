@@ -69,6 +69,7 @@ As part of the Arduino installation package a number of examples sketches are in
     underlying ClearCore I/O and Motion Control library. (See the \ref MotorDriverMain documentation for more information.)
     - The pulseIn() and pulseInLong() functions do not require interrupts to be enabled.
     - There is no functional difference between pulseIn() and pulseInLong().
+    - The pulseIn() and pulseInLong() functions have a minimum resolution of 200 microseconds.
     
     
 <h2> Global Types, Enumerators, and Objects </h2>
@@ -156,6 +157,11 @@ As part of the Arduino installation package a number of examples sketches are in
     - <a href="https://www.arduino.cc/reference/en/language/functions/advanced-io/notone/" >Arduino.cc Reference</a>
     
 <h3 id=pulseIn> pulseIn(pin, value, timeout[optional]) </h3>
+    \note pulseIn() has a minimum resolution of <u>200 microseconds</u>.
+    If you need to read pulses that are under 200 microseconds in length, we recommend
+    using [Hardware Interrupts](@ref DigitalIOExamples/InputInterrupts/InputInterrupts.cpp).
+    Please contact [Teknic's Engineering Support](https://teknic.com/contact/) with any questions.
+    
     - Reads a pulse (HIGH or LOW) on a pin, starts timing, then waits for the pin to change
     state and stops timing. Returns the length of the pulse in microseconds,\n or zero if no
     complete pulse was received within the timeout (specified in microseconds). If no timeout
