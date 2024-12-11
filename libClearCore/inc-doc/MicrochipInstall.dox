@@ -45,6 +45,10 @@ namespace ClearCore {
     <img src="microchip-start.png" /><br>
     The project will compile, upload, and then begin running on your %ClearCore. Notice the
     6 I/O LEDs toggling on and off.
+    
+    \note If you are on Windows 11 24H2 and above, and are running into issues uploading code.
+    Ensure you have WMIC enabled on your system, using [these](https://techcommunity.microsoft.com/blog/windows-itpro-blog/how-to-install-wmic-feature-on-demand-on-windows-11/4189530) instructions.
+
     <img src="microchip-upload.gif" />
 
 4. Use the ProjectTemplate project to begin coding your own program. It has all of the %ClearCore libraries already linked:<br>
