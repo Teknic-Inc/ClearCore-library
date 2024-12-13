@@ -233,7 +233,7 @@ public:
         **/
         MOTOR_FAULTED,
         /**
-            The motor is enabled and HLFB is asserted.
+            The motor is enabled and HLFB is not deasserted (asserted or has PWM).
         **/
         MOTOR_READY,
         /**
