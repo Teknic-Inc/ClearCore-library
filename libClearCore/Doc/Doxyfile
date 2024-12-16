@@ -1030,55 +1030,7 @@ EXCLUDE_SYMBOLS        =
 # that contain example code fragments that are included (see the \include
 # command).
 
-EXAMPLE_PATH           = ../../Microchip_Examples \
-../../Microchip_Examples\AnalogIOExamples\ReadAnalogInput \
-../../Microchip_Examples\AnalogIOExamples\WriteAnalogCurrentOutput \
-../../Microchip_Examples\CCIO8Examples\ClearCoreIOExpansionBoard \
-../../Microchip_Examples\CCIO8Examples\ReadCCIODigitalInput \
-../../Microchip_Examples\CCIO8Examples\WriteCCIODigitalOutput \
-../../Microchip_Examples\CCIO8Examples\WriteCCIODigitalOutputPulses \
-../../Microchip_Examples\ClearCoreBoardStatus\ClearCoreStatusRegister \
-../../Microchip_Examples\ClearPathModeExamples\ClearPath-MC_Series\Abs16PositionsHomeToHardStop \
-../../Microchip_Examples\ClearPathModeExamples\ClearPath-MC_Series\Abs2PositionsHomeToSwitch \
-../../Microchip_Examples\ClearPathModeExamples\ClearPath-MC_Series\Abs4PositionsHomeToHardStop \
-../../Microchip_Examples\ClearPathModeExamples\ClearPath-MC_Series\FollowDigitalPosition \
-../../Microchip_Examples\ClearPathModeExamples\ClearPath-MC_Series\FollowDigitalTorque \
-../../Microchip_Examples\ClearPathModeExamples\ClearPath-MC_Series\FollowDigitalVelocity \
-../../Microchip_Examples\ClearPathModeExamples\ClearPath-MC_Series\FollowDigitalVelocityWithVariableTorque \
-../../Microchip_Examples\ClearPathModeExamples\ClearPath-MC_Series\ManualVelocity \
-../../Microchip_Examples\ClearPathModeExamples\ClearPath-MC_Series\Move2IncrementsHomeToSwitch \
-../../Microchip_Examples\ClearPathModeExamples\ClearPath-MC_Series\Move4IncrementsHomeToHardStop \
-../../Microchip_Examples\ClearPathModeExamples\ClearPath-MC_Series\PulseBurstPositioning \
-../../Microchip_Examples\ClearPathModeExamples\ClearPath-MC_Series\RampUpDownToSelectedVelocity \
-../../Microchip_Examples\ClearPathModeExamples\ClearPath-SD_Series\DualAxisSynchronized \
-../../Microchip_Examples\ClearPathModeExamples\ClearPath-SD_Series\MotorStatusRegister \
-../../Microchip_Examples\ClearPathModeExamples\ClearPath-SD_Series\MovePositionAbsolute \
-../../Microchip_Examples\ClearPathModeExamples\ClearPath-SD_Series\MovePositionRelative \
-../../Microchip_Examples\ClearPathModeExamples\ClearPath-SD_Series\MoveVelocity \
-../../Microchip_Examples\ClearPathModeExamples\ClearPath-SD_Series\UserSeeksHome \
-../../Microchip_Examples\ClearPathModeExamples\High-Level_Feedback_HLFB\AsgWithMeasuredTorque \
-../../Microchip_Examples\ClearPathModeExamples\High-Level_Feedback_HLFB\SpeedOutput \
-../../Microchip_Examples\DigitalIOExamples\InputInterrupts \
-../../Microchip_Examples\DigitalIOExamples\PeriodicInterrupt \
-../../Microchip_Examples\DigitalIOExamples\PlayTone \
-../../Microchip_Examples\DigitalIOExamples\ReadDigitalInput \
-../../Microchip_Examples\DigitalIOExamples\ReadDigitalInputRiseFall \
-../../Microchip_Examples\DigitalIOExamples\WriteDigitalOutput \
-../../Microchip_Examples\DigitalIOExamples\WriteHBridgeOutput \
-../../Microchip_Examples\DigitalIOExamples\WritePwmOutput \
-../../Microchip_Examples\EncoderInputExamples\FollowEncoder \
-../../Microchip_Examples\EthernetExamples\EthernetTcpClientHelloWorld \
-../../Microchip_Examples\EthernetExamples\EthernetTcpServerHelloWorld_automatic \
-../../Microchip_Examples\EthernetExamples\EthernetTcpServerHelloWorld_manual \
-../../Microchip_Examples\EthernetExamples\EthernetUdpHelloWorld \
-../../Microchip_Examples\SerialCommExamples\ClearCoreCommandProtocol \
-../../Microchip_Examples\SerialCommExamples\ReadSerialInput \
-../../Microchip_Examples\SerialCommExamples\SerialPrint \
-../../Microchip_Examples\SerialCommExamples\SpiComPortInitialization \
-../../Microchip_Examples\SerialCommExamples\SpiSerialDisplay \
-../../Microchip_Examples\SerialCommExamples\TtlSerialDisplay \
-../../Microchip_Examples\StepAndDirectionExamplesNonClearPath\StepAndDirectionNonClearPath \
-../../Microchip_Examples\XBeeExamples\WriteXBeeOutput
+EXAMPLE_PATH           = ../../Microchip_Examples
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp and
