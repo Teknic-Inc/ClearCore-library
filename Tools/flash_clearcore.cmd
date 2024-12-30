@@ -1,11 +1,11 @@
 :: Name:     flash_clearcore.cmd
 :: Purpose:  Flash a connected ClearCore device with a compiled binary file.
-:: Author:   Zachary Lebold
-:: Revision: January 2020 - initial version
+:: Author:   Zachary Lebold, Nick Dawson
+:: Revision: December 2024 - Fixing WMIC Deprecation Issue
 
 @echo off
 
-set versionNumber=1.0.11
+set versionNumber=1.1.0
 
 rem ---------------------------------------------------------------------------
 rem An awful but necessary hack because timeout causes redirection issues, even
@@ -98,6 +98,11 @@ rem ----------------------------------------------------------------------------
 for /f "usebackq" %%B in (`wmic path Win32_SerialPort Where %isBootPort% Get DeviceID 2^> nul ^| FINDSTR "COM"`) do set comPort=%%B
 
 if not defined comPort (
+    rem If WMIC fails, use PowerShell as a fallback.
+    for /f "usebackq tokens=*" %%B in (`powershell -NoProfile -Command "Get-CimInstance Win32_SerialPort | Where-Object { $_.PNPDeviceID -match 'USB\\VID_2890&PID_0022' } | Select-Object -ExpandProperty DeviceID"`) do set comPort=%%B
+)
+
+if not defined comPort (
     if %comPortFindAttempt% equ 0 (
         echo Couldn't find the bootloader port. Searching for a regular ClearCore port...
         goto find_com_port
@@ -132,6 +137,11 @@ rem ----------------------------------------------------------------------------
 rem Enumerate the COM ports and grab the one with the VID/PID for a ClearCore device.
 rem ----------------------------------------------------------------------------
 for /f "usebackq" %%B in (`wmic path Win32_SerialPort Where %isComPort% Get DeviceID 2^> nul ^| FINDSTR "COM"`) do set comPort=%%B
+
+if not defined comPort (
+    rem If WMIC fails, use PowerShell as a fallback.
+    for /f "usebackq tokens=*" %%B in (`powershell -NoProfile -Command "Get-CimInstance Win32_SerialPort | Where-Object { $_.PNPDeviceID -match 'USB\\VID_2890&PID_8022' } | Select-Object -ExpandProperty DeviceID"`) do set comPort=%%B
+)
 
 if not defined comPort (
     echo Got error code: %errorlevel%
