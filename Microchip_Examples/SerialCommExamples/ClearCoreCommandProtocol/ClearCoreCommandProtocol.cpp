@@ -576,7 +576,7 @@ int main() {
 							//verify limit is valid, store, then propagate the change to the motor
 							if (MIN_ACCEL_LIMIT<=limit_in && limit_in<=MAX_ACCEL_LIMIT){
 								accelerationLimits[motorNum_in] = limit_in;
-								motors[motorNum_in]->AccelMax(velocityLimits[motorNum_in]);
+								motors[motorNum_in]->AccelMax(accelerationLimits[motorNum_in]);
 								SendFeedback(FB_COMMAND_OK);
 							} else {
 								SendFeedback(FB_ERR_LIMIT_OUT_OF_BOUNDS);
