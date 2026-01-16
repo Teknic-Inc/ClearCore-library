@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
@@ -344,6 +344,9 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="inc\EncoderInput.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\SysTimer.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\EncoderInput.cpp">
