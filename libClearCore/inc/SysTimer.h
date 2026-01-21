@@ -34,10 +34,13 @@ namespace ClearCore {
 
 /**
     \class SysTimer
-    \brief ClearCore system timer/stopwatch class
+    \brief Abstract stopwatch/timer base (Start/Elapsed/Completed) with selectable time base.
 
-    This class provides generic timer functionality that can be inherited to
-    use different time bases
+    <b>Use this when:</b> you want a stopwatch object (start, delay, completed, elapsed) and you’ll choose the time base via a derived class.
+
+    <b>Pick a derived class:</b>
+    - SysTimerMs for millisecond-scale delays
+    - SysTimerUs for microsecond-scale delays.
 **/
 class SysTimer {
 
@@ -135,7 +138,13 @@ private:
 
 /**
     \class SysTimerMs
-    \brief ClearCore system timer/stopwatch class using millisecond time base
+    \brief Stopwatch/timer using millisecond time base (recommended for most timeouts).
+
+    <b>Use this when:</b> your delays/timeouts are human-scale (10 ms to minutes+), and you don’t need microsecond resolution.
+
+    <b>Time base:</b> milliseconds.
+
+    <b>Rollover guidance:</b> this timer will rollover every ~49.7 days - safe for long-running timers compared to microseconds (microsecond base rolls faster).
 **/
 class SysTimerMs : public SysTimer {
 
@@ -168,7 +177,13 @@ private:
 
 /**
     \class SysTimerUs
-    \brief ClearCore system timer/stopwatch class using microsecond time base
+    \brief Stopwatch/timer using microsecond time base (short, high-resolution timing).
+
+    <b>Use this when:</b> you need short, tight timing (sub-millisecond delays, pulse measurement windows, quick debounces).
+
+    <b>Time base:</b> microseconds.
+
+    <b>Rollover caution:</b> this timer will rollover every ~71.5 minutes - best for shorter, more precise intervals.
 **/
 class SysTimerUs : public SysTimer {
 

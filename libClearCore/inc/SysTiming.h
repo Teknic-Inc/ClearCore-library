@@ -80,9 +80,9 @@ const uint16_t SampleRateHz = _CLEARCORE_SAMPLE_RATE_HZ;
 
 /**
     \class SysTiming
-    \brief ClearCore system timing class
+    \brief System time counters (global uptime-style milliseconds/microseconds).
 
-    This class provides an interface for various timing-related operations.
+    <b>Use this when:</b> you want a global time reference (uptime-style counters) without creating timer objects.
 **/
 class SysTiming {
     friend class SysManager;
