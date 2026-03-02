@@ -1071,6 +1071,7 @@ EXAMPLE_PATH           = ../../Microchip_Examples \
 ../../Microchip_Examples/EthernetExamples/EthernetTcpServerHelloWorld_automatic \
 ../../Microchip_Examples/EthernetExamples/EthernetTcpServerHelloWorld_manual \
 ../../Microchip_Examples/EthernetExamples/EthernetUdpHelloWorld \
+../../Microchip_Examples/EthernetExamples/ClearCoreCommandProtocolEthernetTCP \
 ../../Microchip_Examples/SerialCommExamples/ClearCoreCommandProtocol \
 ../../Microchip_Examples/SerialCommExamples/ReadSerialInput \
 ../../Microchip_Examples/SerialCommExamples/SerialPrint \
