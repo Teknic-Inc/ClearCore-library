@@ -15,6 +15,8 @@ Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "EthernetTcpClientHelloWorld
 EndProject
 Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "EthernetTcpServerHelloWorld_automatic", "EthernetTcpServerHelloWorld_automatic\EthernetTcpServerHelloWorld_automatic.cppproj", "{5A820189-8BE3-4E9B-BD9B-1D1EA7B11099}"
 EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "ClearCoreCommandProtocolEthernetTCP", "ClearCoreCommandProtocolEthernetTCP\ClearCoreCommandProtocolEthernetTCP.cppproj", "{1A34FB4F-6307-4377-B225-A17B75AF6A04}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -45,6 +47,10 @@ Global
 		{5A820189-8BE3-4E9B-BD9B-1D1EA7B11099}.Debug|ARM.Build.0 = Debug|ARM
 		{5A820189-8BE3-4E9B-BD9B-1D1EA7B11099}.Release|ARM.ActiveCfg = Release|ARM
 		{5A820189-8BE3-4E9B-BD9B-1D1EA7B11099}.Release|ARM.Build.0 = Release|ARM
+		{1A34FB4F-6307-4377-B225-A17B75AF6A04}.Debug|ARM.ActiveCfg = Debug|ARM
+		{1A34FB4F-6307-4377-B225-A17B75AF6A04}.Debug|ARM.Build.0 = Debug|ARM
+		{1A34FB4F-6307-4377-B225-A17B75AF6A04}.Release|ARM.ActiveCfg = Release|ARM
+		{1A34FB4F-6307-4377-B225-A17B75AF6A04}.Release|ARM.Build.0 = Release|ARM
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
