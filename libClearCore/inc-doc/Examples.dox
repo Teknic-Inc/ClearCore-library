@@ -72,6 +72,7 @@ C:\\Program Files (x86)\\Teknic\\ClearCore-Library x.x [where x.x is the version
 	- [Automatic TCP Server Hello World](@ref EthernetTcpServerHelloWorld_automatic.cpp)
 	- [Manual TCP Server Hello World](@ref EthernetTcpServerHelloWorld_manual.cpp)
 	- [UDP Hello World](@ref EthernetUdpHelloWorld.cpp)
+	- [TCP ClearCore Command Parser](@ref ClearCoreCommandProtocolEthernetTCP.cpp)
     
 <h2>Serial Communication Examples</h2>
     - [Serial Print](@ref SerialPrint.cpp)
