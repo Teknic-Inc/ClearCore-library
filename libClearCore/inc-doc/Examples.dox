@@ -259,6 +259,10 @@ C:\\Program Files (x86)\\Teknic\\ClearCore-Library x.x [where x.x is the version
     \example{lineno} EthernetUdpHelloWorld.cpp
     Return to \ref SdkExamples
 **/
+/**
+    \example{lineno} ClearCoreCommandProtocolEthernetTCP.cpp
+    Return to \ref SdkExamples
+**/
 
 /**
     \example{lineno} SerialPrint.cpp
@@ -464,6 +468,10 @@ C:\\Program Files (x86)\\Teknic\\ClearCore-Library x.x [where x.x is the version
 **/
 /**
     \example{lineno} EthernetExamples/EthernetUdpHelloWorld/EthernetUdpHelloWorld.cpp
+    Return to \ref SdkExamples
+**/
+/**
+    \example{lineno} EthernetExamples/ClearCoreCommandProtocolEthernetTCP/ClearCoreCommandProtocolEthernetTCP.cpp
     Return to \ref SdkExamples
 **/
 
