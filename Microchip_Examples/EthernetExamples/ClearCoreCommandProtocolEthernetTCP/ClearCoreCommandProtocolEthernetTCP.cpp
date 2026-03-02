@@ -3,20 +3,20 @@
  *
  * Objective:
  *    This example demonstrates control of various functionality of the Teknic 
- *     ClearCoreI/O and motion controller, including controlling ClearPath-SD 
- *     motors in step and direction mode over Ethernet TCP.
+ *     ClearCore motion and I/O controller, including controlling ClearPath-SD 
+ *     motors in step and direction, mode over Ethernet TCP.
  *
  * Description:
  *    This example processes strings of characters formatted according to the
  *     specifications below and commands the corresponding action on a ClearCore device. 
- *     A version of this example using USB and serial instead of Ethernet is also available
+ *     A version of this example using USB and serial instead of Ethernet is also available.
  *
  * Setup:
  * 0. Consult the accompanying ClearCore Command Protocol User Guide for more
  *     information on using this example project.
  *		https://teknic.com/files/downloads/ClearCoreCommandProtocol_UserGuide.pdf
- * 1. Connect ClearCore to your Ethernet network. The network must also have the TCP server 
- *	  device connected. This other device will send ASCII commands over Ethernet to control 
+ * 1. Connect ClearCore to your Ethernet network. The TCP server device must also be connected
+ *	  to the network. This other device will send ASCII commands over Ethernet to control 
  *	  ClearCore. "Packet Sender" is a commonly used TCP server test application for PC:
  *	  https://packetsender.com/  
  *    If server and client devices are connected to each other directly (as opposed to 
@@ -26,7 +26,8 @@
  * 3. Identify the IP address of the server and specify it as serverIp below.
  * 4. Identify the TCP port number and specify it as PORT_NUM below.
  * 5. Set the usingDhcp boolean as appropriate. If usingDhcp = false, specify ClearCore's
- *	  static Ip address as "ip" below.  
+ *	  static Ip address as "ip" below.  ClearCore's assigned IP address is printed to the 
+ *	  USB terminal.
  * 6. ClearPath-SD motors can be connected to connector M-0, M-1, M-2, and/or M-3.
  * 7. The connected ClearPath-SD motor(s) must be configured through the MSP software
  *    for Step and Direction mode (In MSP select Mode>>Step and Direction).
@@ -58,7 +59,7 @@
  *		v2 -200		//move motor2 at -200 steps/s in the negative direction
  *		q2s			//query the status of motor2
  *		l3v	100		//limit motor3's velocity (of positional moves only) to 100 steps/s
- *		z1			//zero Clear's position reference for motor1 (no motion is commanded to the motor)  
+ *		z1			//zeros position reference for motor1 (no motion is commanded to the motor)  
  *		i6			//read the current state of connector6 (DI6)
  *		o5 1		//output a value of 1 (digital high) to connector5 (IO5)
  *		h 			//display the help message
@@ -259,20 +260,20 @@ void SendVerboseStatus(int32_t motorNumber);
 void SendInt32asASCII(int32_t value);
 void SendInt16asASCII(int16_t value);
 
-// The IP address of the server you want to connect to
+// The IP address of the server you want to connect to (not ClearCore's IP address)
 IpAddress serverIp = IpAddress(192, 168, 0, 166);
 
 // The port number over which packets will be sent/received
 #define PORT_NUM 28028
 
+// Set usingDhcp to true to have ClearCore's network settings auto assigned
+// Set usingDhcp to false to use user-defined network settings below
+bool usingDhcp = true;
+
 // The maximum number of characters allowed per incoming packet
 #define MAX_PACKET_LENGTH 100
 // Buffer for holding received packets.
 unsigned char packetReceived[MAX_PACKET_LENGTH];
-
-// Set usingDhcp to true to have ClearCore's network settings auto assigned
-// Set usingDhcp to false to use user-defined network settings below
-bool usingDhcp = true;
 
 // Initialize a client object
 // The ClearCore will operate as a TCP client using this object
@@ -818,7 +819,6 @@ int main() {
 	} // while(true)
 } // main()
 
-					
 /*------------------------------------------------------------------------------
  * SendFeedback
  *
