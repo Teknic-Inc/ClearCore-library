@@ -35,7 +35,7 @@ namespace ClearCore {
 /** The maximum number of allowable client connections at any given time. **/
 #define CLIENT_MAX 8
 /** The size of the buffer to hold incoming TCP data, in bytes. **/
-#define TCP_DATA_BUFFER_SIZE 600
+#define TCP_DATA_BUFFER_SIZE 1460
 
 /**
     \brief A base class for an Ethernet TCP connection.
