@@ -40,6 +40,7 @@ extern "C" {
 #endif
 #include "cdcdf_acm.h"
 #include "cdcdf_acm_desc.h"
+#include "hal_atomic.h"
 #include "hal_usb_device.h"
 #ifdef __cplusplus
 }
@@ -315,6 +316,7 @@ bool UsbManager::CBLineStateChanged(usb_cdc_control_signal_t state) {
         cdcdf_acm_register_callback(CDCDF_ACM_CB_WRITE, (FUNC_PTR)NULL);
         // Stop Rx/Tx
         cdcdf_acm_stop_xfer();
+        atomic_clear_seqcst(&UsbMgr.m_sendActive);
         if (cdcdf_acm_get_line_coding()->dwDTERate == 1200) {
             SysMgr.ResetBoard(SysManager::RESET_TO_BOOTLOADER);
         }
@@ -348,7 +350,10 @@ void UsbManager::PortClose() {
     }
 
     // Flush the transmit buffer before closing
+    volatile hal_atomic_t irqMask;
+    atomic_enter_critical(&irqMask);
     TxPump();
+    atomic_leave_critical(&irqMask);
     WaitForWriteFinish();
 
     m_portOpen = false;
@@ -453,6 +458,10 @@ int32_t UsbManager::AvailableForWrite() {
     Transmit any data waiting in the tx buffer
 **/
 void UsbManager::TxPump() {
+    if (!LineState().rs232.DTR) {
+        return;
+    }
+
     if (atomic_test_and_set_acqrel(&m_sendActive)) {
         // Already sending; can't send anything more right now
         return;
