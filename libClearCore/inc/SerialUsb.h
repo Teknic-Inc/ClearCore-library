@@ -108,6 +108,11 @@ public:
     **/
     void PortClose() override;
 
+    /**
+        Reset the USB device
+    **/
+    void PortReset();
+
 #ifndef HIDE_FROM_DOXYGEN
     /**
         \copydoc ISerial::Speed(uint32_t bitsPerSecond)

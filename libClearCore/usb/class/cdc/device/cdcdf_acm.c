@@ -280,6 +280,8 @@ int32_t cdcdf_acm_init(void)
 		return ERR_DENIED;
 	}
 
+	memset(&usbd_cdc_line_coding, 0, sizeof(usbd_cdc_line_coding));
+
 	_cdcdf_acm.ctrl      = cdcdf_acm_ctrl;
 	_cdcdf_acm.func_data = &_cdcdf_acm_funcd;
 

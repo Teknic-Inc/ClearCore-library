@@ -539,6 +539,24 @@ void UsbManager::Refresh(void) {
     }
 }
 
+void UsbManager::Reset() {
+    NVIC_DisableIRQ(USB_0_IRQn);
+    NVIC_DisableIRQ(USB_1_IRQn);
+    NVIC_DisableIRQ(USB_2_IRQn);
+    NVIC_DisableIRQ(USB_3_IRQn);
+    m_lineState.value = 0;
+    usbdc_detach();
+    usbdc_deinit();
+
+    m_inHead = m_inTail;
+    m_outHead = m_outTail;
+    m_readBufAvail = 0;
+    m_sendActive = false;
+
+    Delay_ms(500);
+    cdc_device_acm_init();
+}
+
 void UsbManager::RxCopyToRingBuf() {
     __disable_irq();
     uint32_t space = sizeof(m_bufferIn) - 1 - AvailableForRead();

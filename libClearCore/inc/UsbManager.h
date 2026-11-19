@@ -177,6 +177,7 @@ USB_STATUS_REG_LIST(MASKIFY)
 **/
 class UsbManager {
     friend class SysManager;
+    friend class SerialUsb;
 public:
 #ifndef HIDE_FROM_DOXYGEN
     /**

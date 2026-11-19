@@ -53,6 +53,10 @@ void SerialUsb::PortClose() {
     UsbMgr.PortClose();
 }
 
+void SerialUsb::PortReset() {
+    UsbMgr.Reset();
+}
+
 bool SerialUsb::Speed(uint32_t bitsPerSecond) {
     return UsbMgr.Speed(bitsPerSecond);
 }
